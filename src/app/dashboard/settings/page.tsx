@@ -1,17 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  User, Building2, CreditCard, Bell, Palette,
+  User, Building2, CreditCard, Bell, Palette, Database,
   Check,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { ImageUpload } from "@/components/ui/ImageUpload";
-import { useLocalState } from "@/lib/useLocalState";
+import { DataControls } from "@/components/dashboard/DataControls";
+import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
-type TabId = "profile" | "business" | "billing" | "notifications" | "branding";
+type TabId = "profile" | "business" | "billing" | "notifications" | "branding" | "data";
 
 const tabs: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "profile", label: "Profile", icon: User },
@@ -19,6 +20,7 @@ const tabs: { id: TabId; label: string; icon: React.ComponentType<{ className?: 
   { id: "billing", label: "Billing", icon: CreditCard },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "branding", label: "Branding", icon: Palette },
+  { id: "data", label: "Data", icon: Database },
 ];
 
 const brandColors = [
@@ -52,7 +54,18 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   );
 }
 
+function SavedPill({ show }: { show: boolean }) {
+  if (!show) return null;
+  return (
+    <span className="flex items-center gap-1 text-sm font-medium text-accent-600">
+      <Check className="h-4 w-4" /> Saved
+    </span>
+  );
+}
+
 export default function SettingsPage() {
+  const app = useApp();
+
   const [tab, setTab] = useState<TabId>("profile");
   const [notifications, setNotifications] = useState<Record<string, boolean>>({
     "New client signups": true,
@@ -60,19 +73,55 @@ export default function SettingsPage() {
     "Client messages": true,
     "Weekly summary": false,
   });
-  const [activeColor, setActiveColor] = useState(brandColors[0].value);
-  const [brandLogo, setBrandLogo, brandLogoHydrated] = useLocalState<string | undefined>(
-    "ffkc-brand-logo",
-    undefined,
-  );
-  const [profilePhoto, setProfilePhoto, profilePhotoHydrated] = useLocalState<string | undefined>(
-    "ffkc-profile-photo",
-    undefined,
-  );
+
+  // Profile form (name/email/phone/bio)
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+
+  // Business form
+  const [businessName, setBusinessName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [timezone, setTimezone] = useState("America/Los_Angeles");
+
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [businessSaved, setBusinessSaved] = useState(false);
+
+  // Seed local form state from the store once it has hydrated.
+  useEffect(() => {
+    if (!app.hydrated) return;
+    setName(app.settings.trainerName ?? "");
+    setEmail(app.settings.trainerEmail ?? "");
+    setBusinessName(app.settings.businessName ?? "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [app.hydrated]);
 
   function toggleNotification(key: string) {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
   }
+
+  function saveProfile() {
+    app.updateSettings({ trainerName: name, trainerEmail: email });
+    setProfileSaved(true);
+    window.setTimeout(() => setProfileSaved(false), 2000);
+  }
+
+  function saveBusiness() {
+    app.updateSettings({ businessName });
+    setBusinessSaved(true);
+    window.setTimeout(() => setBusinessSaved(false), 2000);
+  }
+
+  if (!app.hydrated) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+  }
+
+  const activeColor = app.settings.brandColor;
 
   return (
     <>
@@ -107,22 +156,22 @@ export default function SettingsPage() {
               <p className="text-sm text-ink-500">Update your personal details.</p>
 
               <div className="mt-6 flex items-center gap-4">
-                {profilePhotoHydrated && profilePhoto ? (
+                {app.settings.profilePhoto ? (
                   <ImageUpload
-                    value={profilePhoto}
+                    value={app.settings.profilePhoto}
                     aspect="square"
-                    onChange={setProfilePhoto}
+                    onChange={(v) => app.updateSettings({ profilePhoto: v })}
                     className="w-24"
                   />
                 ) : (
                   <Avatar initials="AT" size="lg" />
                 )}
                 <div>
-                  {profilePhotoHydrated && !profilePhoto && (
+                  {!app.settings.profilePhoto && (
                     <ImageUpload
                       aspect="square"
                       label="Change photo"
-                      onChange={setProfilePhoto}
+                      onChange={(v) => app.updateSettings({ profilePhoto: v })}
                       className="w-24"
                     />
                   )}
@@ -133,15 +182,15 @@ export default function SettingsPage() {
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="label">Full name</label>
-                  <input className="input" defaultValue="Alex Turner" />
+                  <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
                 <div>
                   <label className="label">Email</label>
-                  <input className="input" type="email" defaultValue="alex@fitforge.app" />
+                  <input className="input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div>
                   <label className="label">Phone</label>
-                  <input className="input" defaultValue="+1 415 555 0100" />
+                  <input className="input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+1 415 555 0100" />
                 </div>
                 <div>
                   <label className="label">Title</label>
@@ -151,13 +200,16 @@ export default function SettingsPage() {
                   <label className="label">Bio</label>
                   <textarea
                     className="input min-h-[96px] resize-y"
-                    defaultValue="Certified strength coach helping clients build sustainable habits and lasting results."
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Certified strength coach helping clients build sustainable habits and lasting results."
                   />
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
-                <button type="button" className="btn-primary">Save changes</button>
+              <div className="mt-6 flex items-center justify-end gap-3">
+                <SavedPill show={profileSaved} />
+                <button type="button" className="btn-primary" onClick={saveProfile}>Save changes</button>
               </div>
             </div>
           )}
@@ -170,15 +222,15 @@ export default function SettingsPage() {
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="label">Business name</label>
-                  <input className="input" defaultValue="FitForge Coaching" />
+                  <input className="input" value={businessName} onChange={(e) => setBusinessName(e.target.value)} />
                 </div>
                 <div>
                   <label className="label">Website</label>
-                  <input className="input" defaultValue="https://fitforge.app" />
+                  <input className="input" value={website} onChange={(e) => setWebsite(e.target.value)} placeholder="https://fitforge.app" />
                 </div>
                 <div>
                   <label className="label">Timezone</label>
-                  <select className="input" defaultValue="America/Los_Angeles">
+                  <select className="input" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
                     <option value="America/Los_Angeles">Pacific (PT)</option>
                     <option value="America/Denver">Mountain (MT)</option>
                     <option value="America/Chicago">Central (CT)</option>
@@ -198,8 +250,9 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
-                <button type="button" className="btn-primary">Save changes</button>
+              <div className="mt-6 flex items-center justify-end gap-3">
+                <SavedPill show={businessSaved} />
+                <button type="button" className="btn-primary" onClick={saveBusiness}>Save changes</button>
               </div>
             </div>
           )}
@@ -294,7 +347,7 @@ export default function SettingsPage() {
                       key={c.value}
                       type="button"
                       title={c.name}
-                      onClick={() => setActiveColor(c.value)}
+                      onClick={() => app.updateSettings({ brandColor: c.value })}
                       className={cn(
                         "flex h-10 w-10 items-center justify-center rounded-xl ring-2 ring-offset-2 transition",
                         activeColor === c.value ? "ring-ink-900" : "ring-transparent",
@@ -309,21 +362,28 @@ export default function SettingsPage() {
 
               <div className="mt-6">
                 <label className="label">Logo</label>
-                {brandLogoHydrated && (
-                  <ImageUpload
-                    value={brandLogo}
-                    aspect="video"
-                    label="Upload logo"
-                    onChange={setBrandLogo}
-                  />
-                )}
+                <ImageUpload
+                  value={app.settings.brandLogo}
+                  aspect="video"
+                  label="Upload logo"
+                  onChange={(v) => app.updateSettings({ brandLogo: v })}
+                />
                 <p className="mt-1.5 text-xs text-ink-400">
                   SVG or PNG, transparent background recommended.
                 </p>
               </div>
+            </div>
+          )}
 
-              <div className="mt-6 flex justify-end">
-                <button type="button" className="btn-primary">Save branding</button>
+          {tab === "data" && (
+            <div>
+              <h2 className="font-semibold text-ink-900">Data</h2>
+              <p className="text-sm text-ink-500">
+                Load a fully-populated example workspace or clear everything to start fresh.
+              </p>
+
+              <div className="mt-6">
+                <DataControls variant="card" />
               </div>
             </div>
           )}

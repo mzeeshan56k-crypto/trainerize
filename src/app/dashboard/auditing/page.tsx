@@ -2,17 +2,16 @@
 
 import { useState } from "react";
 import {
-  TrendingUp, TrendingDown, Minus, CheckCircle2, AlertTriangle,
-  Eye, Sparkles, FileText,
+  CheckCircle2, AlertTriangle, Eye, Sparkles, FileText, ClipboardList, Loader2,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ComplianceBars } from "@/components/dashboard/Charts";
 import { Avatar } from "@/components/ui/Avatar";
-import {
-  complianceRates, complianceRows, lightStyles, type Light, type ComplianceRow,
-} from "@/lib/platform";
-import { getClient } from "@/lib/data";
+import { EmptyState } from "@/components/ui/Modal";
+import { lightStyles, type Light } from "@/lib/platform";
+import type { Client } from "@/lib/data";
+import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 type Filter = "all" | "red" | "yellow" | "green";
@@ -24,11 +23,32 @@ const filters: { id: Filter; label: string }[] = [
   { id: "green", label: "On track" },
 ];
 
-const trendIcon = {
-  up: { Icon: TrendingUp, className: "text-accent-600" },
-  down: { Icon: TrendingDown, className: "text-rose-500" },
-  flat: { Icon: Minus, className: "text-ink-400" },
-};
+const clamp = (n: number) => Math.max(0, Math.min(100, Math.round(n)));
+
+interface Derived {
+  client: Client;
+  light: Light;
+  workout: number;
+  diet: number;
+  habits: number;
+}
+
+function lightOf(adherence: number): Light {
+  if (adherence >= 80) return "green";
+  if (adherence >= 50) return "yellow";
+  return "red";
+}
+
+function derive(client: Client): Derived {
+  const a = client.adherence ?? 0;
+  return {
+    client,
+    light: lightOf(a),
+    workout: clamp(a),
+    diet: clamp(a - 8),
+    habits: clamp(a - 12),
+  };
+}
 
 function MiniBar({ value, color }: { value: number; color: string }) {
   return (
@@ -41,48 +61,83 @@ function MiniBar({ value, color }: { value: number; color: string }) {
   );
 }
 
-function generateReview(row: ComplianceRow): string {
-  const client = getClient(row.clientId);
-  const name = client?.name.split(" ")[0] ?? "This client";
-  const trendWord =
-    row.trend === "up" ? "trending upward" : row.trend === "down" ? "trending downward" : "holding steady";
-  const strongest = Math.max(row.workout, row.diet, row.habits);
-  const weakest = Math.min(row.workout, row.diet, row.habits);
+function generateReview(d: Derived): string {
+  const name = d.client.name.split(" ")[0] || "This client";
+  const strongest = Math.max(d.workout, d.diet, d.habits);
+  const weakest = Math.min(d.workout, d.diet, d.habits);
   const weakArea =
-    weakest === row.workout ? "workout completion" : weakest === row.diet ? "nutrition logging" : "daily habits";
+    weakest === d.workout ? "workout completion" : weakest === d.diet ? "nutrition logging" : "daily habits";
   const strongArea =
-    strongest === row.workout ? "training adherence" : strongest === row.diet ? "nutrition" : "habit consistency";
+    strongest === d.workout ? "training adherence" : strongest === d.diet ? "nutrition" : "habit consistency";
 
-  if (row.light === "red") {
-    return `${name} is significantly off-plan and ${trendWord}. Workout completion sits at ${row.workout}%, diet at ${row.diet}% and habits at ${row.habits}%. The biggest gap is ${weakArea} (${weakest}%). Immediate action recommended: ${row.note} Schedule a 1:1 to rebuild momentum before the account churns.`;
+  if (d.light === "red") {
+    return `${name} is significantly off-plan with overall adherence at ${d.client.adherence}%. Workout completion sits at ${d.workout}%, diet at ${d.diet}% and habits at ${d.habits}%. The biggest gap is ${weakArea} (${weakest}%). Immediate action recommended: schedule a 1:1 to rebuild momentum before the account churns.`;
   }
-  if (row.light === "yellow") {
-    return `${name} is mostly on track but worth watching — engagement is ${trendWord}. ${strongArea} is the bright spot (${strongest}%), while ${weakArea} (${weakest}%) is dragging overall results. ${row.note} A light-touch nudge this week should keep things from slipping.`;
+  if (d.light === "yellow") {
+    return `${name} is mostly on track but worth watching — overall adherence is ${d.client.adherence}%. ${strongArea} is the bright spot (${strongest}%), while ${weakArea} (${weakest}%) is dragging overall results. A light-touch nudge this week should keep things from slipping.`;
   }
-  return `${name} is performing strongly and ${trendWord}. Across the board — workout ${row.workout}%, diet ${row.diet}%, habits ${row.habits}% — adherence is excellent, led by ${strongArea} at ${strongest}%. ${row.note} Consider progressing the program to keep them challenged.`;
+  return `${name} is performing strongly with ${d.client.adherence}% overall adherence. Across the board — workout ${d.workout}%, diet ${d.diet}%, habits ${d.habits}% — adherence is excellent, led by ${strongArea} at ${strongest}%. Consider progressing the program to keep them challenged.`;
+}
+
+function Loading() {
+  return (
+    <div className="flex items-center justify-center py-24 text-ink-400">
+      <Loader2 className="h-6 w-6 animate-spin" />
+    </div>
+  );
 }
 
 export default function AuditingPage() {
+  const app = useApp();
   const [filter, setFilter] = useState<Filter>("all");
   const [reviews, setReviews] = useState<Record<string, string>>({});
 
-  const counts = complianceRows.reduce(
-    (acc, r) => {
-      acc[r.light] += 1;
+  if (!app.hydrated) return <Loading />;
+
+  if (app.clients.length === 0) {
+    return (
+      <>
+        <PageHeader
+          title="Performance auditing"
+          subtitle="Monitor engagement and flag at-risk accounts"
+        />
+        <EmptyState
+          icon={ClipboardList}
+          title="No clients to audit yet"
+          description="Add clients in the Clients page to start tracking adherence and compliance."
+        />
+      </>
+    );
+  }
+
+  const derived = app.clients.map(derive);
+
+  const counts = derived.reduce(
+    (acc, d) => {
+      acc[d.light] += 1;
       return acc;
     },
     { green: 0, yellow: 0, red: 0 } as Record<Light, number>,
   );
 
-  const rows = filter === "all" ? complianceRows : complianceRows.filter((r) => r.light === filter);
+  const n = derived.length;
+  const avg = (sel: (d: Derived) => number) =>
+    n === 0 ? 0 : clamp(derived.reduce((s, d) => s + sel(d), 0) / n);
+  const rates = {
+    workout: avg((d) => d.workout),
+    diet: avg((d) => d.diet),
+    habits: avg((d) => d.habits),
+  };
 
-  function toggleReview(row: ComplianceRow) {
+  const rows = filter === "all" ? derived : derived.filter((d) => d.light === filter);
+
+  function toggleReview(d: Derived) {
     setReviews((prev) => {
       const next = { ...prev };
-      if (next[row.clientId]) {
-        delete next[row.clientId];
+      if (next[d.client.id]) {
+        delete next[d.client.id];
       } else {
-        next[row.clientId] = generateReview(row);
+        next[d.client.id] = generateReview(d);
       }
       return next;
     });
@@ -99,11 +154,7 @@ export default function AuditingPage() {
         <div className="card p-6">
           <h2 className="font-semibold text-ink-900">Rolling compliance</h2>
           <p className="mb-5 text-sm text-ink-500">Across your active roster</p>
-          <ComplianceBars
-            workout={complianceRates.workout}
-            diet={complianceRates.diet}
-            habits={complianceRates.habits}
-          />
+          <ComplianceBars workout={rates.workout} diet={rates.diet} habits={rates.habits} />
         </div>
         <StatCard label="On track" value={String(counts.green)} icon={CheckCircle2} />
         <div className="grid gap-6 sm:grid-cols-2 lg:contents">
@@ -139,16 +190,14 @@ export default function AuditingPage() {
       </div>
 
       <div className="mt-4 space-y-3">
-        {rows.map((row) => {
-          const client = getClient(row.clientId);
-          const styles = lightStyles[row.light];
-          const Trend = trendIcon[row.trend];
-          const open = Boolean(reviews[row.clientId]);
-          const isRed = row.light === "red";
+        {rows.map((d) => {
+          const styles = lightStyles[d.light];
+          const open = Boolean(reviews[d.client.id]);
+          const isRed = d.light === "red";
 
           return (
             <div
-              key={row.clientId}
+              key={d.client.id}
               className={cn(
                 "card overflow-hidden transition",
                 isRed && "border-rose-200 bg-rose-50/40 ring-1 ring-rose-100",
@@ -157,38 +206,35 @@ export default function AuditingPage() {
               <div className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center">
                 <div className="flex min-w-0 flex-1 items-center gap-3">
                   <span className={cn("h-3 w-3 shrink-0 rounded-full", styles.dot)} />
-                  {client && <Avatar initials={client.avatar} />}
+                  <Avatar initials={d.client.avatar} />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="truncate font-semibold text-ink-900">{client?.name}</span>
+                      <span className="truncate font-semibold text-ink-900">{d.client.name}</span>
                       <span className={cn("badge", styles.badge)}>{styles.label}</span>
                     </div>
-                    <p className="truncate text-xs text-ink-500">{client?.program}</p>
+                    <p className="truncate text-xs text-ink-500">{d.client.program}</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 lg:gap-6">
                   <div>
                     <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-400">Workout</div>
-                    <MiniBar value={row.workout} color="bg-brand-500" />
+                    <MiniBar value={d.workout} color="bg-brand-500" />
                   </div>
                   <div>
                     <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-400">Diet</div>
-                    <MiniBar value={row.diet} color="bg-accent-500" />
+                    <MiniBar value={d.diet} color="bg-accent-500" />
                   </div>
                   <div>
                     <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-ink-400">Habits</div>
-                    <MiniBar value={row.habits} color="bg-amber-500" />
+                    <MiniBar value={d.habits} color="bg-amber-500" />
                   </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <span className={cn("flex items-center gap-1 text-sm font-medium", Trend.className)}>
-                    <Trend.Icon className="h-4 w-4" />
-                  </span>
                   <button
                     type="button"
-                    onClick={() => toggleReview(row)}
+                    onClick={() => toggleReview(d)}
                     className={cn(open ? "btn-secondary" : "btn-primary", "whitespace-nowrap")}
                   >
                     <Sparkles className="h-4 w-4" />
@@ -197,16 +243,12 @@ export default function AuditingPage() {
                 </div>
               </div>
 
-              <p className="border-t border-ink-100 px-5 py-3 text-sm text-ink-600">
-                <span className="font-medium text-ink-700">Note:</span> {row.note}
-              </p>
-
               {open && (
                 <div className="border-t border-brand-100 bg-brand-50/50 px-5 py-4">
                   <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-700">
                     <FileText className="h-3.5 w-3.5" /> Auto-generated progress review
                   </div>
-                  <p className="text-sm leading-relaxed text-ink-700">{reviews[row.clientId]}</p>
+                  <p className="text-sm leading-relaxed text-ink-700">{reviews[d.client.id]}</p>
                 </div>
               )}
             </div>

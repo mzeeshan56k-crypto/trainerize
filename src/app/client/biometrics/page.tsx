@@ -1,9 +1,12 @@
 "use client";
 
-import { Activity, HeartPulse, Moon, FlaskConical, Zap } from "lucide-react";
+import Link from "next/link";
+import { Activity, HeartPulse, Moon, FlaskConical, Zap, UserPlus } from "lucide-react";
 import { SleepChart } from "@/components/dashboard/Charts";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useLocalState } from "@/lib/useLocalState";
+import { useApp, useCurrentClient } from "@/lib/store";
+import { EmptyState } from "@/components/ui/Modal";
 import { sleepData, recoveryMuscles, recoveryHeatmap, bloodwork } from "@/lib/platform";
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -23,10 +26,29 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function BiometricsPage() {
+  const app = useApp();
+  const client = useCurrentClient();
   const [labReport, setLabReport, labReportHydrated] = useLocalState<string | undefined>(
     "ffkc-labs",
     undefined,
   );
+
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!client)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
 
   const last = sleepData[sleepData.length - 1];
   const total = last.rem + last.deep + last.light + last.awake;
@@ -51,6 +73,16 @@ export default function BiometricsPage() {
         </p>
       </section>
 
+      {!app.seeded && (
+        <EmptyState
+          icon={Activity}
+          title="No biometric data yet"
+          description="Sync a device or load example data in the Trainer portal to see sleep, recovery and lab markers."
+        />
+      )}
+
+      {app.seeded && (
+      <>
       {/* Sleep architecture */}
       <section className="card p-5">
         <div className="mb-1 flex items-center gap-2">
@@ -207,26 +239,34 @@ export default function BiometricsPage() {
             </tbody>
           </table>
         </div>
+      </section>
+      </>
+      )}
 
-        <div className="mt-5 border-t border-ink-100 pt-4">
-          <div className="mb-2 flex items-center justify-between">
+      {/* Lab report upload — always available */}
+      <section className="card p-5">
+        <div className="mb-2 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+              <FlaskConical className="h-4 w-4" />
+            </span>
             <h3 className="text-sm font-semibold text-ink-900">Your lab reports</h3>
-            {labReportHydrated && labReport && (
-              <span className="badge bg-accent-50 text-accent-700">Attached</span>
-            )}
           </div>
-          <p className="mb-3 text-xs text-ink-400">
-            Attach a photo or screenshot of your latest bloodwork for your coach to review.
-          </p>
-          {labReportHydrated && (
-            <ImageUpload
-              value={labReport}
-              aspect="video"
-              label="Upload lab report"
-              onChange={setLabReport}
-            />
+          {labReportHydrated && labReport && (
+            <span className="badge bg-accent-50 text-accent-700">Attached</span>
           )}
         </div>
+        <p className="mb-3 text-xs text-ink-400">
+          Attach a photo or screenshot of your latest bloodwork for your coach to review.
+        </p>
+        {labReportHydrated && (
+          <ImageUpload
+            value={labReport}
+            aspect="video"
+            label="Upload lab report"
+            onChange={setLabReport}
+          />
+        )}
       </section>
     </div>
   );

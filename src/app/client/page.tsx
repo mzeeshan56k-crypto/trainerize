@@ -1,47 +1,106 @@
+"use client";
+
 import Link from "next/link";
 import {
   Dumbbell, Flame, Target, TrendingDown, ChevronRight, CheckCircle2,
   Calendar, Apple, Droplet, Moon, Footprints,
-  ClipboardCheck, Trophy, GraduationCap,
+  ClipboardCheck, Trophy, GraduationCap, UserPlus,
 } from "lucide-react";
-import { getCurrentClient } from "@/lib/session";
-import { workouts, habits, appointments } from "@/lib/data";
+import { useApp, useCurrentClient } from "@/lib/store";
+import { habits } from "@/lib/data";
+import { EmptyState } from "@/components/ui/Modal";
 
 const habitIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   footprints: Footprints, droplet: Droplet, moon: Moon, utensils: Apple,
 };
 
 export default function ClientTodayPage() {
-  const c = getCurrentClient();
-  const todaysWorkout = workouts[0];
+  const app = useApp();
+  const c = useCurrentClient();
+
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!c)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
+
+  const todaysWorkout = app.workouts[0];
   const lost = c.startWeight - c.currentWeight;
   const toGoal = Math.abs(c.currentWeight - c.goalWeight);
-  const nextSession = appointments.find((a) => a.clientId === c.id);
 
   return (
     <div className="space-y-6">
+      {/* Viewing as selector */}
+      {app.clients.length >= 2 && (
+        <div className="flex items-center gap-2">
+          <label htmlFor="viewing-as" className="text-xs font-medium uppercase tracking-wide text-ink-400">
+            Viewing as
+          </label>
+          <select
+            id="viewing-as"
+            value={app.currentClientId ?? c.id}
+            onChange={(e) => app.setCurrentClient(e.target.value)}
+            className="input flex-1"
+            aria-label="Viewing as client"
+          >
+            {app.clients.map((cl) => (
+              <option key={cl.id} value={cl.id}>{cl.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* Greeting + workout hero */}
       <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
         <p className="text-sm text-brand-100">Good morning</p>
         <h1 className="text-2xl font-bold">{c.name.split(" ")[0]} 👋</h1>
-        <Link
-          href={`/client/workouts/${todaysWorkout.id}`}
-          className="mt-5 flex items-center gap-4 rounded-2xl bg-white/15 p-4 backdrop-blur transition hover:bg-white/20"
-        >
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
-            <Dumbbell className="h-6 w-6" />
-          </span>
-          <div className="flex-1">
-            <div className="text-xs uppercase tracking-wide text-brand-100">
-              Today&apos;s workout
+
+        {todaysWorkout ? (
+          <Link
+            href={`/client/workouts/${todaysWorkout.id}`}
+            className="mt-5 flex items-center gap-4 rounded-2xl bg-white/15 p-4 backdrop-blur transition hover:bg-white/20"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+              <Dumbbell className="h-6 w-6" />
+            </span>
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wide text-brand-100">
+                Today&apos;s workout
+              </div>
+              <div className="font-semibold">{todaysWorkout.name}</div>
+              <div className="text-xs text-brand-100">
+                {todaysWorkout.exercises.length} exercises · {todaysWorkout.durationMin} min
+              </div>
             </div>
-            <div className="font-semibold">{todaysWorkout.name}</div>
-            <div className="text-xs text-brand-100">
-              {todaysWorkout.exercises.length} exercises · {todaysWorkout.durationMin} min
+            <ChevronRight className="h-5 w-5" />
+          </Link>
+        ) : (
+          <div className="mt-5 flex items-center gap-4 rounded-2xl bg-white/15 p-4 backdrop-blur">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+              <Dumbbell className="h-6 w-6" />
+            </span>
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wide text-brand-100">
+                Today&apos;s workout
+              </div>
+              <div className="font-semibold">No workouts assigned yet</div>
+              <div className="text-xs text-brand-100">
+                Your coach will assign training soon.
+              </div>
             </div>
           </div>
-          <ChevronRight className="h-5 w-5" />
-        </Link>
+        )}
       </section>
 
       {/* Quick actions */}
@@ -120,20 +179,24 @@ export default function ClientTodayPage() {
       </section>
 
       {/* Next session */}
-      {nextSession && (
-        <section className="card flex items-center gap-4 p-5">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
-            <Calendar className="h-6 w-6" />
-          </span>
-          <div className="flex-1">
-            <div className="text-xs uppercase tracking-wide text-ink-400">Next session</div>
-            <div className="font-semibold text-ink-900">{nextSession.title}</div>
-            <div className="text-sm text-ink-500">
-              {nextSession.start} – {nextSession.end} with Coach Alex
+      {(() => {
+        const nextSession = app.appointments.find((a) => a.clientId === c.id);
+        if (!nextSession) return null;
+        return (
+          <section className="card flex items-center gap-4 p-5">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+              <Calendar className="h-6 w-6" />
+            </span>
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wide text-ink-400">Next session</div>
+              <div className="font-semibold text-ink-900">{nextSession.title}</div>
+              <div className="text-sm text-ink-500">
+                {nextSession.start} – {nextSession.end} with Coach Alex
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
     </div>
   );
 }

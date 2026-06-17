@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import {
+  Plus, ChevronLeft, ChevronRight, Clock, X, Loader2,
+} from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
-import { appointments, getClient, type Appointment } from "@/lib/data";
+import { Modal, Field } from "@/components/ui/Modal";
+import { useApp } from "@/lib/store";
+import type { Appointment } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const DAY_OPTIONS = [
+  "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
+];
 // Fabricated current week (Mon 15 Jun 2026 .. Sun 21 Jun 2026)
 const DATES = [15, 16, 17, 18, 19, 20, 21];
 const TODAY_INDEX = 2; // Wednesday 17th highlighted
@@ -43,41 +50,98 @@ const TYPE_STYLES: Record<
   },
 };
 
+const TYPE_OPTIONS: EventType[] = ["session", "check-in", "consult", "class"];
+
 function hourOf(time: string) {
   return parseInt(time.slice(0, 2), 10);
 }
 
-function EventChip({ appt }: { appt: Appointment }) {
-  const client = appt.clientId ? getClient(appt.clientId) : undefined;
-  const style = TYPE_STYLES[appt.type];
+function Loading() {
   return (
-    <div
-      className={cn(
-        "flex items-start gap-2 rounded-lg border p-2 text-left shadow-sm transition hover:shadow-md",
-        style.chip,
-      )}
-    >
-      <div className="min-w-0 flex-1">
-        <div className="truncate text-xs font-semibold leading-tight">
-          {appt.title}
-        </div>
-        <div className="mt-0.5 flex items-center gap-1 text-[11px] opacity-80">
-          <Clock className="h-3 w-3" />
-          {appt.start}–{appt.end}
-        </div>
-      </div>
-      {client && <Avatar initials={client.avatar} size="sm" className="ring-1" />}
+    <div className="flex items-center justify-center py-24 text-ink-400">
+      <Loader2 className="h-6 w-6 animate-spin" />
     </div>
   );
 }
 
 export default function CalendarPage() {
+  const app = useApp();
   const [weekOffset, setWeekOffset] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({
+    title: "",
+    clientId: "",
+    day: 0,
+    start: "09:00",
+    end: "10:00",
+    type: "session" as EventType,
+  });
+
+  if (!app.hydrated) return <Loading />;
+
+  const appointments = app.appointments;
+
+  function EventChip({ appt }: { appt: Appointment }) {
+    const client = appt.clientId ? app.clients.find((c) => c.id === appt.clientId) : undefined;
+    const style = TYPE_STYLES[appt.type];
+    return (
+      <div
+        className={cn(
+          "group/chip relative flex items-start gap-2 rounded-lg border p-2 text-left shadow-sm transition hover:shadow-md",
+          style.chip,
+        )}
+      >
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-xs font-semibold leading-tight">
+            {appt.title}
+          </div>
+          <div className="mt-0.5 flex items-center gap-1 text-[11px] opacity-80">
+            <Clock className="h-3 w-3" />
+            {appt.start}–{appt.end}
+          </div>
+        </div>
+        {client && <Avatar initials={client.avatar} size="sm" className="ring-1" />}
+        <button
+          type="button"
+          onClick={() => app.removeAppointment(appt.id)}
+          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-ink-400 shadow-soft ring-1 ring-ink-100 opacity-0 transition hover:text-rose-600 group-hover/chip:opacity-100"
+          aria-label="Delete event"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    );
+  }
 
   // Sort upcoming by day then start time
   const upcoming = [...appointments].sort(
     (a, b) => a.day - b.day || a.start.localeCompare(b.start),
   );
+
+  function resetForm() {
+    setForm({
+      title: "",
+      clientId: "",
+      day: 0,
+      start: "09:00",
+      end: "10:00",
+      type: "session",
+    });
+  }
+
+  function submit() {
+    if (!form.title.trim()) return;
+    app.addAppointment({
+      title: form.title.trim(),
+      clientId: form.clientId || "",
+      day: form.day,
+      start: form.start,
+      end: form.end,
+      type: form.type,
+    });
+    resetForm();
+    setOpen(false);
+  }
 
   return (
     <>
@@ -85,7 +149,7 @@ export default function CalendarPage() {
         title="Calendar"
         subtitle="Manage sessions, classes and check-ins"
         action={
-          <button className="btn-primary">
+          <button className="btn-primary" onClick={() => setOpen(true)}>
             <Plus className="h-4 w-4" />
             New event
           </button>
@@ -126,6 +190,12 @@ export default function CalendarPage() {
               ))}
             </div>
           </div>
+
+          {appointments.length === 0 && (
+            <p className="mb-4 rounded-xl border border-dashed border-ink-200 bg-ink-50/40 px-4 py-3 text-center text-xs text-ink-400">
+              No events scheduled — add one
+            </p>
+          )}
 
           {/* Desktop / tablet grid */}
           <div className="hidden md:block">
@@ -219,8 +289,11 @@ export default function CalendarPage() {
           <h2 className="font-semibold text-ink-900">Upcoming</h2>
           <p className="mt-1 text-sm text-ink-500">Next on your schedule</p>
           <div className="mt-4 space-y-2">
+            {upcoming.length === 0 && (
+              <p className="text-sm text-ink-400">Nothing scheduled yet.</p>
+            )}
             {upcoming.map((a) => {
-              const client = a.clientId ? getClient(a.clientId) : undefined;
+              const client = a.clientId ? app.clients.find((c) => c.id === a.clientId) : undefined;
               const style = TYPE_STYLES[a.type];
               return (
                 <div
@@ -243,6 +316,105 @@ export default function CalendarPage() {
           </div>
         </div>
       </div>
+
+      <Modal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          resetForm();
+        }}
+        title="New event"
+        footer={
+          <>
+            <button
+              className="btn-secondary"
+              onClick={() => {
+                setOpen(false);
+                resetForm();
+              }}
+            >
+              Cancel
+            </button>
+            <button className="btn-primary" disabled={!form.title.trim()} onClick={submit}>
+              Add event
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Field label="Title">
+            <input
+              autoFocus
+              className="input"
+              value={form.title}
+              onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+              placeholder="e.g. 1:1 strength session"
+            />
+          </Field>
+
+          <Field label="Client (optional)">
+            <select
+              className="input"
+              value={form.clientId}
+              onChange={(e) => setForm((f) => ({ ...f, clientId: e.target.value }))}
+            >
+              <option value="">No client</option>
+              {app.clients.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="Day">
+            <select
+              className="input"
+              value={form.day}
+              onChange={(e) => setForm((f) => ({ ...f, day: Number(e.target.value) }))}
+            >
+              {DAY_OPTIONS.map((d, i) => (
+                <option key={d} value={i}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <div className="grid grid-cols-2 gap-4">
+            <Field label="Start">
+              <input
+                type="time"
+                className="input"
+                value={form.start}
+                onChange={(e) => setForm((f) => ({ ...f, start: e.target.value }))}
+              />
+            </Field>
+            <Field label="End">
+              <input
+                type="time"
+                className="input"
+                value={form.end}
+                onChange={(e) => setForm((f) => ({ ...f, end: e.target.value }))}
+              />
+            </Field>
+          </div>
+
+          <Field label="Type">
+            <select
+              className="input"
+              value={form.type}
+              onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as EventType }))}
+            >
+              {TYPE_OPTIONS.map((t) => (
+                <option key={t} value={t}>
+                  {TYPE_STYLES[t].label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+      </Modal>
     </>
   );
 }

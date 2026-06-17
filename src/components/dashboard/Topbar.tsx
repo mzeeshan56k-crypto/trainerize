@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Search, Bell, Plus, Menu } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { PortalSwitcher } from "@/components/PortalSwitcher";
@@ -23,9 +24,9 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
       </div>
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
         <PortalSwitcher />
-        <button className="btn-primary hidden sm:inline-flex">
+        <Link href="/dashboard/clients?new=1" className="btn-primary hidden sm:inline-flex">
           <Plus className="h-4 w-4" /> Add client
-        </button>
+        </Link>
         <button className="relative flex h-10 w-10 items-center justify-center rounded-full text-ink-600 hover:bg-ink-100" aria-label="Notifications">
           <Bell className="h-5 w-5" />
           <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />

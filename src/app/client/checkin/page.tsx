@@ -1,23 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardCheck, CheckCircle2, CalendarDays } from "lucide-react";
+import Link from "next/link";
+import { ClipboardCheck, CheckCircle2, CalendarDays, UserPlus } from "lucide-react";
 import { checkinQuestions } from "@/lib/platform";
-import { useLocalState } from "@/lib/useLocalState";
-
-interface CheckinSubmission {
-  date: string; // ISO date
-  answers: Record<string, string | number>;
-}
+import { useApp, useCurrentClient } from "@/lib/store";
+import { EmptyState } from "@/components/ui/Modal";
 
 export default function ClientCheckinPage() {
-  const [history, setHistory] = useLocalState<CheckinSubmission[]>(
-    "ffkc-checkins",
-    [],
-  );
+  const app = useApp();
+  const currentClient = useCurrentClient();
+
   const [answers, setAnswers] = useState<Record<string, string | number>>({});
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!currentClient)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
+
+  const history = app.checkins.filter((c) => c.clientId === currentClient.id);
 
   const setAnswer = (id: string, value: string | number) =>
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -40,11 +55,7 @@ export default function ClientCheckinPage() {
       setError(`Please complete: ${missing.map((m) => m.label).join(", ")}.`);
       return;
     }
-    const submission: CheckinSubmission = {
-      date: new Date().toISOString(),
-      answers,
-    };
-    setHistory((prev) => [submission, ...prev]);
+    app.addCheckin(currentClient.id, answers);
     setSubmitted(true);
     setError("");
   };
@@ -173,8 +184,8 @@ export default function ClientCheckinPage() {
         <section>
           <h2 className="mb-3 px-1 font-semibold text-ink-900">Past check-ins</h2>
           <div className="space-y-3">
-            {history.map((h, i) => (
-              <div key={i} className="card flex items-center gap-4 p-4">
+            {history.map((h) => (
+              <div key={h.id} className="card flex items-center gap-4 p-4">
                 <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
                   <CalendarDays className="h-5 w-5" />
                 </span>

@@ -88,17 +88,26 @@ CLI alternative: `npm i -g vercel && vercel --prod`.
 
 ---
 
-## 5. How the demo data works
+## 5. How data works (important)
 
-- All content lives in `src/lib/data.ts` and `src/lib/platform.ts` (typed mock data).
-- Interactive actions **persist in the browser** via `localStorage` (see
-  `src/lib/useLocalState.ts`) — logged sets, booked sessions, kanban moves, AI
-  approvals, uploaded photos, challenge joins, check-ins, security toggles, etc.
-  This means the demo "remembers" your changes per browser. Clearing site data resets it.
+- **The app starts empty** — it's a real working tool, not a fixed demo. Every
+  Add / Edit / Delete / Send / Save button across all three portals creates and
+  mutates real records.
+- All data is held in a single live store (`src/lib/store.tsx`) and **persists in
+  the browser** via `localStorage`, so your work survives navigation and reloads.
+- To explore the platform fully populated, click **Settings → Data → "Load example
+  data"** (Trainer portal). To wipe everything, use **"Clear all data"** in the same
+  place. The example dataset lives in `src/lib/samples.ts`.
+- The **Client portal** previews one member at a time — use the "Viewing as"
+  selector on the client *Today* page to switch between the clients you've created
+  in the Trainer portal.
 - Uploaded images are downscaled client-side and stored as data URLs so the demo
   works with no storage backend.
 - Demo course/exercise videos use public sample clips configured in
   `src/lib/media.ts` — swap these URLs for your own hosted videos in production.
+
+> Because data is per-browser, when you add real auth + a database (see §6), the
+> store's typed shape in `src/lib/store.tsx` maps directly onto your API/schema.
 
 ---
 

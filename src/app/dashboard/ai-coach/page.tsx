@@ -7,9 +7,8 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
-import { aiSuggestions, type AISuggestion } from "@/lib/platform";
-import { getClient } from "@/lib/data";
-import { useLocalState } from "@/lib/useLocalState";
+import type { AISuggestion } from "@/lib/platform";
+import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 /* --------------------------- Suggestion config -------------------------- */
@@ -114,18 +113,15 @@ function nextId() {
 /* -------------------------------- Page ---------------------------------- */
 
 export default function AiCoachPage() {
-  const [suggestions, setSuggestions] = useLocalState<AISuggestion[]>("ffkc-ai-suggestions", aiSuggestions);
+  const app = useApp();
+  const suggestions = app.aiSuggestions;
   const pendingCount = suggestions.filter((s) => s.status === "pending").length;
-
-  function resolve(id: string, status: AISuggestion["status"]) {
-    setSuggestions((prev) => prev.map((s) => (s.id === id ? { ...s, status } : s)));
-  }
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "m0",
       role: "assistant",
-      text: "Hi Alex 👋 I'm your AI co-pilot. I can analyze progress trends, optimize programs, draft check-ins, and flag at-risk clients. What would you like to work on?",
+      text: "Hi 👋 I'm your AI co-pilot. I can analyze progress trends, optimize programs, draft check-ins, and flag at-risk clients. What would you like to work on?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -156,108 +152,123 @@ export default function AiCoachPage() {
         <span className="badge bg-brand-50 text-brand-700">{pendingCount} pending</span>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {suggestions.map((s) => {
-          const client = getClient(s.clientId);
-          const resolved = s.status !== "pending";
-          const approved = s.status === "approved";
-          const dismissed = s.status === "dismissed";
+      {!app.hydrated ? (
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+        </div>
+      ) : suggestions.length === 0 ? (
+        <div className="card flex flex-col items-center justify-center px-6 py-10 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+            <Sparkles className="h-6 w-6" />
+          </span>
+          <p className="mt-4 max-w-sm text-sm text-ink-500">
+            No AI suggestions yet — load example data to see this in action.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {suggestions.map((s) => {
+            const client = app.clients.find((c) => c.id === s.clientId);
+            const resolved = s.status !== "pending";
+            const approved = s.status === "approved";
+            const dismissed = s.status === "dismissed";
 
-          return (
-            <div
-              key={s.id}
-              className={cn(
-                "card flex flex-col p-5 transition",
-                approved && "border-accent-200 bg-accent-50/40 ring-1 ring-accent-100",
-                dismissed && "opacity-55",
-              )}
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <span className={cn("badge", typeStyles[s.type])}>{s.type}</span>
-                  {approved && (
-                    <span className="badge bg-accent-100 text-accent-700">
-                      <Check className="h-3 w-3" /> Approved
-                    </span>
-                  )}
-                  {dismissed && <span className="badge bg-ink-100 text-ink-500">Dismissed</span>}
-                </div>
-                {client && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-ink-600">{client.name}</span>
-                    <Avatar initials={client.avatar} size="sm" />
-                  </div>
+            return (
+              <div
+                key={s.id}
+                className={cn(
+                  "card flex flex-col p-5 transition",
+                  approved && "border-accent-200 bg-accent-50/40 ring-1 ring-accent-100",
+                  dismissed && "opacity-55",
                 )}
-              </div>
-
-              <h3 className="mt-3 font-semibold text-ink-900">{s.title}</h3>
-              <p className="mt-1 text-sm text-ink-500">
-                <span className="font-medium text-ink-600">Why: </span>
-                {s.rationale}
-              </p>
-
-              <div className="mt-3 rounded-xl border border-brand-100 bg-brand-50/60 p-3">
-                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-brand-700">
-                  Drafted change
-                </div>
-                <p className="text-sm leading-relaxed text-ink-700">{s.draft}</p>
-              </div>
-
-              <div className="mt-3">
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="font-medium text-ink-500">AI confidence</span>
-                  <span className="font-semibold tabular-nums text-ink-700">{s.confidence}%</span>
-                </div>
-                <div className="h-2 w-full rounded-full bg-ink-100">
-                  <div
-                    className={cn(
-                      "h-full rounded-full",
-                      s.confidence >= 85 ? "bg-accent-500" : s.confidence >= 75 ? "bg-amber-500" : "bg-rose-500",
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className={cn("badge", typeStyles[s.type])}>{s.type}</span>
+                    {approved && (
+                      <span className="badge bg-accent-100 text-accent-700">
+                        <Check className="h-3 w-3" /> Approved
+                      </span>
                     )}
-                    style={{ width: `${s.confidence}%` }}
-                  />
+                    {dismissed && <span className="badge bg-ink-100 text-ink-500">Dismissed</span>}
+                  </div>
+                  {client && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-ink-600">{client.name}</span>
+                      <Avatar initials={client.avatar} size="sm" />
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              <div className="mt-4 flex items-center gap-2">
-                {resolved ? (
-                  <button
-                    type="button"
-                    onClick={() => resolve(s.id, "pending")}
-                    className="btn-ghost px-3 py-1.5 text-xs"
-                  >
-                    Undo
-                  </button>
-                ) : (
-                  <>
+                <h3 className="mt-3 font-semibold text-ink-900">{s.title}</h3>
+                <p className="mt-1 text-sm text-ink-500">
+                  <span className="font-medium text-ink-600">Why: </span>
+                  {s.rationale}
+                </p>
+
+                <div className="mt-3 rounded-xl border border-brand-100 bg-brand-50/60 p-3">
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-brand-700">
+                    Drafted change
+                  </div>
+                  <p className="text-sm leading-relaxed text-ink-700">{s.draft}</p>
+                </div>
+
+                <div className="mt-3">
+                  <div className="mb-1 flex items-center justify-between text-xs">
+                    <span className="font-medium text-ink-500">AI confidence</span>
+                    <span className="font-semibold tabular-nums text-ink-700">{s.confidence}%</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-ink-100">
+                    <div
+                      className={cn(
+                        "h-full rounded-full",
+                        s.confidence >= 85 ? "bg-accent-500" : s.confidence >= 75 ? "bg-amber-500" : "bg-rose-500",
+                      )}
+                      style={{ width: `${s.confidence}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2">
+                  {resolved ? (
                     <button
                       type="button"
-                      onClick={() => resolve(s.id, "approved")}
-                      className="btn-primary px-4 py-1.5 text-xs"
-                    >
-                      <Check className="h-3.5 w-3.5" /> Approve
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => send(`Edit this draft for ${client?.name ?? "the client"}: ${s.draft}`)}
-                      className="btn-secondary px-3 py-1.5 text-xs"
-                    >
-                      <Pencil className="h-3.5 w-3.5" /> Edit
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => resolve(s.id, "dismissed")}
+                      onClick={() => app.resolveSuggestion(s.id, "pending")}
                       className="btn-ghost px-3 py-1.5 text-xs"
                     >
-                      <X className="h-3.5 w-3.5" /> Dismiss
+                      Undo
                     </button>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => app.resolveSuggestion(s.id, "approved")}
+                        className="btn-primary px-4 py-1.5 text-xs"
+                      >
+                        <Check className="h-3.5 w-3.5" /> Approve
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => send(`Edit this draft for ${client?.name ?? "the client"}: ${s.draft}`)}
+                        className="btn-secondary px-3 py-1.5 text-xs"
+                      >
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => app.resolveSuggestion(s.id, "dismissed")}
+                        className="btn-ghost px-3 py-1.5 text-xs"
+                      >
+                        <X className="h-3.5 w-3.5" /> Dismiss
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* AI chat */}
       <div className="mt-8 mb-3 flex items-center gap-2">

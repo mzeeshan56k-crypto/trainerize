@@ -1,11 +1,16 @@
+"use client";
+
 import {
-  TrendingDown, Dumbbell, Activity, Flame, Camera,
-  Footprints, Droplet, Moon, Utensils,
+  TrendingDown, Dumbbell, Activity, Flame, Camera, LineChart,
+  Footprints, Droplet, Moon, Utensils, Users, Target,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { WeightChart, StrengthChart } from "@/components/dashboard/Charts";
-import { habits, weightTrend, strengthTrend } from "@/lib/data";
+import { EmptyState } from "@/components/ui/Modal";
+import { DataControls } from "@/components/dashboard/DataControls";
+import { weightTrend, strengthTrend, habits } from "@/lib/data";
+import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const habitIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -25,6 +30,22 @@ const photoTiles = [
 ];
 
 export default function ProgressPage() {
+  const app = useApp();
+
+  if (!app.hydrated) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+  }
+
+  const clientCount = app.clients.length;
+  const avgAdherence =
+    clientCount > 0
+      ? Math.round(app.clients.reduce((sum, c) => sum + (c.adherence ?? 0), 0) / clientCount)
+      : 0;
+
   return (
     <>
       <PageHeader
@@ -33,12 +54,44 @@ export default function ProgressPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total weight lost" value="21 lb" delta="9.8%" icon={TrendingDown} />
-        <StatCard label="Strength gain" value="+45%" delta="45%" icon={Dumbbell} />
-        <StatCard label="Workouts logged" value="1,284" delta="6.4%" icon={Activity} />
-        <StatCard label="Active streak" value="23 days" delta="3 days" icon={Flame} />
+        {app.seeded ? (
+          <>
+            <StatCard label="Total weight lost" value="21 lb" delta="9.8%" icon={TrendingDown} />
+            <StatCard label="Strength gain" value="+45%" delta="45%" icon={Dumbbell} />
+            <StatCard label="Workouts logged" value="1,284" delta="6.4%" icon={Activity} />
+            <StatCard label="Active streak" value="23 days" delta="3 days" icon={Flame} />
+          </>
+        ) : (
+          <>
+            <StatCard label="Active clients" value={String(clientCount)} icon={Users} />
+            <StatCard label="Avg adherence" value={`${avgAdherence}%`} icon={Target} />
+            <StatCard label="Workouts logged" value="0" icon={Activity} />
+            <StatCard label="Active streak" value="0 days" icon={Flame} />
+          </>
+        )}
       </div>
 
+      {app.seeded ? (
+        <SeededProgress />
+      ) : (
+        <div className="mt-6 space-y-6">
+          <EmptyState
+            icon={LineChart}
+            title="No progress data yet"
+            description="Charts populate as clients log workouts. Load example data to preview."
+          />
+          <DataControls variant="card" />
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ----------- Rich sample visuals — only rendered when seeded ----------- */
+
+function SeededProgress() {
+  return (
+    <>
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div className="card p-6">
           <div className="flex items-center justify-between">

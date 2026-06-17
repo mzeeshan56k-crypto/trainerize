@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import {
   ChevronLeft, Clock, Flame, Check, CheckCircle2, Dumbbell, PartyPopper,
-  Timer, TrendingUp, AlertTriangle, Activity, X, Play,
+  Timer, TrendingUp, AlertTriangle, Activity, X, Play, UserPlus,
 } from "lucide-react";
-import { workouts } from "@/lib/data";
+import { useApp, useCurrentClient } from "@/lib/store";
+import { EmptyState } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 import { useLocalState } from "@/lib/useLocalState";
 import { VideoModal } from "@/components/ui/VideoModal";
@@ -38,8 +38,50 @@ function autoReg(rpe: number): { tone: "up" | "hold" | "down"; text: string } | 
 }
 
 export default function Page({ params }: { params: { id: string } }) {
-  const workout = workouts.find((w) => w.id === params.id);
-  if (!workout) notFound();
+  const app = useApp();
+  const client = useCurrentClient();
+
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!client)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
+
+  const workout = app.workouts.find((w) => w.id === params.id);
+
+  if (!workout)
+    return (
+      <div className="space-y-5">
+        <Link
+          href="/client/workouts"
+          className="inline-flex items-center gap-1 text-sm font-medium text-ink-500 transition hover:text-ink-900"
+        >
+          <ChevronLeft className="h-4 w-4" /> All workouts
+        </Link>
+        <EmptyState
+          icon={Dumbbell}
+          title="Workout not found"
+          description="This workout no longer exists or hasn't been assigned."
+          action={<Link href="/client/workouts" className="btn-primary">Back to workouts</Link>}
+        />
+      </div>
+    );
+
+  return <WorkoutPlayer workout={workout} />;
+}
+
+function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
   const w = workout;
 
   // Build a stable default log map seeded from the prescribed sets.

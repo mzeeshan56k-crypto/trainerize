@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Users, UserCog, DollarSign, Dumbbell, Star,
   TrendingUp, TrendingDown, Gauge, ShieldCheck,
@@ -6,21 +8,22 @@ import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { EnrollmentChart } from "@/components/dashboard/Charts";
 import { Avatar } from "@/components/ui/Avatar";
-import {
-  adminKpis, enrollmentTrend, billingTiers, trainers,
-} from "@/lib/platform";
+import { EmptyState } from "@/components/ui/Modal";
+import { adminKpis, enrollmentTrend, billingTiers } from "@/lib/platform";
+import { useApp } from "@/lib/store";
 import { formatCurrency } from "@/lib/utils";
 
-const tierBadge: Record<string, string> = {
-  Basic: "bg-ink-100 text-ink-700",
-  Pro: "bg-brand-50 text-brand-700",
-  Elite: "bg-accent-50 text-accent-700",
+const roleBadge: Record<string, string> = {
+  Client: "bg-ink-100 text-ink-700",
+  Coach: "bg-brand-50 text-brand-700",
+  Staff: "bg-purple-50 text-purple-700",
+  Admin: "bg-accent-50 text-accent-700",
 };
 
 const statusBadge: Record<string, string> = {
   active: "bg-accent-50 text-accent-700",
-  trial: "bg-amber-50 text-amber-700",
   suspended: "bg-rose-50 text-rose-600",
+  invited: "bg-amber-50 text-amber-700",
 };
 
 const insights = [
@@ -31,8 +34,12 @@ const insights = [
 ];
 
 export default function AdminOverviewPage() {
+  const app = useApp();
   const maxSubs = Math.max(...billingTiers.map((t) => t.subscribers));
-  const top = [...trainers].sort((a, b) => b.mrr - a.mrr);
+
+  const coaches = app.users.filter((u) => u.role === "Coach");
+  const coachCount = coaches.length;
+  const clientCount = app.clients.length;
 
   return (
     <>
@@ -42,8 +49,8 @@ export default function AdminOverviewPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Trainers" value={adminKpis.trainers.toLocaleString()} delta="4.5%" icon={UserCog} />
-        <StatCard label="Clients" value={adminKpis.clients.toLocaleString()} delta="6.8%" icon={Users} />
+        <StatCard label="Coaches" value={app.hydrated ? coachCount.toLocaleString() : "—"} delta="4.5%" icon={UserCog} />
+        <StatCard label="Clients" value={app.hydrated ? clientCount.toLocaleString() : "—"} delta="6.8%" icon={Users} />
         <StatCard label="MRR" value={formatCurrency(adminKpis.mrr)} delta="9.1%" icon={DollarSign} />
         <StatCard label="Workouts today" value={adminKpis.workoutsToday.toLocaleString()} delta="3.2%" icon={Dumbbell} />
       </div>
@@ -87,47 +94,54 @@ export default function AdminOverviewPage() {
       <div className="mt-6 card p-6">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-ink-900">Top trainers</h2>
-          <span className="text-sm text-ink-500">Ranked by MRR</span>
+          <span className="text-sm text-ink-500">Coaches on the platform</span>
         </div>
-        <div className="mt-4 overflow-x-auto scroll-thin">
-          <table className="w-full min-w-[640px] text-sm">
-            <thead>
-              <tr className="border-b border-ink-100 text-left text-xs uppercase tracking-wide text-ink-400">
-                <th className="pb-3 font-medium">Trainer</th>
-                <th className="pb-3 font-medium">Clients</th>
-                <th className="pb-3 font-medium">Tier</th>
-                <th className="pb-3 font-medium">MRR</th>
-                <th className="pb-3 font-medium">Status</th>
-                <th className="pb-3 font-medium">Rating</th>
-              </tr>
-            </thead>
-            <tbody>
-              {top.map((t) => (
-                <tr key={t.id} className="border-b border-ink-50 last:border-0">
-                  <td className="py-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar initials={t.avatar} size="sm" />
-                      <span className="font-semibold text-ink-900">{t.name}</span>
-                    </div>
-                  </td>
-                  <td className="py-3 text-ink-700">{t.clients}</td>
-                  <td className="py-3">
-                    <span className={`badge ${tierBadge[t.tier]}`}>{t.tier}</span>
-                  </td>
-                  <td className="py-3 font-semibold text-ink-900">{formatCurrency(t.mrr)}</td>
-                  <td className="py-3">
-                    <span className={`badge capitalize ${statusBadge[t.status]}`}>{t.status}</span>
-                  </td>
-                  <td className="py-3">
-                    <span className="flex items-center gap-1 text-ink-700">
-                      <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> {t.rating}
-                    </span>
-                  </td>
+
+        {!app.hydrated ? (
+          <div className="flex h-64 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+          </div>
+        ) : coaches.length === 0 ? (
+          <div className="mt-4">
+            <EmptyState
+              icon={UserCog}
+              title="No coaches yet"
+              description="Invite coaches from Identity & Access and they'll appear here."
+            />
+          </div>
+        ) : (
+          <div className="mt-4 overflow-x-auto scroll-thin">
+            <table className="w-full min-w-[640px] text-sm">
+              <thead>
+                <tr className="border-b border-ink-100 text-left text-xs uppercase tracking-wide text-ink-400">
+                  <th className="pb-3 font-medium">Trainer</th>
+                  <th className="pb-3 font-medium">Email</th>
+                  <th className="pb-3 font-medium">Role</th>
+                  <th className="pb-3 font-medium">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {coaches.map((t) => (
+                  <tr key={t.id} className="border-b border-ink-50 last:border-0">
+                    <td className="py-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar initials={t.avatar} size="sm" />
+                        <span className="font-semibold text-ink-900">{t.name}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 text-ink-700">{t.email}</td>
+                    <td className="py-3">
+                      <span className={`badge ${roleBadge[t.role]}`}>{t.role}</span>
+                    </td>
+                    <td className="py-3">
+                      <span className={`badge capitalize ${statusBadge[t.status]}`}>{t.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       <div className="mt-6">

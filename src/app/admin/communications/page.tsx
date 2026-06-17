@@ -5,16 +5,7 @@ import {
   Megaphone, Send, MessageSquare, Users2, Bell,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-import { useLocalState } from "@/lib/useLocalState";
-import { broadcasts } from "@/lib/platform";
-
-type Broadcast = {
-  id: string;
-  title: string;
-  audience: string;
-  sent: string;
-  reach: string;
-};
+import { useApp } from "@/lib/store";
 
 const audiences = ["All users", "All trainers", "All clients"] as const;
 const channels = ["Push", "Email", "In-app"] as const;
@@ -32,7 +23,7 @@ const channelStatus = [
 ];
 
 export default function CommunicationsPage() {
-  const [sent, setSent] = useLocalState<Broadcast[]>("ffkc-broadcasts", broadcasts);
+  const app = useApp();
   const [audience, setAudience] = useState<(typeof audiences)[number]>("All users");
   const [activeChannels, setActiveChannels] = useState<string[]>(["Push"]);
   const [message, setMessage] = useState("");
@@ -45,15 +36,10 @@ export default function CommunicationsPage() {
 
   function sendBroadcast() {
     if (!message.trim()) return;
-    const next: Broadcast = {
-      id: `bc-${Date.now()}`,
-      title: message.trim(),
-      audience,
-      sent: "Just now",
-      reach: reachByAudience[audience],
-    };
-    setSent((prev) => [next, ...prev]);
+    app.addBroadcast(message.trim(), audience);
     setMessage("");
+    setActiveChannels(["Push"]);
+    setAudience("All users");
   }
 
   return (
@@ -143,20 +129,31 @@ export default function CommunicationsPage() {
       <div className="mt-6 card p-6">
         <h2 className="font-semibold text-ink-900">Sent broadcasts</h2>
         <p className="text-sm text-ink-500">Recent announcements across the network</p>
-        <div className="mt-4 space-y-3">
-          {sent.map((b) => (
-            <div key={b.id} className="flex items-center gap-4 rounded-xl border border-ink-100 p-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                <Megaphone className="h-5 w-5" />
-              </span>
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-semibold text-ink-900">{b.title}</div>
-                <div className="text-xs text-ink-500">{b.audience} · {b.reach} reached</div>
+
+        {!app.hydrated ? (
+          <div className="flex h-64 items-center justify-center">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+          </div>
+        ) : app.broadcasts.length === 0 ? (
+          <p className="mt-6 rounded-xl border border-dashed border-ink-200 bg-ink-50/40 px-4 py-10 text-center text-sm text-ink-400">
+            No broadcasts sent yet. Compose one above to reach your network.
+          </p>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {app.broadcasts.map((b) => (
+              <div key={b.id} className="flex items-center gap-4 rounded-xl border border-ink-100 p-4">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                  <Megaphone className="h-5 w-5" />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-semibold text-ink-900">{b.title}</div>
+                  <div className="text-xs text-ink-500">{b.audience} · {b.reach} reached</div>
+                </div>
+                <span className="shrink-0 text-xs text-ink-400">{b.sent}</span>
               </div>
-              <span className="shrink-0 text-xs text-ink-400">{b.sent}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

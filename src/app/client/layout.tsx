@@ -1,14 +1,20 @@
+"use client";
+
 import { ClientShell } from "@/components/client/ClientShell";
-import { getCurrentClient } from "@/lib/session";
+import { useApp, useCurrentClient } from "@/lib/store";
 
 export default function ClientLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const client = getCurrentClient();
+  const { hydrated } = useApp();
+  const client = useCurrentClient();
   return (
-    <ClientShell clientName={client.name} clientInitials={client.avatar}>
+    <ClientShell
+      clientName={hydrated && client ? client.name : "Member"}
+      clientInitials={hydrated && client ? client.avatar : "—"}
+    >
       {children}
     </ClientShell>
   );

@@ -1,13 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   Apple, Flame, CheckCircle2, Circle, Droplet, Plus, Minus, Utensils,
-  Sparkles, ScanLine, Camera, Trash2, X,
+  Sparkles, ScanLine, Camera, Trash2, X, UserPlus,
 } from "lucide-react";
-import { mealPlans } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { useLocalState } from "@/lib/useLocalState";
+import { useApp, useCurrentClient } from "@/lib/store";
+import { EmptyState } from "@/components/ui/Modal";
 
 type Goal = "cut" | "maintain" | "bulk";
 type Pref = "Balanced" | "High-protein" | "Vegetarian" | "Keto";
@@ -86,7 +88,9 @@ const PHOTO_FOODS = [
 ];
 
 export default function ClientNutritionPage() {
-  const plan = mealPlans[0];
+  const app = useApp();
+  const client = useCurrentClient();
+  const plan = app.mealPlans[0];
   const waterTarget = 8;
 
   const [logged, setLogged] = useLocalState<string[]>("ffkc-logged-meals", []);
@@ -108,19 +112,19 @@ export default function ClientNutritionPage() {
     );
 
   // Calories from logged plan meals + ad-hoc food log entries.
-  const loggedMealKcal = plan.meals
+  const loggedMealKcal = (plan?.meals ?? [])
     .filter((m) => logged.includes(m.name))
     .reduce((acc, m) => acc + m.kcal, 0);
   const foodLogKcal = foodLog.reduce((acc, f) => acc + f.kcal, 0);
   const consumedCalories = loggedMealKcal + foodLogKcal;
 
   // Scale macros proportionally to the share of plan calories consumed.
-  const macroShare = plan.calories ? Math.min(1, loggedMealKcal / plan.calories) : 0;
+  const macroShare = plan?.calories ? Math.min(1, loggedMealKcal / plan.calories) : 0;
   const consumed = useMemo(
     () => ({
-      protein: Math.round(plan.protein * macroShare),
-      carbs: Math.round(plan.carbs * macroShare),
-      fat: Math.round(plan.fat * macroShare),
+      protein: Math.round((plan?.protein ?? 0) * macroShare),
+      carbs: Math.round((plan?.carbs ?? 0) * macroShare),
+      fat: Math.round((plan?.fat ?? 0) * macroShare),
     }),
     [plan, macroShare],
   );
@@ -142,72 +146,100 @@ export default function ClientNutritionPage() {
 
   const aiTotal = aiPlan ? aiPlan.meals.reduce((a, m) => a + m.kcal, 0) : 0;
 
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!client)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
+
   return (
     <div className="space-y-6">
-      {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-accent-500 via-accent-600 to-brand-700 p-6 text-white shadow-glow">
-        <div className="flex items-center gap-2 text-sm text-accent-50">
-          <Apple className="h-4 w-4" />
-          <span>Your nutrition plan</span>
-        </div>
-        <h1 className="mt-1 text-2xl font-bold">{plan.name}</h1>
-        <div className="mt-3 flex items-center gap-2">
-          <span className="badge bg-white/20 text-white">{plan.tag}</span>
-          <span className="text-sm text-accent-50">
-            {plan.calories.toLocaleString()} kcal / day
-          </span>
-        </div>
-        <div className="mt-5 flex items-center gap-4 rounded-2xl bg-white/15 p-4 backdrop-blur">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
-            <Flame className="h-6 w-6" />
-          </span>
-          <div className="flex-1">
-            <div className="text-xs uppercase tracking-wide text-accent-50">
-              Calories today
+      {plan ? (
+        <>
+          {/* Hero */}
+          <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-accent-500 via-accent-600 to-brand-700 p-6 text-white shadow-glow">
+            <div className="flex items-center gap-2 text-sm text-accent-50">
+              <Apple className="h-4 w-4" />
+              <span>Your nutrition plan</span>
             </div>
-            <div className="text-lg font-semibold">
-              {consumedCalories.toLocaleString()}
-              <span className="text-sm font-normal text-accent-50">
-                {" "}/ {plan.calories.toLocaleString()} kcal
+            <h1 className="mt-1 text-2xl font-bold">{plan.name}</h1>
+            <div className="mt-3 flex items-center gap-2">
+              <span className="badge bg-white/20 text-white">{plan.tag}</span>
+              <span className="text-sm text-accent-50">
+                {plan.calories.toLocaleString()} kcal / day
               </span>
             </div>
-          </div>
-        </div>
-      </section>
+            <div className="mt-5 flex items-center gap-4 rounded-2xl bg-white/15 p-4 backdrop-blur">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20">
+                <Flame className="h-6 w-6" />
+              </span>
+              <div className="flex-1">
+                <div className="text-xs uppercase tracking-wide text-accent-50">
+                  Calories today
+                </div>
+                <div className="text-lg font-semibold">
+                  {consumedCalories.toLocaleString()}
+                  <span className="text-sm font-normal text-accent-50">
+                    {" "}/ {plan.calories.toLocaleString()} kcal
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
 
-      {/* Today's macros */}
-      <section className="card p-5">
-        <h2 className="font-semibold text-ink-900">Today&apos;s macros</h2>
-        <div className="mt-4 space-y-4">
-          <MacroBar
-            label="Protein"
-            consumed={consumed.protein}
-            target={plan.protein}
-            barClass="bg-brand-500"
-            tintClass="text-brand-600"
-          />
-          <MacroBar
-            label="Carbs"
-            consumed={consumed.carbs}
-            target={plan.carbs}
-            barClass="bg-accent-500"
-            tintClass="text-accent-600"
-          />
-          <MacroBar
-            label="Fat"
-            consumed={consumed.fat}
-            target={plan.fat}
-            barClass="bg-amber-500"
-            tintClass="text-amber-600"
-          />
-        </div>
-        <div className="mt-5 flex items-center justify-between rounded-xl bg-ink-50 p-4">
-          <span className="text-sm font-medium text-ink-600">Calories</span>
-          <span className="text-sm font-semibold text-ink-900">
-            {consumedCalories.toLocaleString()} / {plan.calories.toLocaleString()} kcal
-          </span>
-        </div>
-      </section>
+          {/* Today's macros */}
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Today&apos;s macros</h2>
+            <div className="mt-4 space-y-4">
+              <MacroBar
+                label="Protein"
+                consumed={consumed.protein}
+                target={plan.protein}
+                barClass="bg-brand-500"
+                tintClass="text-brand-600"
+              />
+              <MacroBar
+                label="Carbs"
+                consumed={consumed.carbs}
+                target={plan.carbs}
+                barClass="bg-accent-500"
+                tintClass="text-accent-600"
+              />
+              <MacroBar
+                label="Fat"
+                consumed={consumed.fat}
+                target={plan.fat}
+                barClass="bg-amber-500"
+                tintClass="text-amber-600"
+              />
+            </div>
+            <div className="mt-5 flex items-center justify-between rounded-xl bg-ink-50 p-4">
+              <span className="text-sm font-medium text-ink-600">Calories</span>
+              <span className="text-sm font-semibold text-ink-900">
+                {consumedCalories.toLocaleString()} / {plan.calories.toLocaleString()} kcal
+              </span>
+            </div>
+          </section>
+        </>
+      ) : (
+        /* No assigned plan — keep the logging tools below working */
+        <EmptyState
+          icon={Apple}
+          title="No meal plan assigned yet"
+          description="Your coach hasn't assigned a nutrition plan. You can still quick-log food, generate an AI plan, and track water below."
+        />
+      )}
 
       {/* Quick log (faux scanners) */}
       <section className="card p-5">
@@ -322,6 +354,7 @@ export default function ClientNutritionPage() {
       </section>
 
       {/* Meals */}
+      {plan && (
       <section className="card p-5">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-ink-900">Meals</h2>
@@ -381,6 +414,7 @@ export default function ClientNutritionPage() {
           })}
         </div>
       </section>
+      )}
 
       {/* AI meal plan generator */}
       <section className="card p-5">

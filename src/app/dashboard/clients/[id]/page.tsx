@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, MessageSquare, Pencil, Scale, Target, Flag, Activity,
-  Dumbbell, Calendar, Sparkles, Clock, Layers,
+  ArrowLeft, MessageSquare, Pencil, Trash2, Scale, Target, Flag, Activity,
+  Dumbbell, Calendar, Sparkles, Clock, Layers, LineChart, Loader2,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { Modal, Field, EmptyState } from "@/components/ui/Modal";
 import { WeightChart, StrengthChart, AdherenceRing } from "@/components/dashboard/Charts";
+import { useApp } from "@/lib/store";
+import { useLocalState } from "@/lib/useLocalState";
 import {
-  getClient, workouts, weightTrend, strengthTrend, type ClientStatus,
+  workouts, weightTrend, strengthTrend, type ClientStatus,
 } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
@@ -23,28 +26,67 @@ const statusBadge: Record<ClientStatus, string> = {
 const tabs = ["Overview", "Training", "Progress", "Notes"] as const;
 type Tab = (typeof tabs)[number];
 
-const priorNotes = [
-  {
-    author: "Coach Alex",
-    time: "Jun 10, 2026 · 2:14 PM",
-    text: "Adjusted Wednesday session to emphasize posterior chain. Form on RDLs is looking much cleaner.",
-  },
-  {
-    author: "Coach Alex",
-    time: "Jun 3, 2026 · 9:40 AM",
-    text: "Great check-in call. Energy and sleep are trending up. Keep protein intake consistent through the weekend.",
-  },
-];
+interface Note {
+  author: string;
+  time: string;
+  text: string;
+}
+
+function Loading() {
+  return (
+    <div className="flex items-center justify-center py-24 text-ink-400">
+      <Loader2 className="h-6 w-6 animate-spin" />
+    </div>
+  );
+}
 
 export default function ClientDetailPage({ params }: { params: { id: string } }) {
-  const client = getClient(params.id);
-  const [tab, setTab] = useState<Tab>("Overview");
+  const { clients, updateClient, removeClient, seeded, hydrated } = useApp();
+  const router = useRouter();
+  const c = clients.find((x) => x.id === params.id);
 
-  if (!client) {
-    notFound();
+  const [tab, setTab] = useState<Tab>("Overview");
+  const [editOpen, setEditOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const [edit, setEdit] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    goal: "",
+    program: "",
+    status: "active" as ClientStatus,
+    currentWeight: "",
+    goalWeight: "",
+    startWeight: "",
+    progress: "",
+    adherence: "",
+    tags: "",
+  });
+
+  const [notes, setNotes, notesHydrated] = useLocalState<Note[]>(
+    `ffkc-client-notes-${params.id}`,
+    [],
+  );
+  const [draft, setDraft] = useState("");
+
+  if (!hydrated) return <Loading />;
+
+  if (!c) {
+    return (
+      <div className="py-24 text-center">
+        <h1 className="text-xl font-bold text-ink-900">Client not found</h1>
+        <p className="mt-2 text-sm text-ink-500">
+          This client may have been removed.
+        </p>
+        <Link href="/dashboard/clients" className="btn-primary mt-6 inline-flex">
+          <ArrowLeft className="h-4 w-4" />
+          Back to clients
+        </Link>
+      </div>
+    );
   }
 
-  const c = client;
   const sampleWorkouts = workouts.slice(0, 3);
   const joined = new Date(c.joinedAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -52,6 +94,65 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
     day: "numeric",
   });
   const weightDelta = c.currentWeight - c.startWeight;
+
+  function openEdit() {
+    if (!c) return;
+    setEdit({
+      name: c.name,
+      email: c.email,
+      phone: c.phone,
+      goal: c.goal,
+      program: c.program,
+      status: c.status,
+      currentWeight: String(c.currentWeight),
+      goalWeight: String(c.goalWeight),
+      startWeight: String(c.startWeight),
+      progress: String(c.progress),
+      adherence: String(c.adherence),
+      tags: c.tags.join(", "),
+    });
+    setEditOpen(true);
+  }
+
+  function saveEdit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!c) return;
+    updateClient(c.id, {
+      name: edit.name.trim() || c.name,
+      email: edit.email.trim(),
+      phone: edit.phone.trim(),
+      goal: edit.goal.trim() || c.goal,
+      program: edit.program.trim() || "Unassigned",
+      status: edit.status,
+      currentWeight: edit.currentWeight ? Number(edit.currentWeight) : 0,
+      goalWeight: edit.goalWeight ? Number(edit.goalWeight) : 0,
+      startWeight: edit.startWeight ? Number(edit.startWeight) : 0,
+      progress: edit.progress ? Number(edit.progress) : 0,
+      adherence: edit.adherence ? Number(edit.adherence) : 0,
+      tags: edit.tags.split(",").map((t) => t.trim()).filter(Boolean),
+    });
+    setEditOpen(false);
+  }
+
+  function confirmDelete() {
+    if (!c) return;
+    removeClient(c.id);
+    router.push("/dashboard/clients");
+  }
+
+  function saveNote() {
+    const text = draft.trim();
+    if (!text) return;
+    const time = new Date().toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    setNotes((prev) => [{ author: "You", time, text }, ...prev]);
+    setDraft("");
+  }
 
   return (
     <>
@@ -91,7 +192,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
               <MessageSquare className="h-4 w-4" />
               Message
             </Link>
-            <button className="btn-primary">
+            <button className="btn-primary" onClick={openEdit}>
               <Pencil className="h-4 w-4" />
               Edit
             </button>
@@ -220,31 +321,39 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
         )}
 
         {tab === "Progress" && (
-          <div className="grid gap-6 lg:grid-cols-2">
-            <div className="card p-6">
-              <h2 className="font-semibold text-ink-900">Weight trend</h2>
-              <p className="text-sm text-ink-500">Actual vs target (lb)</p>
-              <div className="mt-4">
-                <WeightChart data={weightTrend} />
-              </div>
-            </div>
-            <div className="card p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="font-semibold text-ink-900">Strength progress</h2>
-                  <p className="text-sm text-ink-500">Top lifts (lb)</p>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-ink-500">
-                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-brand-500" /> Squat</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-accent-400" /> Bench</span>
-                  <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Deadlift</span>
+          seeded ? (
+            <div className="grid gap-6 lg:grid-cols-2">
+              <div className="card p-6">
+                <h2 className="font-semibold text-ink-900">Weight trend</h2>
+                <p className="text-sm text-ink-500">Actual vs target (lb)</p>
+                <div className="mt-4">
+                  <WeightChart data={weightTrend} />
                 </div>
               </div>
-              <div className="mt-4">
-                <StrengthChart data={strengthTrend} />
+              <div className="card p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="font-semibold text-ink-900">Strength progress</h2>
+                    <p className="text-sm text-ink-500">Top lifts (lb)</p>
+                  </div>
+                  <div className="flex items-center gap-3 text-xs text-ink-500">
+                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-brand-500" /> Squat</span>
+                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-accent-400" /> Bench</span>
+                    <span className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> Deadlift</span>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <StrengthChart data={strengthTrend} />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <EmptyState
+              icon={LineChart}
+              title="No progress logged yet"
+              description="Once this client logs workouts and check-ins, their weight and strength trends will appear here."
+            />
+          )
         )}
 
         {tab === "Notes" && (
@@ -253,7 +362,12 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
               <h2 className="font-semibold text-ink-900">Coach notes</h2>
               <p className="text-sm text-ink-500">History of observations for {c.name}</p>
               <div className="mt-4 space-y-3">
-                {priorNotes.map((n, i) => (
+                {notesHydrated && notes.length === 0 && (
+                  <p className="py-8 text-center text-sm text-ink-400">
+                    No notes yet. Add your first observation.
+                  </p>
+                )}
+                {notes.map((n, i) => (
                   <div key={i} className="rounded-xl border border-ink-100 p-4">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold text-ink-900">{n.author}</span>
@@ -270,14 +384,189 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
               <textarea
                 id="new-note"
                 rows={6}
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
                 placeholder={`Write a note about ${c.name}…`}
                 className="input resize-none"
               />
-              <button className="btn-primary mt-3 w-full">Save note</button>
+              <button
+                className="btn-primary mt-3 w-full"
+                onClick={saveNote}
+                disabled={!draft.trim()}
+              >
+                Save note
+              </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Edit modal */}
+      <Modal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        title="Edit client"
+        footer={
+          <>
+            <button
+              type="button"
+              className="btn-secondary text-rose-600 hover:bg-rose-50"
+              onClick={() => {
+                setEditOpen(false);
+                setConfirmOpen(true);
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+            <button type="submit" form="edit-client-form" className="btn-primary">
+              Save changes
+            </button>
+          </>
+        }
+      >
+        <form id="edit-client-form" onSubmit={saveEdit} className="space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Name">
+              <input
+                className="input"
+                value={edit.name}
+                onChange={(e) => setEdit((s) => ({ ...s, name: e.target.value }))}
+                required
+              />
+            </Field>
+            <Field label="Email">
+              <input
+                type="email"
+                className="input"
+                value={edit.email}
+                onChange={(e) => setEdit((s) => ({ ...s, email: e.target.value }))}
+              />
+            </Field>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Phone">
+              <input
+                className="input"
+                value={edit.phone}
+                onChange={(e) => setEdit((s) => ({ ...s, phone: e.target.value }))}
+              />
+            </Field>
+            <Field label="Status">
+              <select
+                className="input"
+                value={edit.status}
+                onChange={(e) =>
+                  setEdit((s) => ({ ...s, status: e.target.value as ClientStatus }))
+                }
+              >
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Goal">
+            <input
+              className="input"
+              value={edit.goal}
+              onChange={(e) => setEdit((s) => ({ ...s, goal: e.target.value }))}
+            />
+          </Field>
+
+          <Field label="Program">
+            <input
+              className="input"
+              value={edit.program}
+              onChange={(e) => setEdit((s) => ({ ...s, program: e.target.value }))}
+            />
+          </Field>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Field label="Start weight (lb)">
+              <input
+                type="number"
+                className="input"
+                value={edit.startWeight}
+                onChange={(e) => setEdit((s) => ({ ...s, startWeight: e.target.value }))}
+              />
+            </Field>
+            <Field label="Current weight (lb)">
+              <input
+                type="number"
+                className="input"
+                value={edit.currentWeight}
+                onChange={(e) => setEdit((s) => ({ ...s, currentWeight: e.target.value }))}
+              />
+            </Field>
+            <Field label="Goal weight (lb)">
+              <input
+                type="number"
+                className="input"
+                value={edit.goalWeight}
+                onChange={(e) => setEdit((s) => ({ ...s, goalWeight: e.target.value }))}
+              />
+            </Field>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label="Progress (%)">
+              <input
+                type="number"
+                className="input"
+                value={edit.progress}
+                onChange={(e) => setEdit((s) => ({ ...s, progress: e.target.value }))}
+              />
+            </Field>
+            <Field label="Adherence (%)">
+              <input
+                type="number"
+                className="input"
+                value={edit.adherence}
+                onChange={(e) => setEdit((s) => ({ ...s, adherence: e.target.value }))}
+              />
+            </Field>
+          </div>
+
+          <Field label="Tags (comma-separated)">
+            <input
+              className="input"
+              value={edit.tags}
+              onChange={(e) => setEdit((s) => ({ ...s, tags: e.target.value }))}
+            />
+          </Field>
+        </form>
+      </Modal>
+
+      {/* Delete confirm modal */}
+      <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Delete client"
+        size="sm"
+        footer={
+          <>
+            <button type="button" className="btn-secondary" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn-primary bg-rose-600 hover:bg-rose-700"
+              onClick={confirmDelete}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </button>
+          </>
+        }
+      >
+        <p className="text-sm text-ink-600">
+          Are you sure you want to delete <span className="font-semibold text-ink-900">{c.name}</span>?
+          This will also remove their conversations and cannot be undone.
+        </p>
+      </Modal>
     </>
   );
 }

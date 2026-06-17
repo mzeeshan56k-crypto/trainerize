@@ -1,28 +1,38 @@
 "use client";
 
-import { Trophy, Users, Clock, Check, Flame, Star } from "lucide-react";
-import { challenges, leaderboard } from "@/lib/platform";
-import { useLocalState } from "@/lib/useLocalState";
+import Link from "next/link";
+import { Trophy, Users, Clock, Check, Flame, Star, UserPlus } from "lucide-react";
+import { leaderboard } from "@/lib/platform";
+import { useApp, useCurrentClient } from "@/lib/store";
 import { Avatar } from "@/components/ui/Avatar";
-
-// Seed: map challenge id -> joined boolean from the data layer.
-const seedJoins: Record<string, boolean> = Object.fromEntries(
-  challenges.map((c) => [c.id, c.joined]),
-);
+import { EmptyState } from "@/components/ui/Modal";
 
 const medals: Record<number, string> = { 1: "🥇", 2: "🥈", 3: "🥉" };
 
 export default function ClientChallengesPage() {
-  const [joins, setJoins] = useLocalState<Record<string, boolean>>(
-    "ffkc-challenges",
-    seedJoins,
-  );
+  const app = useApp();
+  const client = useCurrentClient();
 
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!client)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
+
+  const challenges = app.challenges;
   const youRow = leaderboard.find((r) => r.you);
-  const joinedCount = challenges.filter((c) => joins[c.id]).length;
-
-  const toggleJoin = (id: string) =>
-    setJoins((prev) => ({ ...prev, [id]: !prev[id] }));
+  const joinedCount = challenges.filter((c) => c.joined).length;
 
   return (
     <div className="space-y-6">
@@ -53,57 +63,63 @@ export default function ClientChallengesPage() {
       {/* Active challenges */}
       <section>
         <h2 className="mb-3 px-1 font-semibold text-ink-900">Active challenges</h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {challenges.map((c) => {
-            const joined = !!joins[c.id];
-            // Reflect the join in the displayed participant count, relative to the seed.
-            const displayParticipants =
-              c.participants + (joined ? 1 : 0) - (c.joined ? 1 : 0);
-            return (
-              <div key={c.id} className="card overflow-hidden">
-                <div className={`bg-gradient-to-br ${c.color} p-4 text-white`}>
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-lg font-bold leading-tight">{c.name}</h3>
-                    {joined && (
-                      <span className="badge bg-white/20 text-white">
-                        <Check className="h-3 w-3" /> Joined
+        {challenges.length === 0 ? (
+          <EmptyState
+            icon={Trophy}
+            title="No challenges yet"
+            description="Create a challenge in the Trainer portal and it will appear here for your clients to join."
+            action={<Link href="/dashboard/challenges" className="btn-primary">Go to Challenges</Link>}
+          />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {challenges.map((c) => {
+              const joined = !!c.joined;
+              return (
+                <div key={c.id} className="card overflow-hidden">
+                  <div className={`bg-gradient-to-br ${c.color} p-4 text-white`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-lg font-bold leading-tight">{c.name}</h3>
+                      {joined && (
+                        <span className="badge bg-white/20 text-white">
+                          <Check className="h-3 w-3" /> Joined
+                        </span>
+                      )}
+                    </div>
+                    <span className="badge mt-2 bg-white/20 text-white">{c.metric}</span>
+                  </div>
+                  <div className="p-4">
+                    <p className="text-sm text-ink-600">{c.desc}</p>
+                    <div className="mt-3 flex items-center gap-4 text-xs text-ink-500">
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" /> {c.daysLeft} days left
                       </span>
-                    )}
+                      <span className="inline-flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5" />{" "}
+                        {c.participants.toLocaleString()} joined
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => app.toggleJoinChallenge(c.id)}
+                      className={
+                        joined
+                          ? "btn-secondary mt-4 w-full"
+                          : "btn-primary mt-4 w-full"
+                      }
+                    >
+                      {joined ? (
+                        <>
+                          <Check className="h-4 w-4" /> Joined ✓
+                        </>
+                      ) : (
+                        "Join challenge"
+                      )}
+                    </button>
                   </div>
-                  <span className="badge mt-2 bg-white/20 text-white">{c.metric}</span>
                 </div>
-                <div className="p-4">
-                  <p className="text-sm text-ink-600">{c.desc}</p>
-                  <div className="mt-3 flex items-center gap-4 text-xs text-ink-500">
-                    <span className="inline-flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" /> {c.daysLeft} days left
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5" />{" "}
-                      {displayParticipants.toLocaleString()} joined
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => toggleJoin(c.id)}
-                    className={
-                      joined
-                        ? "btn-secondary mt-4 w-full"
-                        : "btn-primary mt-4 w-full"
-                    }
-                  >
-                    {joined ? (
-                      <>
-                        <Check className="h-4 w-4" /> Joined ✓
-                      </>
-                    ) : (
-                      "Join challenge"
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* Leaderboard */}

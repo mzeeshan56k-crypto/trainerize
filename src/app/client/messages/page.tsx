@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Send } from "lucide-react";
-import { conversations, type Message } from "@/lib/data";
-import { CURRENT_CLIENT_ID } from "@/lib/session";
+import Link from "next/link";
+import { Send, UserPlus } from "lucide-react";
+import { useApp, useCurrentClient } from "@/lib/store";
+import { EmptyState } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 
 const coachReplies = [
@@ -14,42 +15,51 @@ const coachReplies = [
 ];
 
 export default function ClientMessagesPage() {
-  const conversation =
-    conversations.find((c) => c.clientId === CURRENT_CLIENT_ID) ?? conversations[0];
+  const app = useApp();
+  const member = useCurrentClient();
 
-  const [messages, setMessages] = useState<Message[]>(conversation.messages);
   const [draft, setDraft] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
+  const conversation = member
+    ? app.conversations.find((c) => c.clientId === member.id)
+    : undefined;
+  const messages = conversation?.messages ?? [];
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages.length]);
+
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!member)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!member) return;
     const text = draft.trim();
     if (!text) return;
 
-    const memberMessage: Message = {
-      id: `m-${Date.now()}`,
-      fromClient: true,
-      text,
-      time: "Now",
-    };
-    setMessages((prev) => [...prev, memberMessage]);
+    app.sendMessage(member.id, text, true);
     setDraft("");
 
     const reply = coachReplies[Math.floor(Math.random() * coachReplies.length)];
+    const memberId = member.id;
     setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `c-${Date.now()}`,
-          fromClient: false,
-          text: reply,
-          time: "Now",
-        },
-      ]);
+      app.sendMessage(memberId, reply, false);
     }, 1000);
   }
 
@@ -74,6 +84,11 @@ export default function ClientMessagesPage() {
       {/* Message thread */}
       <section className="card flex h-[calc(100vh-16rem)] flex-col overflow-hidden">
         <div className="scroll-thin flex-1 space-y-4 overflow-y-auto p-4">
+          {messages.length === 0 && (
+            <p className="py-10 text-center text-sm text-ink-400">
+              No messages yet. Say hi to your coach!
+            </p>
+          )}
           {messages.map((m) =>
             m.fromClient ? (
               // Member (you) — right aligned, brand bubble

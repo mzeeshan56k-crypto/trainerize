@@ -1,16 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Clock, GripVertical } from "lucide-react";
+import {
+  ChevronLeft, ChevronRight, Plus, Clock, GripVertical, Trash2, Loader2,
+} from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
-import { kanbanColumns, type KanbanColumn, type KanbanCard } from "@/lib/platform";
-import { getClient } from "@/lib/data";
-import { useLocalState } from "@/lib/useLocalState";
+import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const tagStyles: Record<string, string> = {
   New: "bg-brand-50 text-brand-700",
+  Task: "bg-brand-50 text-brand-700",
   Program: "bg-purple-50 text-purple-700",
   Video: "bg-accent-50 text-accent-700",
   Nutrition: "bg-amber-50 text-amber-700",
@@ -18,40 +19,30 @@ const tagStyles: Record<string, string> = {
   Review: "bg-ink-100 text-ink-700",
 };
 
-let cardCounter = 0;
-function newCardId() {
-  cardCounter += 1;
-  return `kx-${Date.now()}-${cardCounter}`;
+function Loading() {
+  return (
+    <div className="flex items-center justify-center py-24 text-ink-400">
+      <Loader2 className="h-6 w-6 animate-spin" />
+    </div>
+  );
 }
 
 export default function KanbanPage() {
-  const [columns, setColumns, hydrated] = useLocalState<KanbanColumn[]>("ffkc-kanban", kanbanColumns);
+  const app = useApp();
   const [adding, setAdding] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
 
-  function moveCard(colId: string, cardId: string, dir: -1 | 1) {
-    setColumns((prev) => {
-      const idx = prev.findIndex((c) => c.id === colId);
-      const target = idx + dir;
-      if (target < 0 || target >= prev.length) return prev;
-      const card = prev[idx].cards.find((c) => c.id === cardId);
-      if (!card) return prev;
-      return prev.map((col, i) => {
-        if (i === idx) return { ...col, cards: col.cards.filter((c) => c.id !== cardId) };
-        if (i === target) return { ...col, cards: [...col.cards, card] };
-        return col;
-      });
-    });
-  }
+  if (!app.hydrated) return <Loading />;
 
-  function addCard(colId: string) {
+  const columns = app.kanban;
+
+  function submitCard(colId: string) {
     const title = draft.trim();
     if (!title) {
       setAdding(null);
       return;
     }
-    const card: KanbanCard = { id: newCardId(), title, tag: "New", due: "Today" };
-    setColumns((prev) => prev.map((col) => (col.id === colId ? { ...col, cards: [...col.cards, card] } : col)));
+    app.addCard(colId, title);
     setDraft("");
     setAdding(null);
   }
@@ -95,14 +86,14 @@ export default function KanbanPage() {
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") addCard(col.id);
+                      if (e.key === "Enter") submitCard(col.id);
                       if (e.key === "Escape") setAdding(null);
                     }}
                     placeholder="Card title…"
                     className="input"
                   />
                   <div className="mt-2 flex gap-2">
-                    <button type="button" onClick={() => addCard(col.id)} className="btn-primary px-3 py-1.5 text-xs">
+                    <button type="button" onClick={() => submitCard(col.id)} className="btn-primary px-3 py-1.5 text-xs">
                       Add
                     </button>
                     <button
@@ -117,7 +108,9 @@ export default function KanbanPage() {
               )}
 
               {col.cards.map((card) => {
-                const client = card.clientId ? getClient(card.clientId) : undefined;
+                const client = card.clientId ? app.clients.find((c) => c.id === card.clientId) : undefined;
+                const prevCol = columns[colIdx - 1];
+                const nextCol = columns[colIdx + 1];
                 return (
                   <div
                     key={card.id}
@@ -126,6 +119,14 @@ export default function KanbanPage() {
                     <div className="flex items-start gap-2">
                       <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-ink-300" />
                       <p className="flex-1 text-sm font-medium leading-snug text-ink-900">{card.title}</p>
+                      <button
+                        type="button"
+                        onClick={() => app.removeCard(card.id)}
+                        className="shrink-0 rounded-md p-1 text-ink-300 opacity-0 transition hover:bg-rose-50 hover:text-rose-600 group-hover:opacity-100"
+                        aria-label="Delete card"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
 
                     <div className="mt-3 flex items-center justify-between">
@@ -143,16 +144,16 @@ export default function KanbanPage() {
                     <div className="mt-3 flex items-center justify-between border-t border-ink-100 pt-2.5 opacity-0 transition group-hover:opacity-100">
                       <button
                         type="button"
-                        disabled={colIdx === 0}
-                        onClick={() => moveCard(col.id, card.id, -1)}
+                        disabled={!prevCol}
+                        onClick={() => prevCol && app.moveCard(card.id, prevCol.id)}
                         className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-ink-500 transition hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         <ChevronLeft className="h-3.5 w-3.5" /> Move
                       </button>
                       <button
                         type="button"
-                        disabled={colIdx === columns.length - 1}
-                        onClick={() => moveCard(col.id, card.id, 1)}
+                        disabled={!nextCol}
+                        onClick={() => nextCol && app.moveCard(card.id, nextCol.id)}
                         className="flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-ink-500 transition hover:bg-ink-50 disabled:cursor-not-allowed disabled:opacity-40"
                       >
                         Move <ChevronRight className="h-3.5 w-3.5" />
@@ -162,7 +163,7 @@ export default function KanbanPage() {
                 );
               })}
 
-              {hydrated && col.cards.length === 0 && adding !== col.id && (
+              {col.cards.length === 0 && adding !== col.id && (
                 <button
                   type="button"
                   onClick={() => {

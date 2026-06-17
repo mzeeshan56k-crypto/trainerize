@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   TrendingDown, Target, Scale, Flame, Plus, Award,
-  Dumbbell, CheckCircle2, ArrowDown, ArrowUp, X,
+  Dumbbell, CheckCircle2, ArrowDown, ArrowUp, X, UserPlus, LineChart,
 } from "lucide-react";
-import { getCurrentClient } from "@/lib/session";
 import { weightTrend, strengthTrend } from "@/lib/data";
 import { WeightChart, StrengthChart } from "@/components/dashboard/Charts";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useLocalState } from "@/lib/useLocalState";
+import { useApp, useCurrentClient } from "@/lib/store";
+import { EmptyState } from "@/components/ui/Modal";
 import { cn } from "@/lib/utils";
 
 interface CheckIn {
@@ -39,14 +41,14 @@ const achievements = [
 ];
 
 export default function ClientProgressPage() {
-  const c = getCurrentClient();
-  const lost = c.startWeight - c.currentWeight;
-  const toGoal = Math.abs(c.currentWeight - c.goalWeight);
+  const app = useApp();
+  const c = useCurrentClient();
+  const baseWeight = c?.currentWeight ?? 0;
 
   const [checkIns, setCheckIns] = useState<CheckIn[]>([
-    { weight: c.currentWeight, date: "Jun 16" },
-    { weight: c.currentWeight + 1, date: "Jun 9" },
-    { weight: c.currentWeight + 2, date: "Jun 2" },
+    { weight: baseWeight, date: "Jun 16" },
+    { weight: baseWeight + 1, date: "Jun 9" },
+    { weight: baseWeight + 2, date: "Jun 2" },
   ]);
   const [entry, setEntry] = useState("");
 
@@ -87,6 +89,26 @@ export default function ClientProgressPage() {
     setCheckIns((prev) => [{ weight: value, date }, ...prev]);
     setEntry("");
   };
+
+  if (!app.hydrated)
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+
+  if (!c)
+    return (
+      <EmptyState
+        icon={UserPlus}
+        title="No client selected"
+        description="Add a client in the Trainer portal, then preview their experience here."
+        action={<Link href="/dashboard/clients" className="btn-primary">Go to Clients</Link>}
+      />
+    );
+
+  const lost = c.startWeight - c.currentWeight;
+  const toGoal = Math.abs(c.currentWeight - c.goalWeight);
 
   return (
     <div className="space-y-6">
@@ -151,61 +173,77 @@ export default function ClientProgressPage() {
         </div>
       </section>
 
-      {/* Body weight chart */}
-      <section className="card p-5">
-        <h2 className="font-semibold text-ink-900">Body weight</h2>
-        <div className="mt-2">
-          <WeightChart data={weightTrend} />
-        </div>
-      </section>
+      {app.seeded ? (
+        <>
+          {/* Body weight chart */}
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Body weight</h2>
+            <div className="mt-2">
+              <WeightChart data={weightTrend} />
+            </div>
+          </section>
 
-      {/* Strength chart */}
-      <section className="card p-5">
-        <h2 className="font-semibold text-ink-900">Strength</h2>
-        <div className="mt-3 flex flex-wrap gap-4 text-xs">
-          <LegendDot colorClass="bg-brand-500" label="Squat" />
-          <LegendDot colorClass="bg-accent-500" label="Bench" />
-          <LegendDot colorClass="bg-amber-500" label="Deadlift" />
-        </div>
-        <div className="mt-2">
-          <StrengthChart data={strengthTrend} />
-        </div>
-      </section>
+          {/* Strength chart */}
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Strength</h2>
+            <div className="mt-3 flex flex-wrap gap-4 text-xs">
+              <LegendDot colorClass="bg-brand-500" label="Squat" />
+              <LegendDot colorClass="bg-accent-500" label="Bench" />
+              <LegendDot colorClass="bg-amber-500" label="Deadlift" />
+            </div>
+            <div className="mt-2">
+              <StrengthChart data={strengthTrend} />
+            </div>
+          </section>
 
-      {/* Measurements */}
-      <section className="card p-5">
-        <h2 className="font-semibold text-ink-900">Measurements</h2>
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {measurements.map((m) => {
-            const down = m.change < 0;
-            return (
-              <div
-                key={m.name}
-                className="rounded-xl border border-ink-100 p-3"
-              >
-                <div className="text-xs text-ink-400">{m.name}</div>
-                <div className="mt-1 text-lg font-bold text-ink-900">
-                  {m.value}
-                  <span className="text-xs font-normal text-ink-400"> {m.unit}</span>
-                </div>
-                <div
-                  className={cn(
-                    "mt-1 flex items-center gap-0.5 text-xs font-medium",
-                    down ? "text-accent-600" : "text-amber-600"
-                  )}
-                >
-                  {down ? (
-                    <ArrowDown className="h-3 w-3" />
-                  ) : (
-                    <ArrowUp className="h-3 w-3" />
-                  )}
-                  {Math.abs(m.change)} {m.unit}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+          {/* Measurements */}
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Measurements</h2>
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {measurements.map((m) => {
+                const down = m.change < 0;
+                return (
+                  <div
+                    key={m.name}
+                    className="rounded-xl border border-ink-100 p-3"
+                  >
+                    <div className="text-xs text-ink-400">{m.name}</div>
+                    <div className="mt-1 text-lg font-bold text-ink-900">
+                      {m.value}
+                      <span className="text-xs font-normal text-ink-400"> {m.unit}</span>
+                    </div>
+                    <div
+                      className={cn(
+                        "mt-1 flex items-center gap-0.5 text-xs font-medium",
+                        down ? "text-accent-600" : "text-amber-600"
+                      )}
+                    >
+                      {down ? (
+                        <ArrowDown className="h-3 w-3" />
+                      ) : (
+                        <ArrowUp className="h-3 w-3" />
+                      )}
+                      {Math.abs(m.change)} {m.unit}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </>
+      ) : (
+        /* No trend data — keep logging tools working, show empty trend state */
+        <section className="card p-5">
+          <h2 className="font-semibold text-ink-900">Trends</h2>
+          <div className="mt-4">
+            <EmptyState
+              icon={LineChart}
+              title="No trend data yet"
+              description="Keep logging your weight and check-ins. Load example data in the Trainer portal to preview charts."
+            />
+          </div>
+        </section>
+      )}
 
       {/* Progress photos */}
       <section className="card p-5">
