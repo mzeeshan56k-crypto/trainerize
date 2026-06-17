@@ -1,0 +1,78 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard, Users, Dumbbell, Apple, CalendarDays,
+  MessageSquare, LineChart, Sparkles, Settings, LogOut,
+} from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
+import { cn } from "@/lib/utils";
+
+const nav = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/clients", label: "Clients", icon: Users },
+  { href: "/dashboard/workouts", label: "Training", icon: Dumbbell },
+  { href: "/dashboard/nutrition", label: "Nutrition", icon: Apple },
+  { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
+  { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
+  { href: "/dashboard/progress", label: "Progress", icon: LineChart },
+  { href: "/dashboard/ai-coach", label: "AI Coach", icon: Sparkles },
+];
+
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const pathname = usePathname();
+  return (
+    <aside className="flex h-full w-64 flex-col border-r border-ink-100 bg-white">
+      <div className="flex h-16 items-center px-6">
+        <Logo />
+      </div>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4 scroll-thin">
+        {nav.map((item) => {
+          const active =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onNavigate}
+              className={cn(
+                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                active
+                  ? "bg-brand-50 text-brand-700"
+                  : "text-ink-600 hover:bg-ink-50 hover:text-ink-900",
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              {item.label}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="border-t border-ink-100 p-3">
+        <Link
+          href="/dashboard/settings"
+          onClick={onNavigate}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-600 transition hover:bg-ink-50 hover:text-ink-900"
+        >
+          <Settings className="h-5 w-5" /> Settings
+        </Link>
+        <Link
+          href="/"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-ink-600 transition hover:bg-ink-50 hover:text-ink-900"
+        >
+          <LogOut className="h-5 w-5" /> Log out
+        </Link>
+        <div className="mt-3 rounded-xl bg-gradient-to-br from-brand-600 to-accent-500 p-4 text-white">
+          <div className="text-sm font-semibold">Pro plan</div>
+          <div className="mt-1 text-xs text-brand-50">42 / 50 clients used</div>
+          <div className="mt-2 h-1.5 w-full rounded-full bg-white/25">
+            <div className="h-full w-[84%] rounded-full bg-white" />
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
