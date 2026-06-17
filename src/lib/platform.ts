@@ -182,6 +182,91 @@ export const courses: Course[] = [
   { id: "co4", title: "Mindset & Habit Mastery", lessons: 10, durationMin: 112, progress: 20, category: "Lifestyle", color: "from-amber-400 to-orange-500" },
 ];
 
+export interface Lesson {
+  id: string;
+  title: string;
+  durationMin: number;
+  type: "Video" | "Article" | "Quiz";
+}
+// Lessons keyed by course id.
+export const courseLessons: Record<string, Lesson[]> = {
+  co1: [
+    { id: "l1", title: "Welcome & training principles", durationMin: 8, type: "Video" },
+    { id: "l2", title: "Mastering the squat", durationMin: 14, type: "Video" },
+    { id: "l3", title: "Hinge patterns & deadlifts", durationMin: 16, type: "Video" },
+    { id: "l4", title: "Progressive overload explained", durationMin: 11, type: "Article" },
+    { id: "l5", title: "Building your first split", durationMin: 18, type: "Video" },
+    { id: "l6", title: "Knowledge check", durationMin: 5, type: "Quiz" },
+  ],
+  co2: [
+    { id: "l1", title: "Energy balance basics", durationMin: 10, type: "Video" },
+    { id: "l2", title: "Setting macro targets", durationMin: 13, type: "Video" },
+    { id: "l3", title: "Meal timing myths", durationMin: 9, type: "Article" },
+    { id: "l4", title: "Flexible dieting in practice", durationMin: 15, type: "Video" },
+  ],
+  co3: [
+    { id: "l1", title: "Mobility vs flexibility", durationMin: 7, type: "Video" },
+    { id: "l2", title: "Daily hip routine", durationMin: 12, type: "Video" },
+    { id: "l3", title: "Shoulder health", durationMin: 10, type: "Video" },
+  ],
+  co4: [
+    { id: "l1", title: "The habit loop", durationMin: 9, type: "Video" },
+    { id: "l2", title: "Identity-based habits", durationMin: 11, type: "Article" },
+    { id: "l3", title: "Beating motivation dips", durationMin: 14, type: "Video" },
+  ],
+};
+
+/* ----------------------- Challenges & leaderboard --------------------- */
+
+export interface Challenge {
+  id: string;
+  name: string;
+  desc: string;
+  metric: string;
+  daysLeft: number;
+  participants: number;
+  joined: boolean;
+  color: string;
+}
+export const challenges: Challenge[] = [
+  { id: "ch1", name: "30-Day Step Streak", desc: "Hit 10,000 steps every day for 30 days.", metric: "Steps", daysLeft: 12, participants: 184, joined: true, color: "from-brand-500 to-brand-700" },
+  { id: "ch2", name: "Summer Shred", desc: "Log 20 workouts this month.", metric: "Workouts", daysLeft: 18, participants: 312, joined: false, color: "from-accent-400 to-accent-600" },
+  { id: "ch3", name: "Hydration Hero", desc: "Drink 3L of water daily for 2 weeks.", metric: "Hydration", daysLeft: 6, participants: 97, joined: false, color: "from-teal-500 to-emerald-600" },
+];
+
+export interface LeaderRow {
+  rank: number;
+  name: string;
+  avatar: string;
+  points: number;
+  you?: boolean;
+}
+export const leaderboard: LeaderRow[] = [
+  { rank: 1, name: "Emma Wilson", avatar: "EW", points: 2840 },
+  { rank: 2, name: "Maya Chen", avatar: "MC", points: 2710, you: true },
+  { rank: 3, name: "Ava Thompson", avatar: "AT", points: 2655 },
+  { rank: 4, name: "Sofia Reyes", avatar: "SR", points: 2480 },
+  { rank: 5, name: "James Okafor", avatar: "JO", points: 2390 },
+  { rank: 6, name: "Daniel Garcia", avatar: "DG", points: 2105 },
+];
+
+/* --------------------------- Check-in form ---------------------------- */
+
+export interface CheckinQuestion {
+  id: string;
+  label: string;
+  type: "scale" | "number" | "text";
+  unit?: string;
+}
+export const checkinQuestions: CheckinQuestion[] = [
+  { id: "weight", label: "Current body weight", type: "number", unit: "lb" },
+  { id: "energy", label: "Energy levels this week", type: "scale" },
+  { id: "sleep", label: "Sleep quality", type: "scale" },
+  { id: "hunger", label: "Hunger / cravings", type: "scale" },
+  { id: "adherence", label: "Plan adherence", type: "scale" },
+  { id: "notes", label: "Anything you want your coach to know?", type: "text" },
+];
+
 export interface MediaItem {
   id: string;
   title: string;

@@ -4,26 +4,31 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Dumbbell, Apple, LineChart, MessageSquare,
-  Activity, CalendarCheck, GraduationCap,
+  Activity, CalendarCheck, GraduationCap, Trophy, ClipboardCheck,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { PortalSwitcher } from "@/components/PortalSwitcher";
 import { cn } from "@/lib/utils";
 
+const navToday = { href: "/client", label: "Today", icon: Home };
+const navWorkouts = { href: "/client/workouts", label: "Workouts", icon: Dumbbell };
+const navNutrition = { href: "/client/nutrition", label: "Nutrition", icon: Apple };
+const navProgress = { href: "/client/progress", label: "Progress", icon: LineChart };
+const navBiometrics = { href: "/client/biometrics", label: "Biometrics", icon: Activity };
+const navChallenges = { href: "/client/challenges", label: "Challenges", icon: Trophy };
+const navCheckin = { href: "/client/checkin", label: "Check-in", icon: ClipboardCheck };
+const navSchedule = { href: "/client/schedule", label: "Booking", icon: CalendarCheck };
+const navResources = { href: "/client/resources", label: "Learn", icon: GraduationCap };
+const navCoach = { href: "/client/messages", label: "Coach", icon: MessageSquare };
+
 const nav = [
-  { href: "/client", label: "Today", icon: Home },
-  { href: "/client/workouts", label: "Workouts", icon: Dumbbell },
-  { href: "/client/nutrition", label: "Nutrition", icon: Apple },
-  { href: "/client/progress", label: "Progress", icon: LineChart },
-  { href: "/client/biometrics", label: "Biometrics", icon: Activity },
-  { href: "/client/schedule", label: "Booking", icon: CalendarCheck },
-  { href: "/client/resources", label: "Learn", icon: GraduationCap },
-  { href: "/client/messages", label: "Coach", icon: MessageSquare },
+  navToday, navWorkouts, navNutrition, navProgress, navBiometrics,
+  navChallenges, navCheckin, navSchedule, navResources, navCoach,
 ];
 
 // Mobile bottom bar shows the 5 most-used destinations.
-const primaryNav = [nav[0], nav[1], nav[2], nav[4], nav[7]];
+const primaryNav = [navToday, navWorkouts, navNutrition, navProgress, navCoach];
 
 export function ClientShell({
   children,

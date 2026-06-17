@@ -1,7 +1,9 @@
 "use client";
 
-import { Activity, HeartPulse, Moon, Droplet, FlaskConical, Zap } from "lucide-react";
+import { Activity, HeartPulse, Moon, FlaskConical, Zap } from "lucide-react";
 import { SleepChart } from "@/components/dashboard/Charts";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { useLocalState } from "@/lib/useLocalState";
 import { sleepData, recoveryMuscles, recoveryHeatmap, bloodwork } from "@/lib/platform";
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -21,6 +23,11 @@ const statusBadge: Record<string, string> = {
 };
 
 export default function BiometricsPage() {
+  const [labReport, setLabReport, labReportHydrated] = useLocalState<string | undefined>(
+    "ffkc-labs",
+    undefined,
+  );
+
   const last = sleepData[sleepData.length - 1];
   const total = last.rem + last.deep + last.light + last.awake;
   const remPct = Math.round((last.rem / total) * 100);
@@ -201,9 +208,25 @@ export default function BiometricsPage() {
           </table>
         </div>
 
-        <button className="btn-secondary mt-4 w-full">
-          <Droplet className="h-4 w-4" /> Upload new labs
-        </button>
+        <div className="mt-5 border-t border-ink-100 pt-4">
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-ink-900">Your lab reports</h3>
+            {labReportHydrated && labReport && (
+              <span className="badge bg-accent-50 text-accent-700">Attached</span>
+            )}
+          </div>
+          <p className="mb-3 text-xs text-ink-400">
+            Attach a photo or screenshot of your latest bloodwork for your coach to review.
+          </p>
+          {labReportHydrated && (
+            <ImageUpload
+              value={labReport}
+              aspect="video"
+              label="Upload lab report"
+              onChange={setLabReport}
+            />
+          )}
+        </div>
       </section>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import Link from "next/link";
 import {
   Play, Clock, BookOpen, Upload, Video, Share2, Instagram, Twitter, Facebook, Check,
 } from "lucide-react";
@@ -10,13 +11,15 @@ import { courses, mediaVault, type MediaItem } from "@/lib/platform";
 export default function ResourcesPage() {
   const [media, setMedia, mediaHydrated] = useLocalState<MediaItem[]>("ffkc-media", mediaVault);
   const [shared, setShared] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const uploadFormCheck = () => {
+  const handleFile = (file?: File) => {
+    if (!file) return;
     const id = `mv-${Date.now()}`;
     const date = new Date().toLocaleDateString("en-US", { month: "short", day: "numeric" });
     const item: MediaItem = {
       id,
-      title: `New form check upload`,
+      title: file.name,
       type: "Form check",
       date,
       status: "Pending",
@@ -51,9 +54,13 @@ export default function ResourcesPage() {
                 <span className="absolute right-3 top-3">
                   <span className="badge bg-white/20 text-white backdrop-blur">{c.category}</span>
                 </span>
-                <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/25 backdrop-blur transition group-hover:scale-105">
+                <Link
+                  href={`/client/resources/${c.id}`}
+                  aria-label={`Open ${c.title}`}
+                  className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/25 backdrop-blur transition hover:scale-105"
+                >
                   <Play className="h-5 w-5 fill-white text-white" />
-                </span>
+                </Link>
                 <h3 className="relative z-10 text-sm font-bold leading-tight text-white">{c.title}</h3>
               </div>
               {/* Body */}
@@ -74,9 +81,12 @@ export default function ResourcesPage() {
                 </div>
                 <div className="mt-1.5 flex items-center justify-between text-xs text-ink-400">
                   <span>{c.progress}% complete</span>
-                  <button className="font-semibold text-brand-600 hover:text-brand-700">
+                  <Link
+                    href={`/client/resources/${c.id}`}
+                    className="font-semibold text-brand-600 hover:text-brand-700"
+                  >
                     {c.progress === 100 ? "Review" : "Continue"}
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -95,8 +105,18 @@ export default function ResourcesPage() {
         <p className="mb-4 text-sm text-ink-500">Submit lifts for review and track feedback.</p>
 
         {/* Dropzone-style upload */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="video/*"
+          className="hidden"
+          onChange={(e) => {
+            handleFile(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+        />
         <button
-          onClick={uploadFormCheck}
+          onClick={() => fileInputRef.current?.click()}
           className="flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-ink-200 bg-ink-50/50 p-5 text-center transition hover:border-brand-300 hover:bg-brand-50/40"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-brand-600">

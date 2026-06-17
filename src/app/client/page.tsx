@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   Dumbbell, Flame, Target, TrendingDown, ChevronRight, CheckCircle2,
   Calendar, Apple, Droplet, Moon, Footprints,
+  ClipboardCheck, Trophy, GraduationCap,
 } from "lucide-react";
 import { getCurrentClient } from "@/lib/session";
 import { workouts, habits, appointments } from "@/lib/data";
@@ -40,6 +41,22 @@ export default function ClientTodayPage() {
             </div>
           </div>
           <ChevronRight className="h-5 w-5" />
+        </Link>
+      </section>
+
+      {/* Quick actions */}
+      <section className="grid grid-cols-3 gap-3">
+        <Link href="/client/checkin" className="card flex flex-col items-center gap-1.5 p-4 text-center transition hover:border-brand-200 hover:shadow-soft">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><ClipboardCheck className="h-4 w-4" /></span>
+          <span className="text-xs font-medium text-ink-700">Check-in</span>
+        </Link>
+        <Link href="/client/challenges" className="card flex flex-col items-center gap-1.5 p-4 text-center transition hover:border-brand-200 hover:shadow-soft">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600"><Trophy className="h-4 w-4" /></span>
+          <span className="text-xs font-medium text-ink-700">Challenges</span>
+        </Link>
+        <Link href="/client/resources" className="card flex flex-col items-center gap-1.5 p-4 text-center transition hover:border-brand-200 hover:shadow-soft">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600"><GraduationCap className="h-4 w-4" /></span>
+          <span className="text-xs font-medium text-ink-700">Learn</span>
         </Link>
       </section>
 

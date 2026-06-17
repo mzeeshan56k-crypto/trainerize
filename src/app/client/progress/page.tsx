@@ -2,17 +2,25 @@
 
 import { useState } from "react";
 import {
-  TrendingDown, Target, Scale, Flame, Plus, Camera, Award,
-  Dumbbell, CheckCircle2, ArrowDown, ArrowUp,
+  TrendingDown, Target, Scale, Flame, Plus, Award,
+  Dumbbell, CheckCircle2, ArrowDown, ArrowUp, X,
 } from "lucide-react";
 import { getCurrentClient } from "@/lib/session";
 import { weightTrend, strengthTrend } from "@/lib/data";
 import { WeightChart, StrengthChart } from "@/components/dashboard/Charts";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { useLocalState } from "@/lib/useLocalState";
 import { cn } from "@/lib/utils";
 
 interface CheckIn {
   weight: number;
   date: string;
+}
+
+interface ProgressPhoto {
+  id: string;
+  label: string;
+  dataUrl: string;
 }
 
 const measurements = [
@@ -22,8 +30,6 @@ const measurements = [
   { name: "Arms", value: 14.2, unit: "in", change: 0.4 },
   { name: "Thighs", value: 22.5, unit: "in", change: -0.6 },
 ];
-
-const photoWeeks = ["Week 1", "Week 4", "Week 8", "Week 12"];
 
 const achievements = [
   { label: "First workout", icon: Dumbbell },
@@ -43,6 +49,32 @@ export default function ClientProgressPage() {
     { weight: c.currentWeight + 2, date: "Jun 2" },
   ]);
   const [entry, setEntry] = useState("");
+
+  const [photos, setPhotos, photosHydrated] = useLocalState<ProgressPhoto[]>(
+    "ffkc-progress-photos",
+    [],
+  );
+
+  const addPhoto = (dataUrl: string | undefined) => {
+    if (!dataUrl) return;
+    const label = new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+    setPhotos((prev) => [...prev, { id: `pp-${Date.now()}`, label, dataUrl }]);
+  };
+
+  const updatePhoto = (id: string, dataUrl: string | undefined) => {
+    if (!dataUrl) {
+      setPhotos((prev) => prev.filter((p) => p.id !== id));
+      return;
+    }
+    setPhotos((prev) => prev.map((p) => (p.id === id ? { ...p, dataUrl } : p)));
+  };
+
+  const removePhoto = (id: string) => {
+    setPhotos((prev) => prev.filter((p) => p.id !== id));
+  };
 
   const addCheckIn = (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,23 +210,43 @@ export default function ClientProgressPage() {
       {/* Progress photos */}
       <section className="card p-5">
         <h2 className="font-semibold text-ink-900">Progress photos</h2>
-        <div className="mt-4 flex gap-3 overflow-x-auto pb-1 scroll-thin">
-          {photoWeeks.map((week, i) => (
-            <div
-              key={week}
-              className="flex h-36 w-28 shrink-0 flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 via-brand-600 to-ink-800 text-white"
-            >
-              <Camera className="h-6 w-6 opacity-80" />
-              <span className="mt-2 text-xs font-medium">{week}</span>
+        <p className="mt-1 text-sm text-ink-500">
+          Snap a photo to track your transformation over time.
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {photosHydrated &&
+            photos.map((p) => (
+              <div key={p.id} className="space-y-1.5">
+                <div className="relative">
+                  <ImageUpload
+                    value={p.dataUrl}
+                    aspect="tall"
+                    onChange={(url) => updatePhoto(p.id, url)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(p.id)}
+                    title="Remove photo"
+                    className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-soft transition hover:bg-white"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="text-center text-xs font-medium text-ink-500">
+                  {p.label}
+                </div>
+              </div>
+            ))}
+          <div className="space-y-1.5">
+            <ImageUpload
+              aspect="tall"
+              label="Add photo"
+              onChange={addPhoto}
+            />
+            <div className="flex items-center justify-center gap-1 text-center text-xs font-medium text-ink-400">
+              <Plus className="h-3 w-3" /> New photo
             </div>
-          ))}
-          <button
-            type="button"
-            className="flex h-36 w-28 shrink-0 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-ink-200 text-ink-400 transition hover:border-brand-300 hover:text-brand-500"
-          >
-            <Plus className="h-6 w-6" />
-            <span className="mt-2 text-xs font-medium">Add photo</span>
-          </button>
+          </div>
         </div>
       </section>
 

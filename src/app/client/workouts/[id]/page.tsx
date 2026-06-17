@@ -5,11 +5,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ChevronLeft, Clock, Flame, Check, CheckCircle2, Dumbbell, PartyPopper,
-  Timer, TrendingUp, AlertTriangle, Activity, X,
+  Timer, TrendingUp, AlertTriangle, Activity, X, Play,
 } from "lucide-react";
 import { workouts } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { useLocalState } from "@/lib/useLocalState";
+import { VideoModal } from "@/components/ui/VideoModal";
+import { sampleVideo } from "@/lib/media";
 
 interface SetLog {
   done: boolean;
@@ -59,6 +61,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const [log, setLog] = useLocalState<LogMap>(`ffkc-wlog-${w.id}`, defaultLog);
   const [finished, setFinished] = useState(false);
+  const [video, setVideo] = useState<{ src: string; title: string } | null>(null);
 
   // Ensure every prescribed set key exists even if a saved log is stale.
   const getSet = (key: string): SetLog => log[key] ?? defaultLog[key];
@@ -178,11 +181,26 @@ export default function Page({ params }: { params: { id: string } }) {
                     {ex.muscle}
                   </span>
                 </div>
-                {exDone && (
-                  <span className="flex items-center gap-1 text-xs font-semibold text-accent-600">
-                    <CheckCircle2 className="h-5 w-5" /> Done
-                  </span>
-                )}
+                <div className="flex shrink-0 items-center gap-2">
+                  {exDone && (
+                    <span className="flex items-center gap-1 text-xs font-semibold text-accent-600">
+                      <CheckCircle2 className="h-5 w-5" /> Done
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setVideo({
+                        src: sampleVideo(ex.exerciseId || ex.name),
+                        title: ex.name,
+                      })
+                    }
+                    aria-label={`Watch ${ex.name} demo`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-400 hover:text-brand-700 active:scale-95"
+                  >
+                    <Play className="h-3.5 w-3.5 fill-current" /> Watch demo
+                  </button>
+                </div>
               </div>
 
               {ex.notes && (
@@ -368,6 +386,13 @@ export default function Page({ params }: { params: { id: string } }) {
           </button>
         </div>
       </div>
+
+      <VideoModal
+        open={!!video}
+        onClose={() => setVideo(null)}
+        src={video?.src ?? ""}
+        title={video?.title}
+      />
     </div>
   );
 }

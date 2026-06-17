@@ -3,10 +3,12 @@
 import { useState } from "react";
 import {
   User, Building2, CreditCard, Bell, Palette,
-  Check, Upload, Image as ImageIcon,
+  Check,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
+import { ImageUpload } from "@/components/ui/ImageUpload";
+import { useLocalState } from "@/lib/useLocalState";
 import { cn } from "@/lib/utils";
 
 type TabId = "profile" | "business" | "billing" | "notifications" | "branding";
@@ -59,6 +61,14 @@ export default function SettingsPage() {
     "Weekly summary": false,
   });
   const [activeColor, setActiveColor] = useState(brandColors[0].value);
+  const [brandLogo, setBrandLogo, brandLogoHydrated] = useLocalState<string | undefined>(
+    "ffkc-brand-logo",
+    undefined,
+  );
+  const [profilePhoto, setProfilePhoto, profilePhotoHydrated] = useLocalState<string | undefined>(
+    "ffkc-profile-photo",
+    undefined,
+  );
 
   function toggleNotification(key: string) {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -97,11 +107,25 @@ export default function SettingsPage() {
               <p className="text-sm text-ink-500">Update your personal details.</p>
 
               <div className="mt-6 flex items-center gap-4">
-                <Avatar initials="AT" size="lg" />
+                {profilePhotoHydrated && profilePhoto ? (
+                  <ImageUpload
+                    value={profilePhoto}
+                    aspect="square"
+                    onChange={setProfilePhoto}
+                    className="w-24"
+                  />
+                ) : (
+                  <Avatar initials="AT" size="lg" />
+                )}
                 <div>
-                  <button type="button" className="btn-secondary">
-                    <Upload className="h-4 w-4" /> Change photo
-                  </button>
+                  {profilePhotoHydrated && !profilePhoto && (
+                    <ImageUpload
+                      aspect="square"
+                      label="Change photo"
+                      onChange={setProfilePhoto}
+                      className="w-24"
+                    />
+                  )}
                   <p className="mt-1.5 text-xs text-ink-400">JPG or PNG, up to 2MB.</p>
                 </div>
               </div>
@@ -285,16 +309,17 @@ export default function SettingsPage() {
 
               <div className="mt-6">
                 <label className="label">Logo</label>
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-ink-200 bg-ink-50/50 p-8 text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-ink-400 shadow-soft">
-                    <ImageIcon className="h-6 w-6" />
-                  </span>
-                  <p className="mt-3 text-sm font-medium text-ink-700">Upload your logo</p>
-                  <p className="text-xs text-ink-400">SVG or PNG, transparent background recommended.</p>
-                  <button type="button" className="btn-secondary mt-4">
-                    <Upload className="h-4 w-4" /> Choose file
-                  </button>
-                </div>
+                {brandLogoHydrated && (
+                  <ImageUpload
+                    value={brandLogo}
+                    aspect="video"
+                    label="Upload logo"
+                    onChange={setBrandLogo}
+                  />
+                )}
+                <p className="mt-1.5 text-xs text-ink-400">
+                  SVG or PNG, transparent background recommended.
+                </p>
               </div>
 
               <div className="mt-6 flex justify-end">

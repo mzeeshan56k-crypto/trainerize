@@ -6,7 +6,9 @@ import {
   Play, Users, Pencil, Send,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
+import { VideoModal } from "@/components/ui/VideoModal";
 import { programs, workouts, exercises, type Workout } from "@/lib/data";
+import { sampleVideo } from "@/lib/media";
 import { cn } from "@/lib/utils";
 
 type Tab = "programs" | "workouts" | "library";
@@ -37,6 +39,7 @@ export default function TrainingPage() {
   const [selectedWorkout, setSelectedWorkout] = useState<Workout>(workouts[0]);
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<(typeof exerciseTypes)[number]>("All");
+  const [video, setVideo] = useState<{ src: string; title: string } | null>(null);
 
   const filteredExercises = exercises.filter((e) => {
     const matchesType = typeFilter === "All" || e.type === typeFilter;
@@ -277,14 +280,19 @@ export default function TrainingPage() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredExercises.map((ex) => (
                 <div key={ex.id} className="card overflow-hidden">
-                  <div className="relative flex h-32 items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition group-hover:bg-white/40">
+                  <button
+                    type="button"
+                    onClick={() => setVideo({ src: sampleVideo(ex.id), title: ex.name })}
+                    aria-label={`Play ${ex.name} demo`}
+                    className="group/play relative flex h-32 w-full items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700"
+                  >
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition group-hover/play:scale-105 group-hover/play:bg-white/40">
                       <Play className="h-5 w-5 fill-current" />
                     </span>
                     <span className="absolute right-2 top-2 badge bg-white/20 text-white backdrop-blur-sm">
                       {ex.type}
                     </span>
-                  </div>
+                  </button>
                   <div className="p-4">
                     <h3 className="truncate text-sm font-semibold text-ink-900">{ex.name}</h3>
                     <p className="mt-0.5 text-xs text-ink-500">
@@ -300,6 +308,13 @@ export default function TrainingPage() {
           )}
         </div>
       )}
+
+      <VideoModal
+        open={!!video}
+        onClose={() => setVideo(null)}
+        src={video?.src ?? ""}
+        title={video?.title}
+      />
     </>
   );
 }
