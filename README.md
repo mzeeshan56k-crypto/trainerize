@@ -6,21 +6,43 @@ A full-featured, production-style **personal training & online coaching platform
 
 ## ✨ Features
 
-**Marketing site**
-- Landing page with hero, feature grid, solutions, app showcase, testimonials & CTA
-- Features page, Pricing page (3 tiers + FAQ)
-- Login / Sign-up flows
+Three full portals, switchable via the in-app **portal switcher** (top bar) or the
+**Trainer / Client / Admin** buttons on `/login`. Interactive state (logged sets,
+booked sessions, kanban moves, AI approvals, toggles) **persists** via localStorage.
 
-**Coaching dashboard** (`/dashboard`)
-- **Overview** — KPIs, revenue & activity charts, today's schedule, AI at-risk flags, recent client progress
-- **Clients** — searchable/filterable CRM list + rich client detail pages (overview, training, progress charts, notes)
-- **Training** — program library, drag-style workout builder with sets/reps/rest, exercise library with filters
+**Marketing site** — landing, features, pricing (3 tiers + FAQ), login / sign-up.
+
+**1. Trainer portal** (`/dashboard`)
+- **Overview** — KPIs, revenue & activity charts, today's schedule, AI at-risk flags
+- **Clients** — searchable CRM + rich client detail pages (overview, training, progress, notes)
+- **Auditing** — Traffic-Light compliance tracker (green/yellow/red) + auto progress reviews
+- **Training** — program library, workout builder with sets/reps/rest, exercise library
 - **Nutrition** — meal plans, macro breakdowns, calorie targets
-- **Calendar** — weekly scheduling grid with color-coded sessions, classes & check-ins
-- **Messages** — two-pane real-time-style chat with composer
-- **Progress** — body-weight & strength charts, habit tracker, progress photos
-- **AI Coach** — assistant for generating programs, drafting check-ins and surfacing insights
+- **Calendar** — weekly scheduling grid, color-coded sessions, classes & check-ins
+- **Workflow** — Operations Kanban (onboarding / form checks / support) with movable cards
+- **Messages** — two-pane chat with composer
+- **Progress** — body-weight & strength charts, habits, photos
+- **AI Co-Pilot** — AI-drafted corrections with an approve / edit / dismiss workflow + chat
 - **Settings** — profile, business, billing, notifications, white-label branding
+
+**2. Client portal** (`/client`)
+- **Today** — daily overview, today's workout, streaks, habits, next session
+- **Workouts** — assigned plan + interactive **player** logging reps/load/**RPE/RIR**, auto-regulation hints, rest timer
+- **Nutrition** — macro diary, meal logging, **AI meal generator**, barcode/photo quick-log
+- **Progress** — weight logging + charts, measurements, photos, achievements
+- **Biometrics** — sleep architecture (REM/Deep), muscle recovery/volume heatmap, recovery score, bloodwork lab portal
+- **Booking** — browse trainer slots, book/cancel, Google/Apple calendar sync
+- **Learn** — course masterclasses, media vault for form-check uploads, social milestone sharing
+- **Coach** — 1:1 chat with simulated replies
+
+**3. Super Admin portal** (`/admin`)
+- **Overview** — platform-wide KPIs, enrollment growth, top trainers, tier breakdown
+- **Identity & Access (IAM)** — users, role-based permissions, suspend/activate, MFA status
+- **Billing & Tiers** — Basic / Pro / Elite plans, revenue routing & breakdown
+- **Communications** — broadcast composer + multi-channel hub
+- **Automation** — drip-campaign sequences + integration canvas (GoHighLevel, Trainerize, Zapier, Stripe)
+- **Global Library** — master exercise & course asset manager
+- **Security & PII** — MFA, end-to-end encryption, zero-knowledge locks, PII compliance filter, audit log
 
 ## 🛠 Tech Stack
 

@@ -39,12 +39,15 @@ export default function LoginPage() {
         <p className="mt-1 text-sm text-ink-600">
           FitForge has two experiences — the coach dashboard and the member app.
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <Link href="/dashboard" className="btn-secondary">
-            Trainer demo
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          <Link href="/dashboard" className="btn-secondary px-2">
+            Trainer
           </Link>
-          <Link href="/client" className="btn-accent">
-            Client demo
+          <Link href="/client" className="btn-accent px-2">
+            Client
+          </Link>
+          <Link href="/admin" className="btn px-2 bg-ink-900 text-white hover:bg-ink-800">
+            Admin
           </Link>
         </div>
       </div>

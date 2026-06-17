@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Search, Bell, Plus, Menu } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { PortalSwitcher } from "@/components/PortalSwitcher";
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const [q, setQ] = useState("");
@@ -21,6 +22,7 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         />
       </div>
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <PortalSwitcher />
         <button className="btn-primary hidden sm:inline-flex">
           <Plus className="h-4 w-4" /> Add client
         </button>

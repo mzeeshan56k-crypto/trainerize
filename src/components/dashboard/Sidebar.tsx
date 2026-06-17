@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Dumbbell, Apple, CalendarDays,
   MessageSquare, LineChart, Sparkles, Settings, LogOut,
+  TrafficCone, KanbanSquare,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
@@ -12,12 +13,14 @@ import { cn } from "@/lib/utils";
 const nav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/clients", label: "Clients", icon: Users },
+  { href: "/dashboard/auditing", label: "Auditing", icon: TrafficCone },
   { href: "/dashboard/workouts", label: "Training", icon: Dumbbell },
   { href: "/dashboard/nutrition", label: "Nutrition", icon: Apple },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
+  { href: "/dashboard/kanban", label: "Workflow", icon: KanbanSquare },
   { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   { href: "/dashboard/progress", label: "Progress", icon: LineChart },
-  { href: "/dashboard/ai-coach", label: "AI Coach", icon: Sparkles },
+  { href: "/dashboard/ai-coach", label: "AI Co-Pilot", icon: Sparkles },
 ];
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {

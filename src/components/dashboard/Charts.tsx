@@ -78,6 +78,66 @@ export function StrengthChart({ data }: { data: { month: string; squat: number; 
   );
 }
 
+export function SleepChart({ data }: { data: { day: string; rem: number; deep: number; light: number; awake: number }[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={240}>
+      <BarChart data={data} margin={{ left: -16, right: 8, top: 8 }}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#eceef2" vertical={false} />
+        <XAxis dataKey="day" tickLine={false} axisLine={false} fontSize={12} stroke="#828fa6" />
+        <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="#828fa6" tickFormatter={(v) => `${v}h`} />
+        <Tooltip contentStyle={tooltipStyle} />
+        <Bar dataKey="deep" stackId="s" fill="#194b8f" radius={[0, 0, 0, 0]} name="Deep" />
+        <Bar dataKey="rem" stackId="s" fill="#1b82f5" name="REM" />
+        <Bar dataKey="light" stackId="s" fill="#8ed8ff" name="Light" />
+        <Bar dataKey="awake" stackId="s" fill="#eceef2" radius={[6, 6, 0, 0]} name="Awake" />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function EnrollmentChart({ data }: { data: { month: string; clients: number; trainers: number }[] }) {
+  return (
+    <ResponsiveContainer width="100%" height={260}>
+      <AreaChart data={data} margin={{ left: 4, right: 8, top: 8 }}>
+        <defs>
+          <linearGradient id="cl" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="#eceef2" vertical={false} />
+        <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} stroke="#828fa6" />
+        <YAxis tickLine={false} axisLine={false} fontSize={12} stroke="#828fa6" tickFormatter={(v) => `${Math.round(v / 1000)}k`} />
+        <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => v.toLocaleString()} />
+        <Area type="monotone" dataKey="clients" stroke="#10b981" strokeWidth={2.5} fill="url(#cl)" />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+}
+
+export function ComplianceBars({ workout, diet, habits }: { workout: number; diet: number; habits: number }) {
+  const rows = [
+    { label: "Workout", value: workout, color: "bg-brand-500" },
+    { label: "Diet", value: diet, color: "bg-accent-500" },
+    { label: "Habits", value: habits, color: "bg-amber-500" },
+  ];
+  return (
+    <div className="space-y-4">
+      {rows.map((r) => (
+        <div key={r.label}>
+          <div className="mb-1.5 flex justify-between text-sm">
+            <span className="font-medium text-ink-700">{r.label}</span>
+            <span className="font-semibold text-ink-900">{r.value}%</span>
+          </div>
+          <div className="h-2.5 w-full rounded-full bg-ink-100">
+            <div className={`h-full rounded-full ${r.color}`} style={{ width: `${r.value}%` }} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function AdherenceRing({ value }: { value: number }) {
   const data = [{ name: "adherence", value, fill: "#10b981" }];
   return (

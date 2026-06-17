@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Dumbbell, Apple, LineChart, MessageSquare } from "lucide-react";
+import {
+  Home, Dumbbell, Apple, LineChart, MessageSquare,
+  Activity, CalendarCheck, GraduationCap,
+} from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
+import { PortalSwitcher } from "@/components/PortalSwitcher";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -12,8 +16,14 @@ const nav = [
   { href: "/client/workouts", label: "Workouts", icon: Dumbbell },
   { href: "/client/nutrition", label: "Nutrition", icon: Apple },
   { href: "/client/progress", label: "Progress", icon: LineChart },
+  { href: "/client/biometrics", label: "Biometrics", icon: Activity },
+  { href: "/client/schedule", label: "Booking", icon: CalendarCheck },
+  { href: "/client/resources", label: "Learn", icon: GraduationCap },
   { href: "/client/messages", label: "Coach", icon: MessageSquare },
 ];
+
+// Mobile bottom bar shows the 5 most-used destinations.
+const primaryNav = [nav[0], nav[1], nav[2], nav[4], nav[7]];
 
 export function ClientShell({
   children,
@@ -35,6 +45,7 @@ export function ClientShell({
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <div className="flex items-center gap-3">
+            <PortalSwitcher compact />
             <span className="hidden text-sm font-medium text-ink-600 sm:block">
               {clientName}
             </span>
@@ -45,13 +56,13 @@ export function ClientShell({
 
       {/* Desktop tab nav */}
       <div className="sticky top-16 z-30 hidden border-b border-ink-100 bg-white/85 backdrop-blur-xl sm:block">
-        <nav className="mx-auto flex max-w-3xl gap-1 px-4 sm:px-6">
+        <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-4 scroll-thin sm:px-6">
           {nav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition",
+                "flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition whitespace-nowrap",
                 isActive(item.href)
                   ? "border-brand-600 text-brand-700"
                   : "border-transparent text-ink-500 hover:text-ink-900",
@@ -72,7 +83,7 @@ export function ClientShell({
       {/* Mobile bottom nav */}
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-100 bg-white/95 backdrop-blur-xl sm:hidden">
         <div className="flex items-center justify-around px-2 py-2">
-          {nav.map((item) => (
+          {primaryNav.map((item) => (
             <Link
               key={item.href}
               href={item.href}
