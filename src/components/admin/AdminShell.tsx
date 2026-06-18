@@ -5,11 +5,12 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutDashboard, Users, CreditCard, Megaphone, Workflow,
-  ShieldCheck, Library, Menu, X, Bell, Search,
+  ShieldCheck, Library, Menu, X, Bell,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { PortalSwitcher } from "@/components/PortalSwitcher";
+import { AskAIButton } from "@/components/AIAssistant";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -92,12 +93,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <button className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu className="h-6 w-6 text-ink-700" />
           </button>
-          <div className="relative hidden max-w-sm flex-1 sm:block">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
-            <input
-              placeholder="Search trainers, users, logs…"
-              className="w-full rounded-full border border-ink-200 bg-ink-50 py-2 pl-9 pr-4 text-sm focus:border-brand-300 focus:bg-ink-100 focus:outline-none focus:ring-4 focus:ring-brand-100"
-            />
+          <div className="hidden max-w-sm flex-1 sm:block">
+            <AskAIButton />
           </div>
           <div className="ml-auto flex items-center gap-3">
             <PortalSwitcher />

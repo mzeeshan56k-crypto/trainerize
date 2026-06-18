@@ -187,32 +187,33 @@ export interface Lesson {
   title: string;
   durationMin: number;
   type: "Video" | "Article" | "Quiz";
+  video?: string; // YouTube/Vimeo or direct file URL
 }
-// Lessons keyed by course id.
+// Lessons keyed by course id. Video lessons use embeddable YouTube sources.
 export const courseLessons: Record<string, Lesson[]> = {
   co1: [
-    { id: "l1", title: "Welcome & training principles", durationMin: 8, type: "Video" },
-    { id: "l2", title: "Mastering the squat", durationMin: 14, type: "Video" },
-    { id: "l3", title: "Hinge patterns & deadlifts", durationMin: 16, type: "Video" },
+    { id: "l1", title: "Welcome & training principles", durationMin: 8, type: "Video", video: "https://www.youtube.com/watch?v=Kvy_-Ah_y4Q" },
+    { id: "l2", title: "Mastering the squat", durationMin: 14, type: "Video", video: "https://www.youtube.com/watch?v=ultWZbUMPL8" },
+    { id: "l3", title: "Hinge patterns & deadlifts", durationMin: 16, type: "Video", video: "https://www.youtube.com/watch?v=op9kVnSso6Q" },
     { id: "l4", title: "Progressive overload explained", durationMin: 11, type: "Article" },
-    { id: "l5", title: "Building your first split", durationMin: 18, type: "Video" },
+    { id: "l5", title: "Building your first split", durationMin: 18, type: "Video", video: "https://www.youtube.com/watch?v=eMjyvIQbn9M" },
     { id: "l6", title: "Knowledge check", durationMin: 5, type: "Quiz" },
   ],
   co2: [
-    { id: "l1", title: "Energy balance basics", durationMin: 10, type: "Video" },
-    { id: "l2", title: "Setting macro targets", durationMin: 13, type: "Video" },
+    { id: "l1", title: "Energy balance basics", durationMin: 10, type: "Video", video: "https://www.youtube.com/watch?v=vtWp45Negac" },
+    { id: "l2", title: "Setting macro targets", durationMin: 13, type: "Video", video: "https://www.youtube.com/watch?v=lcVgddoLrS8" },
     { id: "l3", title: "Meal timing myths", durationMin: 9, type: "Article" },
-    { id: "l4", title: "Flexible dieting in practice", durationMin: 15, type: "Video" },
+    { id: "l4", title: "Flexible dieting in practice", durationMin: 15, type: "Video", video: "https://www.youtube.com/watch?v=AdqrTg_hpEQ" },
   ],
   co3: [
-    { id: "l1", title: "Mobility vs flexibility", durationMin: 7, type: "Video" },
-    { id: "l2", title: "Daily hip routine", durationMin: 12, type: "Video" },
-    { id: "l3", title: "Shoulder health", durationMin: 10, type: "Video" },
+    { id: "l1", title: "Mobility vs flexibility", durationMin: 7, type: "Video", video: "https://www.youtube.com/watch?v=dHA1lkgrhSY" },
+    { id: "l2", title: "Daily hip routine", durationMin: 12, type: "Video", video: "https://www.youtube.com/watch?v=Wp4BlxcFTkE" },
+    { id: "l3", title: "Shoulder health", durationMin: 10, type: "Video", video: "https://www.youtube.com/watch?v=3VL9o8hEzBc" },
   ],
   co4: [
-    { id: "l1", title: "The habit loop", durationMin: 9, type: "Video" },
+    { id: "l1", title: "The habit loop", durationMin: 9, type: "Video", video: "https://www.youtube.com/watch?v=OMbsGBlpP30" },
     { id: "l2", title: "Identity-based habits", durationMin: 11, type: "Article" },
-    { id: "l3", title: "Beating motivation dips", durationMin: 14, type: "Video" },
+    { id: "l3", title: "Beating motivation dips", durationMin: 14, type: "Video", video: "https://www.youtube.com/watch?v=H14bBuluwB8" },
   ],
 };
 

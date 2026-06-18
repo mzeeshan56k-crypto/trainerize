@@ -23,6 +23,9 @@ export interface AppSettings {
   brandColor: string;
   profilePhoto?: string;
   brandLogo?: string;
+  aiProvider?: "openai" | "anthropic" | "gemini";
+  aiModel?: string;
+  aiApiKey?: string;
 }
 
 export interface Broadcast {

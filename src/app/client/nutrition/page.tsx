@@ -4,12 +4,12 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Apple, Flame, CheckCircle2, Circle, Droplet, Plus, Minus, Utensils,
-  Sparkles, ScanLine, Camera, Trash2, X, UserPlus,
+  Sparkles, ScanLine, Camera, Trash2, X, UserPlus, BookOpen, Pill, PieChart, Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocalState } from "@/lib/useLocalState";
 import { useApp, useCurrentClient } from "@/lib/store";
-import { EmptyState } from "@/components/ui/Modal";
+import { EmptyState, Modal, Field } from "@/components/ui/Modal";
 
 type Goal = "cut" | "maintain" | "bulk";
 type Pref = "Balanced" | "High-protein" | "Vegetarian" | "Keto";
@@ -31,6 +31,39 @@ interface FoodEntry {
   name: string;
   kcal: number;
 }
+
+type NutritionTab = "diary" | "macros" | "recipes" | "supplements";
+
+interface Recipe {
+  id: string;
+  name: string;
+  kcal: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+interface Supplement {
+  id: string;
+  name: string;
+  time: string;
+  taken: boolean;
+}
+
+const SEED_RECIPES: Recipe[] = [
+  { id: "r1", name: "Protein Pancakes", kcal: 420, protein: 35, carbs: 48, fat: 9 },
+  { id: "r2", name: "Chicken Burrito Bowl", kcal: 610, protein: 48, carbs: 62, fat: 16 },
+  { id: "r3", name: "Salmon & Greens", kcal: 530, protein: 42, carbs: 18, fat: 30 },
+  { id: "r4", name: "Overnight Oats", kcal: 380, protein: 22, carbs: 55, fat: 8 },
+];
+
+const SEED_SUPPLEMENTS: Supplement[] = [
+  { id: "su1", name: "Creatine 5g", time: "Anytime", taken: false },
+  { id: "su2", name: "Whey Protein", time: "Post-workout", taken: false },
+  { id: "su3", name: "Vitamin D", time: "Morning", taken: false },
+  { id: "su4", name: "Omega-3", time: "With meal", taken: false },
+  { id: "su5", name: "Magnesium", time: "Evening", taken: false },
+];
 
 // Deterministic templates keyed by dietary preference.
 const PREF_TEMPLATES: Record<Pref, GenMeal[]> = {
@@ -97,6 +130,8 @@ export default function ClientNutritionPage() {
   const [water, setWater] = useLocalState<number>("ffkc-water", 4);
   const [foodLog, setFoodLog] = useLocalState<FoodEntry[]>("ffkc-foodlog", []);
   const [aiPlan, setAiPlan] = useLocalState<GenPlan | null>("ffkc-ai-meal", null);
+  const [recipes, setRecipes] = useLocalState<Recipe[]>("ffkc-recipes", SEED_RECIPES);
+  const [supplements, setSupplements] = useLocalState<Supplement[]>("ffkc-supplements", SEED_SUPPLEMENTS);
 
   // AI generator form state (transient — no need to persist inputs)
   const [goal, setGoal] = useState<Goal>("cut");
@@ -105,6 +140,57 @@ export default function ClientNutritionPage() {
 
   // Quick-log scanner panel
   const [scanner, setScanner] = useState<null | "barcode" | "photo">(null);
+
+  // Tabs
+  const [tab, setTab] = useState<NutritionTab>("diary");
+
+  // Recipes
+  const [recipeModal, setRecipeModal] = useState(false);
+  const [newRecipeName, setNewRecipeName] = useState("");
+  const [newRecipeKcal, setNewRecipeKcal] = useState<number>(450);
+  const [recipeToast, setRecipeToast] = useState<string | null>(null);
+
+  // Supplements
+  const [newSupplement, setNewSupplement] = useState("");
+
+  const addRecipe = () => {
+    const name = newRecipeName.trim();
+    if (!name) return;
+    const kcal = Number.isFinite(newRecipeKcal) && newRecipeKcal > 0 ? newRecipeKcal : 400;
+    const recipe: Recipe = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name,
+      kcal,
+      protein: Math.round((kcal * 0.3) / 4),
+      carbs: Math.round((kcal * 0.45) / 4),
+      fat: Math.round((kcal * 0.25) / 9),
+    };
+    setRecipes((prev) => [recipe, ...prev]);
+    setNewRecipeName("");
+    setNewRecipeKcal(450);
+    setRecipeModal(false);
+  };
+
+  const addRecipeToDiary = (recipe: Recipe) => {
+    addFood(recipe.name, recipe.kcal);
+    setRecipeToast(recipe.name);
+    window.setTimeout(() => setRecipeToast(null), 2000);
+  };
+
+  const toggleSupplement = (id: string) =>
+    setSupplements((prev) =>
+      prev.map((s) => (s.id === id ? { ...s, taken: !s.taken } : s)),
+    );
+
+  const addSupplement = () => {
+    const name = newSupplement.trim();
+    if (!name) return;
+    setSupplements((prev) => [
+      ...prev,
+      { id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, name, time: "Anytime", taken: false },
+    ]);
+    setNewSupplement("");
+  };
 
   const toggleMeal = (name: string) =>
     setLogged((prev) =>
@@ -163,8 +249,47 @@ export default function ClientNutritionPage() {
       />
     );
 
+  const macroPlan = plan ?? { calories: 2000, protein: 150, carbs: 200, fat: 60 };
+  const proteinKcal = macroPlan.protein * 4;
+  const carbsKcal = macroPlan.carbs * 4;
+  const fatKcal = macroPlan.fat * 9;
+  const macroKcalTotal = proteinKcal + carbsKcal + fatKcal || 1;
+
+  const tabs: { id: NutritionTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { id: "diary", label: "Diary", icon: Utensils },
+    { id: "macros", label: "Macro Details", icon: PieChart },
+    { id: "recipes", label: "My Recipes", icon: BookOpen },
+    { id: "supplements", label: "Supplements", icon: Pill },
+  ];
+
   return (
     <div className="space-y-6">
+      {/* Tabs */}
+      <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 scroll-thin">
+        {tabs.map((t) => {
+          const Icon = t.icon;
+          const active = tab === t.id;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm font-semibold transition active:scale-95",
+                active
+                  ? "border-brand-500 bg-brand-600 text-white shadow-glow"
+                  : "border-ink-200 bg-ink-100 text-ink-700 hover:border-brand-300",
+              )}
+            >
+              <Icon className="h-4 w-4" /> {t.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ---------------- DIARY ---------------- */}
+      {tab === "diary" && (
+      <div className="space-y-6">
       {plan ? (
         <>
           {/* Hero */}
@@ -562,6 +687,250 @@ export default function ClientNutritionPage() {
           </button>
         </div>
       </section>
+      </div>
+      )}
+
+      {/* ---------------- MACRO DETAILS ---------------- */}
+      {tab === "macros" && (
+        <div className="space-y-6">
+          <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
+            <div className="flex items-center gap-2 text-sm text-brand-100">
+              <PieChart className="h-4 w-4" /> Macro details
+            </div>
+            <h1 className="mt-1 text-2xl font-bold">Your daily macro split</h1>
+            <p className="mt-1 text-sm text-brand-100">
+              {macroPlan.calories.toLocaleString()} kcal target
+            </p>
+          </section>
+
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Macro breakdown</h2>
+            <div className="mt-4 space-y-4">
+              <MacroDetailRow
+                label="Protein"
+                grams={macroPlan.protein}
+                kcal={proteinKcal}
+                pct={Math.round((proteinKcal / macroKcalTotal) * 100)}
+                barClass="bg-brand-500"
+                tintClass="text-brand-400"
+              />
+              <MacroDetailRow
+                label="Carbs"
+                grams={macroPlan.carbs}
+                kcal={carbsKcal}
+                pct={Math.round((carbsKcal / macroKcalTotal) * 100)}
+                barClass="bg-accent-500"
+                tintClass="text-accent-400"
+              />
+              <MacroDetailRow
+                label="Fat"
+                grams={macroPlan.fat}
+                kcal={fatKcal}
+                pct={Math.round((fatKcal / macroKcalTotal) * 100)}
+                barClass="bg-amber-500"
+                tintClass="text-amber-400"
+              />
+            </div>
+          </section>
+
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Micros & extras</h2>
+            <div className="mt-4 divide-y divide-ink-100">
+              {[
+                { label: "Fiber", value: "31 g", target: "30 g" },
+                { label: "Sugar", value: "42 g", target: "< 50 g" },
+                { label: "Sodium", value: "2,180 mg", target: "< 2,300 mg" },
+              ].map((row) => (
+                <div key={row.label} className="flex items-center justify-between py-3">
+                  <span className="text-sm font-medium text-ink-700">{row.label}</span>
+                  <span className="text-sm text-ink-500">
+                    <span className="font-semibold text-ink-900">{row.value}</span> / {row.target}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="card p-5">
+            <h2 className="font-semibold text-ink-900">Weekly macro adherence</h2>
+            <p className="mt-1 text-xs text-ink-400">% of days you hit each target this week</p>
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              {[
+                { label: "Protein", pct: 86, tint: "text-brand-400 bg-brand-500/15" },
+                { label: "Carbs", pct: 74, tint: "text-accent-400 bg-accent-500/15" },
+                { label: "Fat", pct: 68, tint: "text-amber-400 bg-amber-500/15" },
+              ].map((m) => {
+                const [text, bg] = m.tint.split(" ");
+                return (
+                  <div key={m.label} className="rounded-2xl border border-ink-100 bg-ink-50 p-4 text-center">
+                    <div className={cn("text-2xl font-bold", text)}>{m.pct}%</div>
+                    <div className="text-[11px] text-ink-400">{m.label}</div>
+                    <div className="mt-2 h-1.5 w-full rounded-full bg-ink-100">
+                      <div className={cn("h-full rounded-full", bg.replace("/15", ""))} style={{ width: `${m.pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* ---------------- MY RECIPES ---------------- */}
+      {tab === "recipes" && (
+        <div className="space-y-6">
+          <section className="flex items-center justify-between">
+            <div>
+              <h2 className="font-semibold text-ink-900">My recipes</h2>
+              <p className="text-xs text-ink-400">{recipes.length} saved</p>
+            </div>
+            <button type="button" onClick={() => setRecipeModal(true)} className="btn-primary">
+              <Plus className="h-4 w-4" /> New recipe
+            </button>
+          </section>
+
+          {recipeToast && (
+            <div className="flex items-center gap-2 rounded-2xl border border-accent-200 bg-accent-500/15 px-4 py-3 text-sm font-medium text-accent-400">
+              <Check className="h-4 w-4" /> Added “{recipeToast}” to your diary
+            </div>
+          )}
+
+          <section className="grid gap-4 sm:grid-cols-2">
+            {recipes.map((r) => (
+              <div key={r.id} className="card flex flex-col p-5">
+                <div className="flex items-start justify-between gap-2">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
+                    <Utensils className="h-5 w-5" />
+                  </span>
+                  <span className="text-sm font-semibold text-ink-900">{r.kcal} kcal</span>
+                </div>
+                <h3 className="mt-3 font-semibold text-ink-900">{r.name}</h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  <span className="rounded-full bg-brand-500/15 px-2.5 py-0.5 text-xs font-medium text-brand-400">P {r.protein}g</span>
+                  <span className="rounded-full bg-accent-500/15 px-2.5 py-0.5 text-xs font-medium text-accent-400">C {r.carbs}g</span>
+                  <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-medium text-amber-400">F {r.fat}g</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => addRecipeToDiary(r)}
+                  className="btn-secondary mt-4 w-full"
+                >
+                  <Plus className="h-4 w-4" /> Add to diary
+                </button>
+              </div>
+            ))}
+          </section>
+        </div>
+      )}
+
+      {/* ---------------- SUPPLEMENTS ---------------- */}
+      {tab === "supplements" && (
+        <div className="space-y-6">
+          <section className="card p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
+                  <Pill className="h-4 w-4" />
+                </span>
+                <h2 className="font-semibold text-ink-900">Supplements</h2>
+              </div>
+              <span className="text-sm text-ink-500">
+                {supplements.filter((s) => s.taken).length} / {supplements.length} taken
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              {supplements.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => toggleSupplement(s.id)}
+                  aria-pressed={s.taken}
+                  className={cn(
+                    "flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition active:scale-[0.99]",
+                    s.taken
+                      ? "border-accent-200 bg-accent-500/15"
+                      : "border-ink-100 bg-ink-100 hover:border-brand-300",
+                  )}
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink-50 text-ink-500">
+                    <Pill className="h-4 w-4" />
+                  </span>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-ink-900">{s.name}</div>
+                    <div className="text-xs text-ink-400">{s.time}</div>
+                  </div>
+                  {s.taken ? (
+                    <CheckCircle2 className="h-7 w-7 text-accent-500" />
+                  ) : (
+                    <Circle className="h-7 w-7 text-ink-200" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-4 flex gap-2">
+              <input
+                value={newSupplement}
+                onChange={(e) => setNewSupplement(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && addSupplement()}
+                placeholder="Add a supplement…"
+                className="input flex-1"
+                aria-label="New supplement name"
+              />
+              <button
+                type="button"
+                onClick={addSupplement}
+                disabled={!newSupplement.trim()}
+                className="btn-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Plus className="h-4 w-4" /> Add
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* New recipe modal */}
+      <Modal
+        open={recipeModal}
+        onClose={() => setRecipeModal(false)}
+        title="New recipe"
+        footer={
+          <>
+            <button type="button" onClick={() => setRecipeModal(false)} className="btn-secondary">
+              Cancel
+            </button>
+            <button type="button" onClick={addRecipe} disabled={!newRecipeName.trim()} className="btn-primary disabled:opacity-50">
+              Save recipe
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Field label="Recipe name">
+            <input
+              value={newRecipeName}
+              onChange={(e) => setNewRecipeName(e.target.value)}
+              placeholder="e.g. Greek Yogurt Bowl"
+              className="input"
+            />
+          </Field>
+          <Field label="Calories (kcal)">
+            <input
+              type="number"
+              inputMode="numeric"
+              value={Number.isFinite(newRecipeKcal) ? newRecipeKcal : ""}
+              onChange={(e) => setNewRecipeKcal(parseInt(e.target.value, 10))}
+              className="input"
+              min={50}
+              max={2000}
+              step={10}
+            />
+          </Field>
+          <p className="text-xs text-ink-400">Macros are estimated automatically from calories.</p>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -589,6 +958,31 @@ function MacroBar({
           className={cn("h-full rounded-full", barClass)}
           style={{ width: `${pct}%` }}
         />
+      </div>
+    </div>
+  );
+}
+
+function MacroDetailRow({
+  label, grams, kcal, pct, barClass, tintClass,
+}: {
+  label: string;
+  grams: number;
+  kcal: number;
+  pct: number;
+  barClass: string;
+  tintClass: string;
+}) {
+  return (
+    <div>
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-medium text-ink-700">{label}</span>
+        <span className="text-ink-500">
+          <span className={cn("font-semibold", tintClass)}>{grams}g</span> · {kcal} kcal · {pct}%
+        </span>
+      </div>
+      <div className="mt-1.5 h-2.5 w-full rounded-full bg-ink-100">
+        <div className={cn("h-full rounded-full", barClass)} style={{ width: `${pct}%` }} />
       </div>
     </div>
   );

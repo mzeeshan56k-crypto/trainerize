@@ -8,9 +8,30 @@ import {
   CheckCircle2, ArrowRight,
 } from "lucide-react";
 import { courses, courseLessons, type Lesson } from "@/lib/platform";
-import { sampleVideo } from "@/lib/media";
+import { sampleVideo, toEmbedUrl } from "@/lib/media";
 import { useLocalState } from "@/lib/useLocalState";
 import { cn } from "@/lib/utils";
+
+function LessonVideo({ lesson }: { lesson: Lesson }) {
+  const src = lesson.video || sampleVideo(lesson.id);
+  const embed = toEmbedUrl(src);
+  if (embed) {
+    return (
+      <iframe
+        key={lesson.id}
+        src={embed}
+        title={lesson.title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="aspect-video w-full bg-black"
+      />
+    );
+  }
+  return (
+    // eslint-disable-next-line jsx-a11y/media-has-caption
+    <video key={lesson.id} src={src} controls playsInline className="aspect-video w-full bg-black" />
+  );
+}
 
 const typeMeta: Record<
   Lesson["type"],
@@ -96,14 +117,7 @@ export default function Page({ params }: { params: { id: string } }) {
           <div className="card overflow-hidden">
             {selectedLesson ? (
               <>
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-                <video
-                  key={selectedLesson.id}
-                  src={sampleVideo(selectedLesson.id)}
-                  controls
-                  playsInline
-                  className="aspect-video w-full bg-black"
-                />
+                <LessonVideo lesson={selectedLesson} />
                 <div className="p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>

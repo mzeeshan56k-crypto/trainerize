@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Home, Dumbbell, Apple, LineChart, MessageSquare,
-  Activity, CalendarCheck, GraduationCap, Trophy, ClipboardCheck,
+  Activity, CalendarCheck, GraduationCap, Trophy, ClipboardCheck, Award, UsersRound,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { Avatar } from "@/components/ui/Avatar";
 import { PortalSwitcher } from "@/components/PortalSwitcher";
+import { AskAIButton } from "@/components/AIAssistant";
 import { cn } from "@/lib/utils";
 
 const navToday = { href: "/client", label: "Today", icon: Home };
@@ -20,11 +21,13 @@ const navChallenges = { href: "/client/challenges", label: "Challenges", icon: T
 const navCheckin = { href: "/client/checkin", label: "Check-in", icon: ClipboardCheck };
 const navSchedule = { href: "/client/schedule", label: "Booking", icon: CalendarCheck };
 const navResources = { href: "/client/resources", label: "Learn", icon: GraduationCap };
+const navAchievements = { href: "/client/achievements", label: "Achievements", icon: Award };
+const navCommunity = { href: "/client/community", label: "Community", icon: UsersRound };
 const navCoach = { href: "/client/messages", label: "Coach", icon: MessageSquare };
 
 const nav = [
   navToday, navWorkouts, navNutrition, navProgress, navBiometrics,
-  navChallenges, navCheckin, navSchedule, navResources, navCoach,
+  navChallenges, navCheckin, navSchedule, navResources, navAchievements, navCommunity, navCoach,
 ];
 
 // Mobile bottom bar shows the 5 most-used destinations.
@@ -50,6 +53,7 @@ export function ClientShell({
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <div className="flex items-center gap-3">
+            <AskAIButton compact />
             <PortalSwitcher compact />
             <span className="hidden text-sm font-medium text-ink-600 sm:block">
               {clientName}

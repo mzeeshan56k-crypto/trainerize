@@ -3,20 +3,22 @@
 import { useEffect, useState } from "react";
 import {
   User, Building2, CreditCard, Bell, Palette, Database,
-  Check,
+  Check, Sparkles, KeyRound,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { DataControls } from "@/components/dashboard/DataControls";
 import { useApp } from "@/lib/store";
+import { AI_MODELS } from "@/lib/ai";
 import { cn } from "@/lib/utils";
 
-type TabId = "profile" | "business" | "billing" | "notifications" | "branding" | "data";
+type TabId = "profile" | "business" | "ai" | "billing" | "notifications" | "branding" | "data";
 
 const tabs: { id: TabId; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: "profile", label: "Profile", icon: User },
   { id: "business", label: "Business", icon: Building2 },
+  { id: "ai", label: "AI Copilot", icon: Sparkles },
   { id: "billing", label: "Billing", icon: CreditCard },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "branding", label: "Branding", icon: Palette },
@@ -85,8 +87,20 @@ export default function SettingsPage() {
   const [website, setWebsite] = useState("");
   const [timezone, setTimezone] = useState("America/Los_Angeles");
 
+  // AI Copilot config
+  const [aiProvider, setAiProvider] = useState<"openai" | "anthropic" | "gemini">("openai");
+  const [aiModel, setAiModel] = useState("");
+  const [aiApiKey, setAiApiKey] = useState("");
+  const [aiSaved, setAiSaved] = useState(false);
+
   const [profileSaved, setProfileSaved] = useState(false);
   const [businessSaved, setBusinessSaved] = useState(false);
+
+  // Deep link: /dashboard/settings?tab=ai
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get("tab");
+    if (t && tabs.some((x) => x.id === t)) setTab(t as TabId);
+  }, []);
 
   // Seed local form state from the store once it has hydrated.
   useEffect(() => {
@@ -94,8 +108,21 @@ export default function SettingsPage() {
     setName(app.settings.trainerName ?? "");
     setEmail(app.settings.trainerEmail ?? "");
     setBusinessName(app.settings.businessName ?? "");
+    setAiProvider(app.settings.aiProvider ?? "openai");
+    setAiModel(app.settings.aiModel ?? "");
+    setAiApiKey(app.settings.aiApiKey ?? "");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app.hydrated]);
+
+  function saveAi() {
+    app.updateSettings({
+      aiProvider,
+      aiModel: aiModel || AI_MODELS[aiProvider].models[0],
+      aiApiKey: aiApiKey.trim(),
+    });
+    setAiSaved(true);
+    window.setTimeout(() => setAiSaved(false), 2000);
+  }
 
   function toggleNotification(key: string) {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -253,6 +280,95 @@ export default function SettingsPage() {
               <div className="mt-6 flex items-center justify-end gap-3">
                 <SavedPill show={businessSaved} />
                 <button type="button" className="btn-primary" onClick={saveBusiness}>Save changes</button>
+              </div>
+            </div>
+          )}
+
+          {tab === "ai" && (
+            <div>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold text-ink-900">AI Copilot</h2>
+                  <p className="text-sm text-ink-500">
+                    Connect your own AI provider to power live answers across the platform.
+                  </p>
+                </div>
+                <SavedPill show={aiSaved} />
+              </div>
+
+              <div className="mt-5 flex items-start gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 p-4 text-sm text-ink-700">
+                <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-brand-400" />
+                <span>
+                  Your key is stored only in this browser and sent directly to the provider through a
+                  secure proxy — never shared. Pick a provider, paste a key, and the AI Copilot
+                  (⌘K) and the AI Co-Pilot page go live.
+                </span>
+              </div>
+
+              <div className="mt-6 space-y-5">
+                <div>
+                  <span className="label">Provider</span>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    {(Object.keys(AI_MODELS) as Array<"openai" | "anthropic" | "gemini">).map((p) => (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => { setAiProvider(p); setAiModel(AI_MODELS[p].models[0]); }}
+                        className={cn(
+                          "rounded-xl border p-3 text-left text-sm transition",
+                          aiProvider === p
+                            ? "border-brand-500 bg-brand-500/10 text-ink-900"
+                            : "border-ink-200 text-ink-600 hover:border-ink-300",
+                        )}
+                      >
+                        <div className="font-semibold">{AI_MODELS[p].label}</div>
+                        <div className="text-xs text-ink-400">{AI_MODELS[p].models[0]}</div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <label className="block">
+                  <span className="label">Model</span>
+                  <select className="input" value={aiModel} onChange={(e) => setAiModel(e.target.value)}>
+                    {AI_MODELS[aiProvider].models.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="block">
+                  <span className="label">API key</span>
+                  <div className="relative">
+                    <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+                    <input
+                      type="password"
+                      className="input pl-9"
+                      value={aiApiKey}
+                      onChange={(e) => setAiApiKey(e.target.value)}
+                      placeholder={
+                        aiProvider === "openai" ? "sk-…" : aiProvider === "anthropic" ? "sk-ant-…" : "AIza…"
+                      }
+                      autoComplete="off"
+                    />
+                  </div>
+                  <p className="mt-1.5 text-xs text-ink-400">
+                    {aiProvider === "openai" && "Get one at platform.openai.com → API keys."}
+                    {aiProvider === "anthropic" && "Get one at console.anthropic.com → API keys."}
+                    {aiProvider === "gemini" && "Get one at aistudio.google.com → API keys."}
+                  </p>
+                </label>
+
+                <div className="flex items-center gap-3">
+                  <button type="button" className="btn-primary" onClick={saveAi}>Save & connect</button>
+                  {app.settings.aiApiKey ? (
+                    <span className="badge bg-accent-500/15 text-accent-400">
+                      <Check className="h-3 w-3" /> Connected
+                    </span>
+                  ) : (
+                    <span className="text-sm text-ink-400">Not connected — running in demo mode</span>
+                  )}
+                </div>
               </div>
             </div>
           )}
