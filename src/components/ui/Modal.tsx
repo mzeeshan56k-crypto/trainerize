@@ -34,11 +34,11 @@ export function Modal({
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-end justify-center bg-ink-950/50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-[90] flex items-end justify-center bg-black/50 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
-        className={`flex max-h-[92vh] w-full ${widths[size]} flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl`}
+        className={`flex max-h-[92vh] w-full ${widths[size]} flex-col overflow-hidden rounded-t-2xl bg-ink-100 shadow-2xl sm:rounded-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-ink-100 px-5 py-4">
@@ -84,7 +84,7 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ink-200 bg-ink-50/40 px-6 py-14 text-center">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-ink-300 shadow-soft">
+      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink-100 text-ink-300 shadow-soft">
         <Icon className="h-6 w-6" />
       </span>
       <h3 className="mt-4 font-semibold text-ink-900">{title}</h3>

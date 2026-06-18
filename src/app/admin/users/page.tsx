@@ -12,15 +12,15 @@ import { useApp } from "@/lib/store";
 
 const roleBadge: Record<string, string> = {
   Client: "bg-ink-100 text-ink-700",
-  Coach: "bg-brand-50 text-brand-700",
-  Staff: "bg-purple-50 text-purple-700",
-  Admin: "bg-accent-50 text-accent-700",
+  Coach: "bg-brand-500/15 text-brand-400",
+  Staff: "bg-purple-500/15 text-purple-400",
+  Admin: "bg-accent-500/15 text-accent-400",
 };
 
 const statusBadge: Record<string, string> = {
-  active: "bg-accent-50 text-accent-700",
-  suspended: "bg-rose-50 text-rose-600",
-  invited: "bg-amber-50 text-amber-700",
+  active: "bg-accent-500/15 text-accent-400",
+  suspended: "bg-rose-500/15 text-rose-400",
+  invited: "bg-amber-500/15 text-amber-400",
 };
 
 const filters = ["All", "Client", "Coach", "Staff", "Admin"] as const;
@@ -153,7 +153,7 @@ export default function UsersPage() {
                     </td>
                     <td className="py-3">
                       {u.mfa ? (
-                        <span className="badge bg-accent-50 text-accent-700">
+                        <span className="badge bg-accent-500/15 text-accent-400">
                           <ShieldCheck className="h-3 w-3" /> On
                         </span>
                       ) : (
@@ -168,8 +168,8 @@ export default function UsersPage() {
                           onClick={() => toggleStatus(u)}
                           className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                             u.status === "suspended"
-                              ? "bg-accent-50 text-accent-700 hover:bg-accent-100"
-                              : "bg-rose-50 text-rose-600 hover:bg-rose-100"
+                              ? "bg-accent-500/15 text-accent-400 hover:bg-accent-500/20"
+                              : "bg-rose-500/15 text-rose-400 hover:bg-rose-500/20"
                           }`}
                         >
                           {u.status === "suspended" ? (
@@ -185,7 +185,7 @@ export default function UsersPage() {
                         <button
                           onClick={() => app.removeUser(u.id)}
                           aria-label={`Remove ${u.name}`}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-400 transition hover:bg-rose-50 hover:text-rose-600"
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-ink-400 transition hover:bg-rose-500/15 hover:text-rose-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -280,7 +280,7 @@ export default function UsersPage() {
               type="checkbox"
               checked={form.mfa}
               onChange={(e) => setForm((f) => ({ ...f, mfa: e.target.checked }))}
-              className="h-4 w-4 rounded border-ink-300 text-brand-600 focus:ring-brand-500"
+              className="h-4 w-4 rounded border-ink-300 text-brand-400 focus:ring-brand-500"
             />
             Require multi-factor authentication
           </label>

@@ -197,7 +197,7 @@ export const exercises: Exercise[] = [
 export const programs: Program[] = [
   { id: "p1", name: "12-Week Hypertrophy", weeks: 12, workoutsPerWeek: 5, focus: "Muscle gain", clientsAssigned: 14, color: "from-brand-500 to-brand-700" },
   { id: "p2", name: "Fat Loss Accelerator", weeks: 8, workoutsPerWeek: 4, focus: "Fat loss", clientsAssigned: 22, color: "from-accent-400 to-accent-600" },
-  { id: "p3", name: "Powerlifting Block", weeks: 10, workoutsPerWeek: 4, focus: "Strength", clientsAssigned: 9, color: "from-ink-700 to-ink-900" },
+  { id: "p3", name: "Powerlifting Block", weeks: 10, workoutsPerWeek: 4, focus: "Strength", clientsAssigned: 9, color: "from-ink-700 to-ink-50" },
   { id: "p4", name: "Beginner Foundations", weeks: 6, workoutsPerWeek: 3, focus: "Habit building", clientsAssigned: 31, color: "from-brand-400 to-accent-500" },
 ];
 

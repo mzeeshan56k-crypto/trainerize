@@ -15,22 +15,22 @@ import { formatCurrency } from "@/lib/utils";
 
 const roleBadge: Record<string, string> = {
   Client: "bg-ink-100 text-ink-700",
-  Coach: "bg-brand-50 text-brand-700",
-  Staff: "bg-purple-50 text-purple-700",
-  Admin: "bg-accent-50 text-accent-700",
+  Coach: "bg-brand-500/15 text-brand-400",
+  Staff: "bg-purple-500/15 text-purple-400",
+  Admin: "bg-accent-500/15 text-accent-400",
 };
 
 const statusBadge: Record<string, string> = {
-  active: "bg-accent-50 text-accent-700",
-  suspended: "bg-rose-50 text-rose-600",
-  invited: "bg-amber-50 text-amber-700",
+  active: "bg-accent-500/15 text-accent-400",
+  suspended: "bg-rose-500/15 text-rose-400",
+  invited: "bg-amber-500/15 text-amber-400",
 };
 
 const insights = [
-  { label: "Client retention", value: "94.2%", icon: TrendingUp, tone: "text-accent-600", bg: "bg-accent-50" },
-  { label: "Monthly churn", value: "2.8%", icon: TrendingDown, tone: "text-rose-600", bg: "bg-rose-50" },
-  { label: "Avg session rating", value: "4.8 / 5", icon: Star, tone: "text-amber-600", bg: "bg-amber-50" },
-  { label: "Support SLA met", value: "98.5%", icon: Gauge, tone: "text-brand-600", bg: "bg-brand-50" },
+  { label: "Client retention", value: "94.2%", icon: TrendingUp, tone: "text-accent-400", bg: "bg-accent-500/15" },
+  { label: "Monthly churn", value: "2.8%", icon: TrendingDown, tone: "text-rose-400", bg: "bg-rose-500/15" },
+  { label: "Avg session rating", value: "4.8 / 5", icon: Star, tone: "text-amber-400", bg: "bg-amber-500/15" },
+  { label: "Support SLA met", value: "98.5%", icon: Gauge, tone: "text-brand-400", bg: "bg-brand-500/15" },
 ];
 
 export default function AdminOverviewPage() {

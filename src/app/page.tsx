@@ -40,7 +40,7 @@ export default function HomePage() {
       <Navbar />
       <main>
         {/* Hero */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/60 to-white">
+        <section className="relative overflow-hidden bg-gradient-to-b from-ink-100 to-ink-50">
           <div className="absolute inset-0 bg-grid opacity-60" />
           <div className="container-page relative grid gap-12 py-20 lg:grid-cols-2 lg:items-center lg:py-28">
             <div className="animate-fade-up">
@@ -72,7 +72,7 @@ export default function HomePage() {
               <HeroMockup />
             </div>
           </div>
-          <div className="border-y border-ink-100 bg-white/70">
+          <div className="border-y border-ink-100 bg-ink-100/80">
             <div className="container-page grid grid-cols-2 gap-6 py-8 sm:grid-cols-4">
               {stats.map((s) => (
                 <div key={s.label} className="text-center">
@@ -99,7 +99,7 @@ export default function HomePage() {
           <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map((f) => (
               <div key={f.title} className="card group p-7 transition hover:-translate-y-1 hover:shadow-glow">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400 transition group-hover:bg-brand-600 group-hover:text-white">
                   <f.icon className="h-6 w-6" />
                 </div>
                 <h3 className="mt-5 text-lg font-semibold text-ink-900">{f.title}</h3>
@@ -121,7 +121,7 @@ export default function HomePage() {
             <div className="mt-14 grid gap-6 lg:grid-cols-3">
               {solutions.map((s) => (
                 <div key={s.tag} className="card flex flex-col p-8">
-                  <span className="badge w-fit bg-brand-50 text-brand-700">{s.tag}</span>
+                  <span className="badge w-fit bg-brand-500/15 text-brand-400">{s.tag}</span>
                   <h3 className="mt-4 text-xl font-bold text-ink-900">{s.title}</h3>
                   <ul className="mt-5 space-y-3">
                     {s.points.map((p) => (
@@ -130,7 +130,7 @@ export default function HomePage() {
                       </li>
                     ))}
                   </ul>
-                  <Link href="/dashboard" className="btn-ghost mt-6 w-fit px-0 text-brand-600 hover:bg-transparent hover:text-brand-700">
+                  <Link href="/dashboard" className="btn-ghost mt-6 w-fit px-0 text-brand-400 hover:bg-transparent hover:text-brand-400">
                     Learn more <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
                   ["Grow with referrals & community", Users],
                 ].map(([label, Icon]: any) => (
                   <li key={label} className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-500/15 text-accent-400">
                       <Icon className="h-5 w-5" />
                     </span>
                     <span className="font-medium text-ink-800">{label}</span>
@@ -174,7 +174,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials */}
-        <section className="bg-gradient-to-b from-white to-brand-50/40 section" id="testimonials">
+        <section className="bg-gradient-to-b from-ink-50 to-ink-100 section" id="testimonials">
           <div className="container-page">
             <div className="mx-auto max-w-2xl text-center">
               <span className="eyebrow">Loved by professionals</span>
@@ -208,7 +208,7 @@ export default function HomePage() {
 
         {/* CTA */}
         <section className="section container-page">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 px-8 py-16 text-center sm:px-16">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 px-8 py-16 text-center sm:px-16">
             <div className="absolute inset-0 bg-grid opacity-10" />
             <div className="relative mx-auto max-w-2xl">
               <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
@@ -219,7 +219,7 @@ export default function HomePage() {
                 profitable businesses with FitForge.
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Link href="/dashboard" className="btn bg-white px-7 py-3 text-base text-brand-700 hover:bg-brand-50">
+                <Link href="/dashboard" className="btn bg-ink-100 px-7 py-3 text-base text-brand-400 hover:bg-brand-500/15">
                   Start your free trial <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link href="/pricing" className="btn border border-white/30 px-7 py-3 text-base text-white hover:bg-white/10">
@@ -237,7 +237,7 @@ export default function HomePage() {
 
 function HeroMockup() {
   return (
-    <div className="relative rounded-2xl border border-ink-100 bg-white p-4 shadow-glow">
+    <div className="relative rounded-2xl border border-ink-100 bg-ink-100 p-4 shadow-glow">
       <div className="flex items-center gap-1.5 pb-3">
         <span className="h-3 w-3 rounded-full bg-rose-400" />
         <span className="h-3 w-3 rounded-full bg-amber-400" />
@@ -249,7 +249,7 @@ function HeroMockup() {
             <div className="text-xs font-medium text-ink-400">Active clients</div>
             <div className="text-2xl font-bold text-ink-900">42</div>
           </div>
-          <span className="badge bg-accent-100 text-accent-700">+8 this month</span>
+          <span className="badge bg-accent-500/20 text-accent-400">+8 this month</span>
         </div>
         <div className="mt-4 flex h-28 items-end gap-2">
           {[40, 65, 50, 80, 72, 95, 88].map((h, i) => (
@@ -273,9 +273,9 @@ function HeroMockup() {
 
 function PhoneMockup() {
   return (
-    <div className="mx-auto w-64 rounded-[2.5rem] border-8 border-ink-900 bg-ink-900 shadow-2xl">
-      <div className="h-6 rounded-t-[1.6rem] bg-ink-900" />
-      <div className="overflow-hidden rounded-b-[1.6rem] bg-white">
+    <div className="mx-auto w-64 rounded-[2.5rem] border-8 border-ink-900 bg-ink-50 shadow-2xl">
+      <div className="h-6 rounded-t-[1.6rem] bg-ink-50" />
+      <div className="overflow-hidden rounded-b-[1.6rem] bg-ink-100">
         <div className="bg-gradient-to-br from-brand-600 to-accent-500 p-5 text-white">
           <div className="text-xs opacity-80">Good morning</div>
           <div className="text-lg font-bold">Maya 👋</div>
@@ -288,7 +288,7 @@ function PhoneMockup() {
         <div className="space-y-3 p-4">
           {["Bench Press", "Overhead Press", "Tricep Pushdown"].map((e, i) => (
             <div key={e} className="flex items-center gap-3 rounded-xl border border-ink-100 p-2.5">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-xs font-bold text-brand-600">{i + 1}</span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-xs font-bold text-brand-400">{i + 1}</span>
               <div className="flex-1">
                 <div className="text-sm font-semibold text-ink-900">{e}</div>
                 <div className="text-xs text-ink-400">3 sets</div>

@@ -173,7 +173,7 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
       </Link>
 
       {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 to-ink-50 p-6 text-white shadow-glow">
         <span className="badge bg-white/15 text-white">{w.category}</span>
         <h1 className="mt-2 text-2xl font-bold">{w.name}</h1>
         <div className="mt-1 flex items-center gap-3 text-sm text-brand-100">
@@ -220,13 +220,13 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
                     </span>
                     <h2 className="font-semibold text-ink-900">{ex.name}</h2>
                   </div>
-                  <span className="badge mt-1.5 bg-brand-50 text-brand-700">
+                  <span className="badge mt-1.5 bg-brand-500/15 text-brand-400">
                     {ex.muscle}
                   </span>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
                   {exDone && (
-                    <span className="flex items-center gap-1 text-xs font-semibold text-accent-600">
+                    <span className="flex items-center gap-1 text-xs font-semibold text-accent-400">
                       <CheckCircle2 className="h-5 w-5" /> Done
                     </span>
                   )}
@@ -241,7 +241,7 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
                       })
                     }
                     aria-label={`Watch ${ex.name} demo`}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-400 hover:text-brand-700 active:scale-95"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-ink-100 px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-400 hover:text-brand-400 active:scale-95"
                   >
                     <Play className="h-3.5 w-3.5 fill-current" /> Watch demo
                   </button>
@@ -270,8 +270,8 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
                       className={cn(
                         "rounded-xl border p-3 text-sm transition",
                         checked
-                          ? "border-accent-200 bg-accent-50"
-                          : "border-ink-100 bg-white",
+                          ? "border-accent-200 bg-accent-500/15"
+                          : "border-ink-100 bg-ink-100",
                       )}
                     >
                       <div className="flex items-center gap-3">
@@ -347,9 +347,9 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
                         <div
                           className={cn(
                             "mt-2 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium",
-                            hint.tone === "up" && "bg-accent-50 text-accent-700",
-                            hint.tone === "hold" && "bg-brand-50 text-brand-700",
-                            hint.tone === "down" && "bg-amber-50 text-amber-700",
+                            hint.tone === "up" && "bg-accent-500/15 text-accent-400",
+                            hint.tone === "hold" && "bg-brand-500/15 text-brand-400",
+                            hint.tone === "down" && "bg-amber-500/15 text-amber-400",
                           )}
                         >
                           {hint.tone === "up" && <TrendingUp className="h-3.5 w-3.5" />}
@@ -370,7 +370,7 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
       {/* Finish summary */}
       {finished && (
         <section className="card border-accent-200 bg-accent-50/60 p-5">
-          <div className="flex items-center gap-2 text-accent-700">
+          <div className="flex items-center gap-2 text-accent-400">
             <PartyPopper className="h-5 w-5" />
             <h2 className="font-semibold">Workout complete!</h2>
           </div>
@@ -393,7 +393,7 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
         <div
           className={cn(
             "card flex items-center gap-4 p-4 shadow-lg backdrop-blur",
-            allDone ? "border-accent-200 bg-accent-50/90" : "bg-white/95",
+            allDone ? "border-accent-200 bg-accent-50/90" : "bg-ink-100/80",
           )}
         >
           <div className="min-w-0 flex-1">
@@ -455,7 +455,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function SummaryTile({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-white p-3 text-center shadow-soft">
+    <div className="rounded-xl bg-ink-100 p-3 text-center shadow-soft">
       <div className="text-lg font-bold text-ink-900">{value}</div>
       <div className="text-[11px] text-ink-400">{label}</div>
     </div>
@@ -498,9 +498,9 @@ function RestTimer({ seconds }: { seconds: number }) {
   return (
     <div className="mt-3">
       {running ? (
-        <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 px-3 py-2">
-          <Timer className="h-4 w-4 text-brand-600" />
-          <span className="font-mono text-base font-bold tabular-nums text-brand-700">
+        <div className="flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-500/15 px-3 py-2">
+          <Timer className="h-4 w-4 text-brand-400" />
+          <span className="font-mono text-base font-bold tabular-nums text-brand-400">
             {mm}:{ss}
           </span>
           <span className="text-xs text-brand-500">resting…</span>
@@ -508,7 +508,7 @@ function RestTimer({ seconds }: { seconds: number }) {
             type="button"
             onClick={stop}
             aria-label="Stop rest timer"
-            className="ml-auto flex h-7 w-7 items-center justify-center rounded-full border border-brand-200 text-brand-600 transition hover:bg-white active:scale-90"
+            className="ml-auto flex h-7 w-7 items-center justify-center rounded-full border border-brand-200 text-brand-400 transition hover:bg-ink-100 active:scale-90"
           >
             <X className="h-4 w-4" />
           </button>
@@ -517,7 +517,7 @@ function RestTimer({ seconds }: { seconds: number }) {
         <button
           type="button"
           onClick={start}
-          className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-400 hover:text-brand-700 active:scale-95"
+          className="inline-flex items-center gap-1.5 rounded-full border border-ink-200 bg-ink-100 px-3 py-1.5 text-xs font-semibold text-ink-700 transition hover:border-brand-400 hover:text-brand-400 active:scale-95"
         >
           <Timer className="h-3.5 w-3.5" /> Rest {seconds}s
         </button>

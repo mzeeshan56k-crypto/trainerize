@@ -14,10 +14,10 @@ import { cn } from "@/lib/utils";
 /* --------------------------- Suggestion config -------------------------- */
 
 const typeStyles: Record<AISuggestion["type"], string> = {
-  Program: "bg-brand-50 text-brand-700",
-  Nutrition: "bg-amber-50 text-amber-700",
-  Recovery: "bg-purple-50 text-purple-700",
-  Message: "bg-accent-50 text-accent-700",
+  Program: "bg-brand-500/15 text-brand-400",
+  Nutrition: "bg-amber-500/15 text-amber-400",
+  Recovery: "bg-purple-500/15 text-purple-400",
+  Message: "bg-accent-500/15 text-accent-400",
 };
 
 /* ------------------------------- Chat config ---------------------------- */
@@ -146,10 +146,10 @@ export default function AiCoachPage() {
       {/* Suggestions awaiting approval */}
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-brand-600" />
+          <ShieldCheck className="h-5 w-5 text-brand-400" />
           <h2 className="font-semibold text-ink-900">Suggestions awaiting approval</h2>
         </div>
-        <span className="badge bg-brand-50 text-brand-700">{pendingCount} pending</span>
+        <span className="badge bg-brand-500/15 text-brand-400">{pendingCount} pending</span>
       </div>
 
       {!app.hydrated ? (
@@ -158,7 +158,7 @@ export default function AiCoachPage() {
         </div>
       ) : suggestions.length === 0 ? (
         <div className="card flex flex-col items-center justify-center px-6 py-10 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+          <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/15 text-brand-400">
             <Sparkles className="h-6 w-6" />
           </span>
           <p className="mt-4 max-w-sm text-sm text-ink-500">
@@ -186,7 +186,7 @@ export default function AiCoachPage() {
                   <div className="flex items-center gap-2">
                     <span className={cn("badge", typeStyles[s.type])}>{s.type}</span>
                     {approved && (
-                      <span className="badge bg-accent-100 text-accent-700">
+                      <span className="badge bg-accent-500/20 text-accent-400">
                         <Check className="h-3 w-3" /> Approved
                       </span>
                     )}
@@ -207,7 +207,7 @@ export default function AiCoachPage() {
                 </p>
 
                 <div className="mt-3 rounded-xl border border-brand-100 bg-brand-50/60 p-3">
-                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-brand-700">
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-brand-400">
                     Drafted change
                   </div>
                   <p className="text-sm leading-relaxed text-ink-700">{s.draft}</p>
@@ -272,7 +272,7 @@ export default function AiCoachPage() {
 
       {/* AI chat */}
       <div className="mt-8 mb-3 flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-brand-600" />
+        <Sparkles className="h-5 w-5 text-brand-400" />
         <h2 className="font-semibold text-ink-900">Ask your co-pilot</h2>
       </div>
 
@@ -285,7 +285,7 @@ export default function AiCoachPage() {
               setInput(a.prompt);
               inputRef.current?.focus();
             }}
-            className="flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700"
+            className="flex items-center gap-2 rounded-full border border-ink-200 bg-ink-100 px-3.5 py-1.5 text-sm font-medium text-ink-700 transition hover:border-brand-200 hover:bg-brand-500/15 hover:text-brand-400"
           >
             <a.icon className="h-4 w-4" /> {a.label}
           </button>
@@ -299,7 +299,7 @@ export default function AiCoachPage() {
           </span>
           <div>
             <div className="text-sm font-semibold text-ink-900">AI Co-Pilot</div>
-            <div className="text-xs text-accent-600">Online · ready to help</div>
+            <div className="text-xs text-accent-400">Online · ready to help</div>
           </div>
         </div>
 

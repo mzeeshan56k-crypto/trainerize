@@ -37,11 +37,11 @@ const colorPresets: { label: string; value: string }[] = [
 function difficultyClasses(level: string) {
   switch (level) {
     case "Beginner":
-      return "bg-accent-50 text-accent-700";
+      return "bg-accent-500/15 text-accent-400";
     case "Intermediate":
-      return "bg-brand-50 text-brand-700";
+      return "bg-brand-500/15 text-brand-400";
     case "Advanced":
-      return "bg-rose-50 text-rose-600";
+      return "bg-rose-500/15 text-rose-400";
     default:
       return "bg-ink-100 text-ink-600";
   }
@@ -200,7 +200,7 @@ export default function TrainingPage() {
               className={cn(
                 "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-all",
                 active
-                  ? "bg-white text-ink-900 shadow-soft"
+                  ? "bg-ink-100 text-ink-900 shadow-soft"
                   : "text-ink-500 hover:text-ink-800",
               )}
             >
@@ -248,7 +248,7 @@ export default function TrainingPage() {
                       <button
                         onClick={() => app.removeProgram(p.id)}
                         aria-label={`Delete ${p.name}`}
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-50 hover:text-rose-600"
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-500/15 hover:text-rose-400"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -352,7 +352,7 @@ export default function TrainingPage() {
                       app.removeWorkout(selectedWorkout.id);
                       setSelectedId(null);
                     }}
-                    className="btn-secondary text-rose-600 hover:bg-rose-50"
+                    className="btn-secondary text-rose-400 hover:bg-rose-500/15"
                   >
                     <Trash2 className="h-4 w-4" />
                     Delete workout
@@ -364,7 +364,7 @@ export default function TrainingPage() {
                     <div key={`${ex.exerciseId}-${i}`} className="rounded-xl border border-ink-100">
                       <div className="flex items-center gap-3 border-b border-ink-100 p-3">
                         <GripVertical className="h-5 w-5 cursor-grab text-ink-300" />
-                        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-xs font-bold text-brand-700">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-xs font-bold text-brand-400">
                           {i + 1}
                         </span>
                         <div className="min-w-0 flex-1">
@@ -462,7 +462,7 @@ export default function TrainingPage() {
                       "rounded-full px-3.5 py-1.5 text-xs font-semibold transition",
                       active
                         ? "bg-brand-600 text-white"
-                        : "border border-ink-200 bg-white text-ink-600 hover:border-ink-300 hover:bg-ink-50",
+                        : "border border-ink-200 bg-ink-100 text-ink-600 hover:border-ink-300 hover:bg-ink-50",
                     )}
                   >
                     {t}
@@ -515,7 +515,7 @@ export default function TrainingPage() {
                       <button
                         onClick={() => app.removeExercise(ex.id)}
                         aria-label={`Remove ${ex.name}`}
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-50 hover:text-rose-600"
+                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-500/15 hover:text-rose-400"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

@@ -16,9 +16,9 @@ const typeMeta: Record<
   Lesson["type"],
   { icon: React.ComponentType<{ className?: string }>; badge: string }
 > = {
-  Video: { icon: Play, badge: "bg-brand-50 text-brand-700" },
-  Article: { icon: FileText, badge: "bg-purple-50 text-purple-700" },
-  Quiz: { icon: HelpCircle, badge: "bg-amber-50 text-amber-700" },
+  Video: { icon: Play, badge: "bg-brand-500/15 text-brand-400" },
+  Article: { icon: FileText, badge: "bg-purple-500/15 text-purple-400" },
+  Quiz: { icon: HelpCircle, badge: "bg-amber-500/15 text-amber-400" },
 };
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -83,7 +83,7 @@ export default function Page({ params }: { params: { id: string } }) {
           </div>
           <div className="mt-2 h-2.5 w-full rounded-full bg-white/20">
             <div
-              className="h-full rounded-full bg-white/90 transition-all duration-300"
+              className="h-full rounded-full bg-ink-100/80 transition-all duration-300"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -123,7 +123,7 @@ export default function Page({ params }: { params: { id: string } }) {
                       </div>
                     </div>
                     {isDone(selectedLesson.id) && (
-                      <span className="flex items-center gap-1 text-xs font-semibold text-accent-600">
+                      <span className="flex items-center gap-1 text-xs font-semibold text-accent-400">
                         <CheckCircle2 className="h-5 w-5" /> Completed
                       </span>
                     )}

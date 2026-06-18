@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/ui/Modal";
 
 const difficultyTint: Record<string, string> = {
-  Beginner: "bg-accent-50 text-accent-700",
-  Intermediate: "bg-brand-50 text-brand-700",
-  Advanced: "bg-rose-50 text-rose-600",
+  Beginner: "bg-accent-500/15 text-accent-400",
+  Intermediate: "bg-brand-500/15 text-brand-400",
+  Advanced: "bg-rose-500/15 text-rose-400",
 };
 
 export default function ClientWorkoutsPage() {
@@ -40,7 +40,7 @@ export default function ClientWorkoutsPage() {
   return (
     <div className="space-y-6">
       {/* Header / plan hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-brand-100">
           <CalendarDays className="h-4 w-4" /> Your training plan
         </div>

@@ -15,8 +15,8 @@ import { type ClientStatus } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 const statusBadge: Record<ClientStatus, string> = {
-  active: "bg-accent-50 text-accent-700",
-  pending: "bg-amber-50 text-amber-700",
+  active: "bg-accent-500/15 text-accent-400",
+  pending: "bg-amber-500/15 text-amber-400",
   inactive: "bg-ink-100 text-ink-600",
 };
 
@@ -161,7 +161,7 @@ export default function ClientsPage() {
                     "rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors",
                     status === f.value
                       ? "bg-brand-600 text-white shadow-glow"
-                      : "border border-ink-200 bg-white text-ink-600 hover:border-ink-300 hover:bg-ink-50",
+                      : "border border-ink-200 bg-ink-100 text-ink-600 hover:border-ink-300 hover:bg-ink-50",
                   )}
                 >
                   {f.label}

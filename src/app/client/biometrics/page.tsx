@@ -13,16 +13,16 @@ const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const intensityClass = [
   "bg-ink-100 text-ink-400",
-  "bg-brand-100 text-brand-600",
-  "bg-brand-200 text-brand-700",
+  "bg-brand-500/20 text-brand-400",
+  "bg-brand-200 text-brand-400",
   "bg-brand-400 text-white",
   "bg-gradient-to-br from-brand-600 to-accent-500 text-white",
 ];
 
 const statusBadge: Record<string, string> = {
-  optimal: "bg-accent-50 text-accent-700",
-  normal: "bg-brand-50 text-brand-700",
-  watch: "bg-amber-50 text-amber-700",
+  optimal: "bg-accent-500/15 text-accent-400",
+  normal: "bg-brand-500/15 text-brand-400",
+  watch: "bg-amber-500/15 text-amber-400",
 };
 
 export default function BiometricsPage() {
@@ -57,15 +57,15 @@ export default function BiometricsPage() {
 
   const readiness = 82;
   const readinessInputs = [
-    { icon: HeartPulse, label: "HRV", value: "68 ms", tint: "text-accent-600 bg-accent-50" },
-    { icon: Activity, label: "Resting HR", value: "54 bpm", tint: "text-brand-600 bg-brand-50" },
-    { icon: Zap, label: "Soreness", value: "Low", tint: "text-amber-600 bg-amber-50" },
+    { icon: HeartPulse, label: "HRV", value: "68 ms", tint: "text-accent-400 bg-accent-500/15" },
+    { icon: Activity, label: "Resting HR", value: "54 bpm", tint: "text-brand-400 bg-brand-500/15" },
+    { icon: Zap, label: "Soreness", value: "Low", tint: "text-amber-400 bg-amber-500/15" },
   ];
 
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <p className="text-sm text-brand-100">Your body, decoded</p>
         <h1 className="text-2xl font-bold">Progress &amp; Biometrics</h1>
         <p className="mt-1 text-sm text-brand-100">
@@ -86,7 +86,7 @@ export default function BiometricsPage() {
       {/* Sleep architecture */}
       <section className="card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
             <Moon className="h-4 w-4" />
           </span>
           <h2 className="font-semibold text-ink-900">Sleep architecture</h2>
@@ -114,7 +114,7 @@ export default function BiometricsPage() {
       {/* Muscle recovery / volume heatmap */}
       <section className="card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/15 text-accent-400">
             <Activity className="h-4 w-4" />
           </span>
           <h2 className="font-semibold text-ink-900">Muscle recovery &amp; volume</h2>
@@ -199,7 +199,7 @@ export default function BiometricsPage() {
             })}
           </div>
         </div>
-        <p className="mt-4 rounded-xl bg-accent-50 p-3 text-sm text-accent-700">
+        <p className="mt-4 rounded-xl bg-accent-500/15 p-3 text-sm text-accent-400">
           You&apos;re primed for a hard session today — push your top sets.
         </p>
       </section>
@@ -208,7 +208,7 @@ export default function BiometricsPage() {
       <section className="card p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/15 text-purple-400">
               <FlaskConical className="h-4 w-4" />
             </span>
             <h2 className="font-semibold text-ink-900">Lab portal — bloodwork</h2>
@@ -247,13 +247,13 @@ export default function BiometricsPage() {
       <section className="card p-5">
         <div className="mb-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-50 text-purple-600">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-500/15 text-purple-400">
               <FlaskConical className="h-4 w-4" />
             </span>
             <h3 className="text-sm font-semibold text-ink-900">Your lab reports</h3>
           </div>
           {labReportHydrated && labReport && (
-            <span className="badge bg-accent-50 text-accent-700">Attached</span>
+            <span className="badge bg-accent-500/15 text-accent-400">Attached</span>
           )}
         </div>
         <p className="mb-3 text-xs text-ink-400">

@@ -12,9 +12,9 @@ import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const macroConfig = [
-  { key: "protein" as const, label: "Protein", kcalPerG: 4, color: "bg-brand-500", text: "text-brand-700" },
-  { key: "carbs" as const, label: "Carbs", kcalPerG: 4, color: "bg-accent-500", text: "text-accent-700" },
-  { key: "fat" as const, label: "Fat", kcalPerG: 9, color: "bg-amber-500", text: "text-amber-700" },
+  { key: "protein" as const, label: "Protein", kcalPerG: 4, color: "bg-brand-500", text: "text-brand-400" },
+  { key: "carbs" as const, label: "Carbs", kcalPerG: 4, color: "bg-accent-500", text: "text-accent-400" },
+  { key: "fat" as const, label: "Fat", kcalPerG: 9, color: "bg-amber-500", text: "text-amber-400" },
 ];
 
 type MealRow = { name: string; kcal: string; items: string };
@@ -155,7 +155,7 @@ export default function NutritionPage() {
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="truncate text-sm font-semibold text-ink-900">{m.name}</span>
-                        <span className="badge bg-brand-50 text-brand-700">{m.tag}</span>
+                        <span className="badge bg-brand-500/15 text-brand-400">{m.tag}</span>
                       </div>
                       <div className="mt-1 flex items-center gap-1.5 text-xs text-ink-500">
                         <Flame className="h-3.5 w-3.5" />
@@ -168,7 +168,7 @@ export default function NutritionPage() {
                         if (selectedId === m.id) setSelectedId(null);
                       }}
                       aria-label={`Delete ${m.name}`}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-50 hover:text-rose-600"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-500/15 hover:text-rose-400"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -188,7 +188,7 @@ export default function NutritionPage() {
                     <h2 className="font-semibold text-ink-900">{selected.name}</h2>
                     <p className="text-sm text-ink-500">Macro breakdown · {selected.calories.toLocaleString()} kcal/day</p>
                   </div>
-                  <span className="badge bg-brand-50 text-brand-700">{selected.tag}</span>
+                  <span className="badge bg-brand-500/15 text-brand-400">{selected.tag}</span>
                 </div>
 
                 <div className="mt-5 space-y-4">
@@ -224,7 +224,7 @@ export default function NutritionPage() {
               {/* Meals */}
               <div className="card p-6">
                 <div className="flex items-center gap-2">
-                  <Utensils className="h-5 w-5 text-brand-600" />
+                  <Utensils className="h-5 w-5 text-brand-400" />
                   <h2 className="font-semibold text-ink-900">Meals</h2>
                   <span className="badge bg-ink-100 text-ink-600">{selected.meals.length}</span>
                 </div>
@@ -349,7 +349,7 @@ export default function NutritionPage() {
                         type="button"
                         onClick={() => setMealRows((rows) => rows.filter((_, idx) => idx !== i))}
                         aria-label="Remove meal row"
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-50 hover:text-rose-600"
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-400 hover:bg-rose-500/15 hover:text-rose-400"
                       >
                         <X className="h-4 w-4" />
                       </button>

@@ -24,7 +24,7 @@ export function AuthShell({
           <p className="mt-8 text-center text-sm text-ink-500">{footer}</p>
         </div>
       </div>
-      <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 lg:block">
+      <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 lg:block">
         <div className="absolute inset-0 bg-grid opacity-10" />
         <div className="relative flex h-full flex-col justify-center px-16 text-white">
           <blockquote className="text-2xl font-semibold leading-snug">

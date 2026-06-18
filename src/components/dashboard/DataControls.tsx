@@ -19,7 +19,7 @@ export function DataControls({ variant = "inline" }: { variant?: "inline" | "car
       <button
         onClick={() => setConfirm("reset")}
         disabled={!hasData && !seeded}
-        className="btn border border-rose-200 text-rose-600 hover:bg-rose-50"
+        className="btn border border-rose-200 text-rose-400 hover:bg-rose-500/15"
       >
         <Trash2 className="h-4 w-4" /> Clear all data
       </button>
@@ -31,7 +31,7 @@ export function DataControls({ variant = "inline" }: { variant?: "inline" | "car
       {variant === "card" ? (
         <div className="card p-5">
           <div className="flex items-center gap-2">
-            <Database className="h-5 w-5 text-brand-600" />
+            <Database className="h-5 w-5 text-brand-400" />
             <h3 className="font-semibold text-ink-900">Workspace data</h3>
           </div>
           <p className="mt-1 text-sm text-ink-500">

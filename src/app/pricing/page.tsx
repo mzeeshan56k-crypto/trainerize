@@ -42,7 +42,7 @@ export default function PricingPage() {
     <>
       <Navbar />
       <main>
-        <section className="bg-gradient-to-b from-brand-50/60 to-white">
+        <section className="bg-gradient-to-b from-ink-100 to-ink-50">
           <div className="container-page py-20 text-center">
             <span className="eyebrow"><Sparkles className="h-3.5 w-3.5" /> Simple pricing</span>
             <h1 className="mx-auto mt-5 max-w-2xl text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
@@ -97,7 +97,7 @@ export default function PricingPage() {
           <h2 className="text-center text-3xl font-bold tracking-tight text-ink-900">
             Frequently asked questions
           </h2>
-          <div className="mx-auto mt-10 max-w-3xl divide-y divide-ink-100 rounded-2xl border border-ink-100 bg-white">
+          <div className="mx-auto mt-10 max-w-3xl divide-y divide-ink-100 rounded-2xl border border-ink-100 bg-ink-100">
             {faqs.map(([q, a]) => (
               <div key={q} className="p-6">
                 <h3 className="font-semibold text-ink-900">{q}</h3>

@@ -26,7 +26,7 @@ export function Logo({
           dark ? "text-white" : "text-ink-900",
         )}
       >
-        Fit<span className="text-brand-600">Forge</span>
+        Fit<span className="text-brand-400">Forge</span>
       </span>
     </Link>
   );

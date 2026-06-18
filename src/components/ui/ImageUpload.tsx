@@ -74,16 +74,16 @@ export function ImageUpload({
         <div className={cn("group relative overflow-hidden rounded-2xl border border-ink-100", ratio)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={value} alt="upload" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-ink-900/40 opacity-0 transition group-hover:opacity-100">
+          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-ink-50/40 opacity-0 transition group-hover:opacity-100">
             <button
               onClick={() => inputRef.current?.click()}
-              className="btn bg-white/90 px-3 py-1.5 text-xs text-ink-800 hover:bg-white"
+              className="btn bg-ink-100/80 px-3 py-1.5 text-xs text-ink-800 hover:bg-ink-100"
             >
               Replace
             </button>
             <button
               onClick={() => onChange(undefined)}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-rose-600 hover:bg-white"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-ink-100/80 text-rose-400 hover:bg-ink-100"
             >
               <X className="h-4 w-4" />
             </button>
@@ -93,7 +93,7 @@ export function ImageUpload({
         <button
           onClick={() => inputRef.current?.click()}
           className={cn(
-            "flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink-200 bg-ink-50/50 text-ink-400 transition hover:border-brand-300 hover:bg-brand-50/40 hover:text-brand-600",
+            "flex w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-ink-200 bg-ink-50/50 text-ink-400 transition hover:border-brand-300 hover:bg-brand-50/40 hover:text-brand-400",
             ratio,
           )}
         >

@@ -61,7 +61,7 @@ export default function SecurityPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="card p-6">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-accent-600" />
+            <ShieldCheck className="h-5 w-5 text-accent-400" />
             <h2 className="font-semibold text-ink-900">Security controls</h2>
           </div>
           <p className="mt-1 text-sm text-ink-500">Toggle platform-wide protections</p>
@@ -86,7 +86,7 @@ export default function SecurityPage() {
                 >
                   <span
                     className={cn(
-                      "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
+                      "inline-block h-5 w-5 transform rounded-full bg-ink-100 shadow transition-transform",
                       c.on ? "translate-x-5" : "translate-x-0.5",
                     )}
                   />
@@ -100,14 +100,14 @@ export default function SecurityPage() {
           <h2 className="font-semibold text-ink-900">3-layer protection</h2>
           {layers.map((l) => (
             <div key={l.name} className="card flex items-center gap-4 p-5">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                 <l.icon className="h-5 w-5" />
               </span>
               <div className="flex-1">
                 <div className="font-semibold text-ink-900">{l.name}</div>
                 <div className="text-xs text-ink-500">{l.desc}</div>
               </div>
-              <span className="badge bg-accent-50 text-accent-700">{l.status}</span>
+              <span className="badge bg-accent-500/15 text-accent-400">{l.status}</span>
             </div>
           ))}
         </div>
@@ -115,7 +115,7 @@ export default function SecurityPage() {
 
       <div className="mt-6 card p-6">
         <div className="flex items-center gap-2">
-          <Filter className="h-5 w-5 text-brand-600" />
+          <Filter className="h-5 w-5 text-brand-400" />
           <h2 className="font-semibold text-ink-900">PII compliance filter</h2>
         </div>
         <p className="mt-1 text-sm text-ink-500">
@@ -124,12 +124,12 @@ export default function SecurityPage() {
         </p>
         <div className="mt-5 grid items-center gap-4 sm:grid-cols-[1fr_auto_1fr]">
           <div className="rounded-xl border border-rose-100 bg-rose-50/50 p-4">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-rose-600">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-rose-400">
               Raw record
             </div>
             <div className="flex flex-wrap gap-1.5">
               {rawFields.map((f) => (
-                <code key={f} className="rounded bg-white px-2 py-0.5 text-xs text-ink-700 ring-1 ring-rose-100">
+                <code key={f} className="rounded bg-ink-100 px-2 py-0.5 text-xs text-ink-700 ring-1 ring-rose-100">
                   {f}
                 </code>
               ))}
@@ -139,7 +139,7 @@ export default function SecurityPage() {
             <ArrowRight className="h-5 w-5 text-ink-400" />
           </div>
           <div className="rounded-xl border border-accent-100 bg-accent-50/50 p-4">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-accent-700">
+            <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-accent-400">
               Sent to AI
             </div>
             <div className="flex flex-wrap gap-1.5">
@@ -150,7 +150,7 @@ export default function SecurityPage() {
                     "rounded px-2 py-0.5 text-xs ring-1",
                     f === "[REDACTED]"
                       ? "bg-ink-100 text-ink-400 ring-ink-200"
-                      : "bg-white text-ink-700 ring-accent-100",
+                      : "bg-ink-100 text-ink-700 ring-accent-100",
                   )}
                 >
                   {f}

@@ -37,7 +37,7 @@ export default function ClientChallengesPage() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <div className="flex items-center gap-2 text-sm text-brand-100">
           <Trophy className="h-4 w-4" /> Challenges
         </div>
@@ -126,7 +126,7 @@ export default function ClientChallengesPage() {
       <section className="card p-5">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-semibold text-ink-900">Leaderboard</h2>
-          <span className="badge bg-brand-50 text-brand-700">This month</span>
+          <span className="badge bg-brand-500/15 text-brand-400">This month</span>
         </div>
         <div className="space-y-2">
           {leaderboard.map((row) => (
@@ -134,7 +134,7 @@ export default function ClientChallengesPage() {
               key={row.rank}
               className={
                 row.you
-                  ? "flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-50 p-3"
+                  ? "flex items-center gap-3 rounded-xl border border-brand-200 bg-brand-500/15 p-3"
                   : "flex items-center gap-3 rounded-xl border border-ink-100 p-3"
               }
             >
@@ -152,7 +152,7 @@ export default function ClientChallengesPage() {
                   )}
                 </div>
               </div>
-              <span className="flex items-center gap-1 text-sm font-bold text-brand-600">
+              <span className="flex items-center gap-1 text-sm font-bold text-brand-400">
                 <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                 {row.points.toLocaleString()}
               </span>

@@ -26,7 +26,7 @@ const nav = [
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-ink-100 bg-white">
+    <aside className="flex h-full w-64 flex-col border-r border-ink-100 bg-ink-100">
       <div className="flex h-16 items-center px-6">
         <Logo />
       </div>
@@ -44,7 +44,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
                 active
-                  ? "bg-brand-50 text-brand-700"
+                  ? "bg-brand-500/15 text-brand-400"
                   : "text-ink-600 hover:bg-ink-50 hover:text-ink-900",
               )}
             >
@@ -72,7 +72,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <div className="text-sm font-semibold">Pro plan</div>
           <div className="mt-1 text-xs text-brand-50">42 / 50 clients used</div>
           <div className="mt-2 h-1.5 w-full rounded-full bg-white/25">
-            <div className="h-full w-[84%] rounded-full bg-white" />
+            <div className="h-full w-[84%] rounded-full bg-ink-100" />
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ export default function SchedulePage() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <p className="text-sm text-brand-100">Plan your week</p>
         <h1 className="text-2xl font-bold">Scheduling &amp; Booking</h1>
         <p className="mt-1 text-sm text-brand-100">
@@ -54,7 +54,7 @@ export default function SchedulePage() {
       {/* My upcoming bookings */}
       <section className="card p-5">
         <div className="mb-4 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/15 text-accent-400">
             <CalendarCheck className="h-4 w-4" />
           </span>
           <h2 className="font-semibold text-ink-900">My upcoming bookings</h2>
@@ -70,7 +70,7 @@ export default function SchedulePage() {
                 key={s.id}
                 className="flex items-center gap-3 rounded-xl border border-accent-100 bg-accent-50/40 p-3"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-100 text-accent-700">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent-500/20 text-accent-400">
                   <Check className="h-5 w-5" />
                 </span>
                 <div className="flex-1">
@@ -81,7 +81,7 @@ export default function SchedulePage() {
                 </div>
                 <button
                   onClick={() => cancel(s.id)}
-                  className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50"
+                  className="flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-semibold text-rose-400 transition hover:bg-rose-500/15"
                 >
                   <X className="h-3.5 w-3.5" /> Cancel
                 </button>
@@ -103,7 +103,7 @@ export default function SchedulePage() {
                 key={s.id}
                 className="flex items-center gap-3 rounded-xl border border-ink-100 p-3"
               >
-                <span className="flex h-11 w-11 flex-col items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                <span className="flex h-11 w-11 flex-col items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
                   <Calendar className="h-4 w-4" />
                 </span>
                 <div className="flex-1">
@@ -113,7 +113,7 @@ export default function SchedulePage() {
                   </div>
                 </div>
                 {isBooked ? (
-                  <span className="badge bg-accent-50 text-accent-700">
+                  <span className="badge bg-accent-500/15 text-accent-400">
                     <Check className="h-3.5 w-3.5" /> Booked
                   </span>
                 ) : available ? (

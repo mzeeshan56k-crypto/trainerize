@@ -142,7 +142,7 @@ function SeededProgress() {
                 key={habit.id}
                 className="flex flex-wrap items-center gap-4 rounded-xl border border-ink-100 p-3"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                   <Icon className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">

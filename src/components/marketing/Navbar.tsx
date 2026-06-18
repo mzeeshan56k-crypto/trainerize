@@ -15,7 +15,7 @@ const links = [
 export function Navbar() {
   const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-50 border-b border-ink-100 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-ink-100 bg-ink-100/80 backdrop-blur-xl">
       <nav className="container-page flex h-16 items-center justify-between">
         <Logo />
         <div className="hidden items-center gap-8 md:flex">
@@ -42,7 +42,7 @@ export function Navbar() {
         </button>
       </nav>
       {open && (
-        <div className="border-t border-ink-100 bg-white px-5 py-4 md:hidden">
+        <div className="border-t border-ink-100 bg-ink-100 px-5 py-4 md:hidden">
           <div className="flex flex-col gap-3">
             {links.map((l) => (
               <Link

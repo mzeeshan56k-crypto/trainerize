@@ -46,7 +46,7 @@ export function ClientShell({
   return (
     <div className="min-h-screen bg-ink-50/40">
       {/* Top bar */}
-      <header className="sticky top-0 z-40 border-b border-ink-100 bg-white/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-ink-100 bg-ink-100/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4 sm:px-6">
           <Logo />
           <div className="flex items-center gap-3">
@@ -60,7 +60,7 @@ export function ClientShell({
       </header>
 
       {/* Desktop tab nav */}
-      <div className="sticky top-16 z-30 hidden border-b border-ink-100 bg-white/85 backdrop-blur-xl sm:block">
+      <div className="sticky top-16 z-30 hidden border-b border-ink-100 bg-ink-100/80 backdrop-blur-xl sm:block">
         <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-4 scroll-thin sm:px-6">
           {nav.map((item) => (
             <Link
@@ -69,7 +69,7 @@ export function ClientShell({
               className={cn(
                 "flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-medium transition whitespace-nowrap",
                 isActive(item.href)
-                  ? "border-brand-600 text-brand-700"
+                  ? "border-brand-600 text-brand-400"
                   : "border-transparent text-ink-500 hover:text-ink-900",
               )}
             >
@@ -86,7 +86,7 @@ export function ClientShell({
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-100 bg-white/95 backdrop-blur-xl sm:hidden">
+      <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-100 bg-ink-100/80 backdrop-blur-xl sm:hidden">
         <div className="flex items-center justify-around px-2 py-2">
           {primaryNav.map((item) => (
             <Link
@@ -94,11 +94,11 @@ export function ClientShell({
               href={item.href}
               className={cn(
                 "flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5 text-[11px] font-medium transition",
-                isActive(item.href) ? "text-brand-700" : "text-ink-400",
+                isActive(item.href) ? "text-brand-400" : "text-ink-400",
               )}
             >
               <item.icon
-                className={cn("h-5 w-5", isActive(item.href) && "text-brand-600")}
+                className={cn("h-5 w-5", isActive(item.href) && "text-brand-400")}
               />
               {item.label}
             </Link>

@@ -113,11 +113,11 @@ export default function CommunicationsPage() {
           <div className="mt-5 space-y-3">
             {channelStatus.map((c) => (
               <div key={c.name} className="flex items-center gap-3 rounded-xl border border-ink-100 p-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                   <c.icon className="h-5 w-5" />
                 </span>
                 <div className="flex-1 text-sm font-semibold text-ink-900">{c.name}</div>
-                <span className="badge bg-accent-50 text-accent-700">
+                <span className="badge bg-accent-500/15 text-accent-400">
                   <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> Active
                 </span>
               </div>
@@ -142,7 +142,7 @@ export default function CommunicationsPage() {
           <div className="mt-4 space-y-3">
             {app.broadcasts.map((b) => (
               <div key={b.id} className="flex items-center gap-4 rounded-xl border border-ink-100 p-4">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                   <Megaphone className="h-5 w-5" />
                 </span>
                 <div className="min-w-0 flex-1">

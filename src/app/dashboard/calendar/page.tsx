@@ -31,22 +31,22 @@ const TYPE_STYLES: Record<
   session: {
     label: "Session",
     dot: "bg-brand-500",
-    chip: "border-brand-200 bg-brand-50 text-brand-800",
+    chip: "border-brand-200 bg-brand-500/15 text-brand-800",
   },
   "check-in": {
     label: "Check-in",
     dot: "bg-accent-500",
-    chip: "border-accent-200 bg-accent-50 text-accent-800",
+    chip: "border-accent-200 bg-accent-500/15 text-accent-800",
   },
   consult: {
     label: "Consult",
     dot: "bg-amber-500",
-    chip: "border-amber-200 bg-amber-50 text-amber-800",
+    chip: "border-amber-200 bg-amber-500/15 text-amber-800",
   },
   class: {
     label: "Class",
     dot: "bg-purple-500",
-    chip: "border-purple-200 bg-purple-50 text-purple-800",
+    chip: "border-purple-200 bg-purple-500/15 text-purple-800",
   },
 };
 
@@ -104,7 +104,7 @@ export default function CalendarPage() {
         <button
           type="button"
           onClick={() => app.removeAppointment(appt.id)}
-          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-white text-ink-400 shadow-soft ring-1 ring-ink-100 opacity-0 transition hover:text-rose-600 group-hover/chip:opacity-100"
+          className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ink-100 text-ink-400 shadow-soft ring-1 ring-ink-100 opacity-0 transition hover:text-rose-400 group-hover/chip:opacity-100"
           aria-label="Delete event"
         >
           <X className="h-3 w-3" />
@@ -209,7 +209,7 @@ export default function CalendarPage() {
                       key={d}
                       className={cn(
                         "px-2 pb-2 text-center",
-                        i === TODAY_INDEX && "rounded-t-lg bg-brand-50",
+                        i === TODAY_INDEX && "rounded-t-lg bg-brand-500/15",
                       )}
                     >
                       <div className="text-xs font-medium text-ink-500">{d}</div>

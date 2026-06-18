@@ -18,8 +18,8 @@ import {
 import { cn } from "@/lib/utils";
 
 const statusBadge: Record<ClientStatus, string> = {
-  active: "bg-accent-50 text-accent-700",
-  pending: "bg-amber-50 text-amber-700",
+  active: "bg-accent-500/15 text-accent-400",
+  pending: "bg-amber-500/15 text-amber-400",
   inactive: "bg-ink-100 text-ink-600",
 };
 
@@ -181,7 +181,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
               {c.tags.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
                   {c.tags.map((t) => (
-                    <span key={t} className="badge bg-brand-50 text-brand-700">{t}</span>
+                    <span key={t} className="badge bg-brand-500/15 text-brand-400">{t}</span>
                   ))}
                 </div>
               )}
@@ -216,7 +216,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
             onClick={() => setTab(t)}
             className={cn(
               "relative px-4 py-2.5 text-sm font-medium transition-colors",
-              tab === t ? "text-brand-700" : "text-ink-500 hover:text-ink-900",
+              tab === t ? "text-brand-400" : "text-ink-500 hover:text-ink-900",
             )}
           >
             {t}
@@ -253,7 +253,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
 
               <div className="mt-6 rounded-xl border border-brand-100 bg-brand-50/50 p-4">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-brand-600" />
+                  <Sparkles className="h-5 w-5 text-brand-400" />
                   <h3 className="font-semibold text-ink-900">AI insights</h3>
                 </div>
                 <ul className="mt-3 space-y-2 text-sm text-ink-600">
@@ -287,7 +287,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
           <div className="space-y-6">
             <div className="card p-6">
               <div className="flex items-center gap-2">
-                <Dumbbell className="h-5 w-5 text-brand-600" />
+                <Dumbbell className="h-5 w-5 text-brand-400" />
                 <h2 className="font-semibold text-ink-900">Assigned program</h2>
               </div>
               <p className="mt-1 text-sm text-ink-500">{c.program}</p>
@@ -298,7 +298,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
                 <div key={w.id} className="card p-5">
                   <div className="flex items-start justify-between">
                     <h3 className="font-semibold text-ink-900">{w.name}</h3>
-                    <span className="badge bg-brand-50 text-brand-700">{w.category}</span>
+                    <span className="badge bg-brand-500/15 text-brand-400">{w.category}</span>
                   </div>
                   <div className="mt-4 space-y-2 text-sm text-ink-500">
                     <div className="flex items-center gap-2">
@@ -410,7 +410,7 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
           <>
             <button
               type="button"
-              className="btn-secondary text-rose-600 hover:bg-rose-50"
+              className="btn-secondary text-rose-400 hover:bg-rose-500/15"
               onClick={() => {
                 setEditOpen(false);
                 setConfirmOpen(true);
@@ -584,7 +584,7 @@ function StatTile({
 }) {
   return (
     <div className="card p-5">
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
         <Icon className="h-5 w-5" />
       </span>
       <div className="mt-4 text-2xl font-bold text-ink-900">{value}</div>

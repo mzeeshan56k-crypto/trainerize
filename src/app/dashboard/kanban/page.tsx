@@ -10,12 +10,12 @@ import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const tagStyles: Record<string, string> = {
-  New: "bg-brand-50 text-brand-700",
-  Task: "bg-brand-50 text-brand-700",
-  Program: "bg-purple-50 text-purple-700",
-  Video: "bg-accent-50 text-accent-700",
-  Nutrition: "bg-amber-50 text-amber-700",
-  Schedule: "bg-indigo-50 text-indigo-700",
+  New: "bg-brand-500/15 text-brand-400",
+  Task: "bg-brand-500/15 text-brand-400",
+  Program: "bg-purple-500/15 text-purple-400",
+  Video: "bg-accent-500/15 text-accent-400",
+  Nutrition: "bg-amber-500/15 text-amber-400",
+  Schedule: "bg-indigo-500/15 text-indigo-400",
   Review: "bg-ink-100 text-ink-700",
 };
 
@@ -63,7 +63,7 @@ export default function KanbanPage() {
             <div className="flex items-center justify-between px-4 py-3.5">
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold text-ink-900">{col.title}</h2>
-                <span className="badge bg-white text-ink-500 shadow-soft">{col.cards.length}</span>
+                <span className="badge bg-ink-100 text-ink-500 shadow-soft">{col.cards.length}</span>
               </div>
               <button
                 type="button"
@@ -71,7 +71,7 @@ export default function KanbanPage() {
                   setAdding(adding === col.id ? null : col.id);
                   setDraft("");
                 }}
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-400 transition hover:bg-white hover:text-brand-600"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-400 transition hover:bg-ink-100 hover:text-brand-400"
                 aria-label="Add card"
               >
                 <Plus className="h-4 w-4" />
@@ -80,7 +80,7 @@ export default function KanbanPage() {
 
             <div className="scroll-thin flex-1 space-y-3 overflow-y-auto px-3 pb-3">
               {adding === col.id && (
-                <div className="rounded-xl border border-brand-200 bg-white p-3 shadow-soft">
+                <div className="rounded-xl border border-brand-200 bg-ink-100 p-3 shadow-soft">
                   <input
                     autoFocus
                     value={draft}
@@ -114,7 +114,7 @@ export default function KanbanPage() {
                 return (
                   <div
                     key={card.id}
-                    className="group rounded-xl border border-ink-100 bg-white p-3.5 shadow-soft transition hover:border-brand-200 hover:shadow-lg"
+                    className="group rounded-xl border border-ink-100 bg-ink-100 p-3.5 shadow-soft transition hover:border-brand-200 hover:shadow-lg"
                   >
                     <div className="flex items-start gap-2">
                       <GripVertical className="mt-0.5 h-4 w-4 shrink-0 text-ink-300" />
@@ -122,7 +122,7 @@ export default function KanbanPage() {
                       <button
                         type="button"
                         onClick={() => app.removeCard(card.id)}
-                        className="shrink-0 rounded-md p-1 text-ink-300 opacity-0 transition hover:bg-rose-50 hover:text-rose-600 group-hover:opacity-100"
+                        className="shrink-0 rounded-md p-1 text-ink-300 opacity-0 transition hover:bg-rose-500/15 hover:text-rose-400 group-hover:opacity-100"
                         aria-label="Delete card"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
@@ -170,7 +170,7 @@ export default function KanbanPage() {
                     setAdding(col.id);
                     setDraft("");
                   }}
-                  className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-ink-200 py-6 text-xs font-medium text-ink-400 transition hover:border-brand-300 hover:text-brand-600"
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-ink-200 py-6 text-xs font-medium text-ink-400 transition hover:border-brand-300 hover:text-brand-400"
                 >
                   <Plus className="h-3.5 w-3.5" /> Add card
                 </button>

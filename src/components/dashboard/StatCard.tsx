@@ -17,14 +17,14 @@ export function StatCard({
   return (
     <div className="card p-5">
       <div className="flex items-center justify-between">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
           <Icon className="h-5 w-5" />
         </span>
         {delta && (
           <span
             className={cn(
               "badge",
-              positive ? "bg-accent-50 text-accent-700" : "bg-rose-50 text-rose-600",
+              positive ? "bg-accent-500/15 text-accent-400" : "bg-rose-500/15 text-rose-400",
             )}
           >
             {positive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}

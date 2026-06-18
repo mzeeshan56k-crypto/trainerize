@@ -31,11 +31,11 @@ export function VideoModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-ink-950/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-ink-950 shadow-2xl"
+        className="relative w-full max-w-3xl overflow-hidden rounded-2xl bg-black shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-4 py-3">

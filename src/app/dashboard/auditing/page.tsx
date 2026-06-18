@@ -175,7 +175,7 @@ export default function AuditingPage() {
                 "rounded-full px-4 py-1.5 text-sm font-semibold transition",
                 active
                   ? "bg-brand-600 text-white shadow-glow"
-                  : "border border-ink-200 bg-white text-ink-700 hover:bg-ink-50",
+                  : "border border-ink-200 bg-ink-100 text-ink-700 hover:bg-ink-50",
               )}
             >
               {f.label}
@@ -245,7 +245,7 @@ export default function AuditingPage() {
 
               {open && (
                 <div className="border-t border-brand-100 bg-brand-50/50 px-5 py-4">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-700">
+                  <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-brand-400">
                     <FileText className="h-3.5 w-3.5" /> Auto-generated progress review
                   </div>
                   <p className="text-sm leading-relaxed text-ink-700">{reviews[d.client.id]}</p>

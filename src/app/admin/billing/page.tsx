@@ -91,17 +91,17 @@ export default function BillingPage() {
           <p className="text-sm text-ink-500">Payment processing and payout schedule</p>
           <div className="mt-5 space-y-3">
             <div className="flex items-center gap-3 rounded-xl border border-ink-100 p-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/15 text-indigo-400">
                 <CreditCard className="h-5 w-5" />
               </span>
               <div className="flex-1">
                 <div className="font-semibold text-ink-900">Stripe</div>
                 <div className="text-xs text-ink-500">Connected · acct_FFKC_live</div>
               </div>
-              <span className="badge bg-accent-50 text-accent-700">Connected</span>
+              <span className="badge bg-accent-500/15 text-accent-400">Connected</span>
             </div>
             <div className="flex items-center gap-3 rounded-xl border border-ink-100 p-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                 <Wallet className="h-5 w-5" />
               </span>
               <div className="flex-1">
@@ -111,14 +111,14 @@ export default function BillingPage() {
               <span className="badge bg-ink-100 text-ink-700">Rolling</span>
             </div>
             <div className="flex items-center gap-3 rounded-xl border border-ink-100 p-4">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/15 text-amber-400">
                 <CalendarClock className="h-5 w-5" />
               </span>
               <div className="flex-1">
                 <div className="font-semibold text-ink-900">Next payout</div>
                 <div className="text-xs text-ink-500">Jun 19, 2026 · {formatCurrency(Math.round(totalRevenue / 15))}</div>
               </div>
-              <span className="badge bg-amber-50 text-amber-700">Pending</span>
+              <span className="badge bg-amber-500/15 text-amber-400">Pending</span>
             </div>
           </div>
         </div>

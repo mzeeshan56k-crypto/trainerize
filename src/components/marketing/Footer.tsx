@@ -57,7 +57,7 @@ export function Footer() {
                 <a
                   key={s}
                   href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-200 text-ink-500 transition hover:border-brand-300 hover:text-brand-600"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-ink-200 text-ink-500 transition hover:border-brand-300 hover:text-brand-400"
                   aria-label={s}
                 >
                   <span className="text-xs font-semibold capitalize">
@@ -77,7 +77,7 @@ export function Footer() {
                   <li key={label}>
                     <Link
                       href={href}
-                      className="text-sm text-ink-500 transition hover:text-brand-600"
+                      className="text-sm text-ink-500 transition hover:text-brand-400"
                     >
                       {label}
                     </Link>

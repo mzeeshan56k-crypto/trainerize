@@ -46,7 +46,7 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
     >
       <span
         className={cn(
-          "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
+          "inline-block h-5 w-5 transform rounded-full bg-ink-100 shadow transition-transform",
           on ? "translate-x-5" : "translate-x-0.5",
         )}
       />
@@ -57,7 +57,7 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
 function SavedPill({ show }: { show: boolean }) {
   if (!show) return null;
   return (
-    <span className="flex items-center gap-1 text-sm font-medium text-accent-600">
+    <span className="flex items-center gap-1 text-sm font-medium text-accent-400">
       <Check className="h-4 w-4" /> Saved
     </span>
   );
@@ -140,7 +140,7 @@ export default function SettingsPage() {
               className={cn(
                 "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
                 tab === t.id
-                  ? "bg-brand-50 text-brand-700"
+                  ? "bg-brand-500/15 text-brand-400"
                   : "text-ink-600 hover:bg-ink-50 hover:text-ink-900",
               )}
             >
@@ -264,7 +264,7 @@ export default function SettingsPage() {
 
               <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-brand-100 bg-brand-50/50 p-5">
                 <div>
-                  <span className="badge bg-brand-100 text-brand-700">Current plan</span>
+                  <span className="badge bg-brand-500/20 text-brand-400">Current plan</span>
                   <div className="mt-2 text-lg font-bold text-ink-900">Pro · $49/mo</div>
                   <p className="text-sm text-ink-500">Renews on July 17, 2026</p>
                 </div>
@@ -287,7 +287,7 @@ export default function SettingsPage() {
               <div className="mt-6">
                 <label className="label">Payment method</label>
                 <div className="flex items-center gap-4 rounded-xl border border-ink-100 p-4">
-                  <span className="flex h-10 w-14 items-center justify-center rounded-lg bg-ink-900 text-xs font-bold text-white">
+                  <span className="flex h-10 w-14 items-center justify-center rounded-lg bg-ink-50 text-xs font-bold text-white">
                     VISA
                   </span>
                   <div className="flex-1">

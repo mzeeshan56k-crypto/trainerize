@@ -10,8 +10,8 @@ import { useLocalState } from "@/lib/useLocalState";
 import { dripCampaigns, integrations as seedIntegrations, type DripCampaign } from "@/lib/platform";
 
 const statusBadge: Record<string, string> = {
-  active: "bg-accent-50 text-accent-700",
-  paused: "bg-amber-50 text-amber-700",
+  active: "bg-accent-500/15 text-accent-400",
+  paused: "bg-amber-500/15 text-amber-400",
   draft: "bg-ink-100 text-ink-600",
 };
 
@@ -103,15 +103,15 @@ export default function AutomationPage() {
                   onClick={() => toggleStatus(d.id)}
                   className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
                     d.status === "active"
-                      ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
-                      : "bg-accent-50 text-accent-700 hover:bg-accent-100"
+                      ? "bg-amber-500/15 text-amber-400 hover:bg-amber-500/20"
+                      : "bg-accent-500/15 text-accent-400 hover:bg-accent-500/20"
                   }`}
                 >
                   {d.status === "active" ? <><Pause className="h-3.5 w-3.5" /> Pause</> : <><Play className="h-3.5 w-3.5" /> Activate</>}
                 </button>
                 <button
                   onClick={() => removeCampaign(d.id)}
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-ink-400 hover:bg-rose-50 hover:text-rose-600"
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-ink-400 hover:bg-rose-500/15 hover:text-rose-400"
                   aria-label="Delete campaign"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default function AutomationPage() {
                   <div key={i} className="flex items-center gap-3">
                     <div className="min-w-[180px] rounded-xl border border-ink-100 bg-ink-50/50 p-3">
                       <div className="flex items-center justify-between">
-                        <span className="badge bg-brand-50 text-brand-700">Day {s.day}</span>
+                        <span className="badge bg-brand-500/15 text-brand-400">Day {s.day}</span>
                         <Icon className="h-4 w-4 text-ink-400" />
                       </div>
                       <div className="mt-2 text-sm font-semibold text-ink-900">{s.title}</div>
@@ -172,7 +172,7 @@ export default function AutomationPage() {
                 {i.status === "connected" ? (
                   <button
                     onClick={() => toggleConnect(i.id)}
-                    className="flex w-full items-center justify-center gap-1.5 rounded-full bg-accent-50 px-3 py-2 text-sm font-semibold text-accent-700 transition hover:bg-accent-100"
+                    className="flex w-full items-center justify-center gap-1.5 rounded-full bg-accent-500/15 px-3 py-2 text-sm font-semibold text-accent-400 transition hover:bg-accent-500/20"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> Connected · Disconnect
                   </button>

@@ -84,7 +84,7 @@ export default function LibraryPage() {
       <section className="card p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
               <Dumbbell className="h-5 w-5" />
             </span>
             <div>
@@ -121,7 +121,7 @@ export default function LibraryPage() {
 
       <section className="mt-6">
         <div className="mb-4 flex items-center gap-2">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-500/15 text-accent-400">
             <GraduationCap className="h-5 w-5" />
           </span>
           <div>
@@ -144,7 +144,7 @@ export default function LibraryPage() {
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-3">
                       <h3 className="font-semibold text-ink-900">{c.title}</h3>
-                      <span className={`badge shrink-0 ${isPub ? "bg-accent-50 text-accent-700" : "bg-brand-50 text-brand-700"}`}>
+                      <span className={`badge shrink-0 ${isPub ? "bg-accent-500/15 text-accent-400" : "bg-brand-500/15 text-brand-400"}`}>
                         {isPub ? "Published" : c.category}
                       </span>
                     </div>
@@ -164,7 +164,7 @@ export default function LibraryPage() {
                       </button>
                       <button
                         onClick={() => removeCourse(c.id)}
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink-400 hover:bg-rose-50 hover:text-rose-600"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-ink-400 hover:bg-rose-500/15 hover:text-rose-400"
                         aria-label="Delete course"
                       >
                         <Trash2 className="h-4 w-4" />

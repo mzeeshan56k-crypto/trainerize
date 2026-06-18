@@ -25,7 +25,7 @@ const nav = [
 function Nav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <aside className="flex h-full w-64 flex-col border-r border-ink-100 bg-ink-950 text-white">
+    <aside className="flex h-full w-64 flex-col border-r border-ink-100 bg-black text-white">
       <div className="flex h-16 items-center gap-2 px-6">
         <Logo dark />
         <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-200">
@@ -45,7 +45,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               className={cn(
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
-                active ? "bg-brand-600 text-white" : "text-ink-300 hover:bg-white/5 hover:text-white",
+                active ? "bg-brand-600 text-white" : "text-ink-500 hover:bg-white/5 hover:text-white",
               )}
             >
               <item.icon className="h-5 w-5" />
@@ -55,7 +55,7 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
         })}
       </nav>
       <div className="border-t border-white/10 p-4">
-        <div className="rounded-xl bg-white/5 p-3 text-xs text-ink-300">
+        <div className="rounded-xl bg-white/5 p-3 text-xs text-ink-500">
           <div className="font-semibold text-white">Platform status</div>
           <div className="mt-2 flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-accent-400" /> All systems operational
@@ -75,10 +75,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-ink-900/50" onClick={() => setOpen(false)} />
+          <div className="absolute inset-0 bg-ink-50/50" onClick={() => setOpen(false)} />
           <div className="absolute left-0 top-0 h-full">
             <button
-              className="absolute -right-12 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white text-ink-700"
+              className="absolute -right-12 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-ink-100 text-ink-700"
               onClick={() => setOpen(false)}
             >
               <X className="h-5 w-5" />
@@ -88,7 +88,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </div>
       )}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-ink-100 bg-white/85 px-4 backdrop-blur-xl sm:px-6">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-ink-100 bg-ink-100/80 px-4 backdrop-blur-xl sm:px-6">
           <button className="lg:hidden" onClick={() => setOpen(true)}>
             <Menu className="h-6 w-6 text-ink-700" />
           </button>
@@ -96,14 +96,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
             <input
               placeholder="Search trainers, users, logs…"
-              className="w-full rounded-full border border-ink-200 bg-ink-50 py-2 pl-9 pr-4 text-sm focus:border-brand-300 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-100"
+              className="w-full rounded-full border border-ink-200 bg-ink-50 py-2 pl-9 pr-4 text-sm focus:border-brand-300 focus:bg-ink-100 focus:outline-none focus:ring-4 focus:ring-brand-100"
             />
           </div>
           <div className="ml-auto flex items-center gap-3">
             <PortalSwitcher />
             <button className="relative flex h-10 w-10 items-center justify-center rounded-full text-ink-600 hover:bg-ink-100">
               <Bell className="h-5 w-5" />
-              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-white" />
+              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-rose-500 ring-2 ring-ink-100" />
             </button>
             <Avatar initials="DR" size="sm" />
           </div>

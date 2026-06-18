@@ -35,7 +35,7 @@ export default function ResourcesPage() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <p className="text-sm text-brand-100">Learn, submit, celebrate</p>
         <h1 className="text-2xl font-bold">Resource Library</h1>
         <p className="mt-1 text-sm text-brand-100">
@@ -83,7 +83,7 @@ export default function ResourcesPage() {
                   <span>{c.progress}% complete</span>
                   <Link
                     href={`/client/resources/${c.id}`}
-                    className="font-semibold text-brand-600 hover:text-brand-700"
+                    className="font-semibold text-brand-400 hover:text-brand-400"
                   >
                     {c.progress === 100 ? "Review" : "Continue"}
                   </Link>
@@ -97,7 +97,7 @@ export default function ResourcesPage() {
       {/* Media vault */}
       <section className="card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
             <Video className="h-4 w-4" />
           </span>
           <h2 className="font-semibold text-ink-900">Media vault — form checks</h2>
@@ -119,7 +119,7 @@ export default function ResourcesPage() {
           onClick={() => fileInputRef.current?.click()}
           className="flex w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-ink-200 bg-ink-50/50 p-5 text-center transition hover:border-brand-300 hover:bg-brand-50/40"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500/20 text-brand-400">
             <Upload className="h-5 w-5" />
           </span>
           <span className="text-sm font-semibold text-ink-800">Upload form check video</span>
@@ -142,7 +142,7 @@ export default function ResourcesPage() {
                 </div>
                 <span
                   className={`badge ${
-                    m.status === "Reviewed" ? "bg-accent-50 text-accent-700" : "bg-amber-50 text-amber-700"
+                    m.status === "Reviewed" ? "bg-accent-500/15 text-accent-400" : "bg-amber-500/15 text-amber-400"
                   }`}
                 >
                   {m.status}
@@ -155,7 +155,7 @@ export default function ResourcesPage() {
       {/* Share your milestone */}
       <section className="card p-5">
         <div className="mb-1 flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/15 text-accent-400">
             <Share2 className="h-4 w-4" />
           </span>
           <h2 className="font-semibold text-ink-900">Share your milestone</h2>
@@ -163,7 +163,7 @@ export default function ResourcesPage() {
         <p className="mb-4 text-sm text-ink-500">Celebrate the wins with your community.</p>
 
         {/* Milestone preview */}
-        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-center text-white shadow-glow">
+        <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-center text-white shadow-glow">
           <div className="text-4xl">🔥</div>
           <div className="mt-2 text-xl font-bold">30-day streak</div>
           <div className="text-sm text-brand-100">A full month of showing up. Keep it rolling!</div>
@@ -174,7 +174,7 @@ export default function ResourcesPage() {
           <ShareButton
             icon={Instagram}
             label="Instagram"
-            tint="text-pink-600 bg-pink-50 hover:bg-pink-100"
+            tint="text-pink-400 bg-pink-500/15 hover:bg-pink-500/20"
             onClick={() => share("Instagram")}
           />
           <ShareButton
@@ -186,13 +186,13 @@ export default function ResourcesPage() {
           <ShareButton
             icon={Facebook}
             label="Facebook"
-            tint="text-blue-600 bg-blue-50 hover:bg-blue-100"
+            tint="text-blue-600 bg-blue-500/15 hover:bg-blue-100"
             onClick={() => share("Facebook")}
           />
         </div>
 
         {shared && (
-          <div className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-accent-50 p-3 text-sm font-semibold text-accent-700">
+          <div className="mt-4 flex items-center justify-center gap-2 rounded-xl bg-accent-500/15 p-3 text-sm font-semibold text-accent-400">
             <Check className="h-4 w-4" /> Shared to {shared}! ✅
           </div>
         )}

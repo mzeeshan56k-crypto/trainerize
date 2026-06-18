@@ -70,7 +70,7 @@ export default function ClientCheckinPage() {
   return (
     <div className="space-y-6">
       {/* Hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-accent-500 via-brand-600 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-accent-500 via-brand-600 to-ink-50 p-6 text-white shadow-glow">
         <div className="flex items-center gap-2 text-sm text-brand-100">
           <ClipboardCheck className="h-4 w-4" /> Weekly check-in
         </div>
@@ -85,7 +85,7 @@ export default function ClientCheckinPage() {
       {submitted ? (
         /* Success confirmation */
         <section className="card p-6 text-center">
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-50 text-accent-600">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-accent-500/15 text-accent-400">
             <CheckCircle2 className="h-7 w-7" />
           </span>
           <h2 className="mt-4 text-lg font-bold text-ink-900">
@@ -144,7 +144,7 @@ export default function ClientCheckinPage() {
                         className={
                           selected
                             ? "flex h-12 items-center justify-center rounded-xl bg-brand-600 text-base font-bold text-white shadow-glow transition active:scale-95"
-                            : "flex h-12 items-center justify-center rounded-xl border border-ink-200 bg-white text-base font-bold text-ink-600 transition hover:border-brand-300 hover:bg-brand-50 active:scale-95"
+                            : "flex h-12 items-center justify-center rounded-xl border border-ink-200 bg-ink-100 text-base font-bold text-ink-600 transition hover:border-brand-300 hover:bg-brand-500/15 active:scale-95"
                         }
                       >
                         {n}
@@ -168,7 +168,7 @@ export default function ClientCheckinPage() {
           ))}
 
           {error && (
-            <p className="rounded-xl bg-rose-50 px-4 py-2.5 text-sm font-medium text-rose-600">
+            <p className="rounded-xl bg-rose-500/15 px-4 py-2.5 text-sm font-medium text-rose-400">
               {error}
             </p>
           )}
@@ -186,7 +186,7 @@ export default function ClientCheckinPage() {
           <div className="space-y-3">
             {history.map((h) => (
               <div key={h.id} className="card flex items-center gap-4 p-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500/15 text-brand-400">
                   <CalendarDays className="h-5 w-5" />
                 </span>
                 <div className="flex-1 min-w-0">
@@ -205,7 +205,7 @@ export default function ClientCheckinPage() {
                     )}
                   </div>
                 </div>
-                <span className="badge bg-accent-50 text-accent-700">
+                <span className="badge bg-accent-500/15 text-accent-400">
                   <CheckCircle2 className="h-3 w-3" /> Submitted
                 </span>
               </div>

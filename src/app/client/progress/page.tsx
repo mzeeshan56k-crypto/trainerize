@@ -113,7 +113,7 @@ export default function ClientProgressPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <p className="text-sm text-brand-100">Your journey</p>
         <h1 className="text-2xl font-bold">Progress</h1>
         <p className="mt-1 text-sm text-brand-100">
@@ -123,10 +123,10 @@ export default function ClientProgressPage() {
 
       {/* Quick stat tiles */}
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatTile icon={Scale} label="Current" value={`${c.currentWeight} lb`} tint="text-brand-600 bg-brand-50" />
-        <StatTile icon={TrendingDown} label="Change" value={`${lost >= 0 ? "-" : "+"}${Math.abs(lost)} lb`} tint="text-accent-600 bg-accent-50" />
-        <StatTile icon={Target} label="To goal" value={`${toGoal} lb`} tint="text-amber-600 bg-amber-50" />
-        <StatTile icon={Flame} label="Streak" value="23 days" tint="text-orange-500 bg-orange-50" />
+        <StatTile icon={Scale} label="Current" value={`${c.currentWeight} lb`} tint="text-brand-400 bg-brand-500/15" />
+        <StatTile icon={TrendingDown} label="Change" value={`${lost >= 0 ? "-" : "+"}${Math.abs(lost)} lb`} tint="text-accent-400 bg-accent-500/15" />
+        <StatTile icon={Target} label="To goal" value={`${toGoal} lb`} tint="text-amber-400 bg-amber-500/15" />
+        <StatTile icon={Flame} label="Streak" value="23 days" tint="text-orange-500 bg-orange-500/15" />
       </section>
 
       {/* Log weight */}
@@ -215,7 +215,7 @@ export default function ClientProgressPage() {
                     <div
                       className={cn(
                         "mt-1 flex items-center gap-0.5 text-xs font-medium",
-                        down ? "text-accent-600" : "text-amber-600"
+                        down ? "text-accent-400" : "text-amber-400"
                       )}
                     >
                       {down ? (
@@ -265,7 +265,7 @@ export default function ClientProgressPage() {
                     type="button"
                     onClick={() => removePhoto(p.id)}
                     title="Remove photo"
-                    className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-rose-600 shadow-soft transition hover:bg-white"
+                    className="absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-ink-100/80 text-rose-400 shadow-soft transition hover:bg-ink-100"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -300,7 +300,7 @@ export default function ClientProgressPage() {
             return (
               <span
                 key={a.label}
-                className="badge border border-amber-100 bg-amber-50 text-amber-700"
+                className="badge border border-amber-100 bg-amber-500/15 text-amber-400"
               >
                 <Icon className="h-3.5 w-3.5" />
                 {a.label}

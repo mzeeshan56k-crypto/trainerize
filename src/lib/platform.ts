@@ -467,7 +467,7 @@ export const auditLog = [
 ];
 
 export const lightStyles: Record<Light, { dot: string; badge: string; label: string }> = {
-  green: { dot: "bg-accent-500", badge: "bg-accent-50 text-accent-700", label: "On track" },
-  yellow: { dot: "bg-amber-500", badge: "bg-amber-50 text-amber-700", label: "Watch" },
-  red: { dot: "bg-rose-500", badge: "bg-rose-50 text-rose-600", label: "At risk" },
+  green: { dot: "bg-accent-500", badge: "bg-accent-500/15 text-accent-400", label: "On track" },
+  yellow: { dot: "bg-amber-500", badge: "bg-amber-500/15 text-amber-400", label: "Watch" },
+  red: { dot: "bg-rose-500", badge: "bg-rose-500/15 text-rose-400", label: "At risk" },
 };

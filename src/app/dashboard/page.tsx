@@ -48,7 +48,7 @@ export default function DashboardPage() {
         <div className="card p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-ink-900">Today&apos;s schedule</h2>
-            <Link href="/dashboard/calendar" className="text-sm font-medium text-brand-600 hover:text-brand-700">
+            <Link href="/dashboard/calendar" className="text-sm font-medium text-brand-400 hover:text-brand-400">
               View all
             </Link>
           </div>
@@ -57,7 +57,7 @@ export default function DashboardPage() {
               const c = getClient(a.clientId);
               return (
                 <div key={a.id} className="flex items-center gap-3 rounded-xl border border-ink-100 p-3">
-                  <div className="flex h-11 w-11 flex-col items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                  <div className="flex h-11 w-11 flex-col items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
                     <Calendar className="h-4 w-4" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -107,7 +107,7 @@ export default function DashboardPage() {
                   <div className="truncate text-sm font-semibold text-ink-900">{c.name}</div>
                   <div className="text-xs text-ink-500">{c.adherence}% adherence · {c.lastActive}</div>
                 </div>
-                <span className="badge bg-amber-50 text-amber-700">At risk</span>
+                <span className="badge bg-amber-500/15 text-amber-400">At risk</span>
               </Link>
             ))}
           </div>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
       <div className="mt-6 card p-6">
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-ink-900">Recent client progress</h2>
-          <Link href="/dashboard/clients" className="flex items-center gap-1 text-sm font-medium text-brand-600 hover:text-brand-700">
+          <Link href="/dashboard/clients" className="flex items-center gap-1 text-sm font-medium text-brand-400 hover:text-brand-400">
             All clients <ArrowRight className="h-4 w-4" />
           </Link>
         </div>

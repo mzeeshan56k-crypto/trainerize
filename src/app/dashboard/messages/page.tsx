@@ -168,7 +168,7 @@ export default function MessagesPage() {
                           className={cn(
                             "max-w-[78%] rounded-2xl px-4 py-2.5 text-sm shadow-sm",
                             m.fromClient
-                              ? "rounded-bl-sm bg-white text-ink-900 ring-1 ring-ink-100"
+                              ? "rounded-bl-sm bg-ink-100 text-ink-900 ring-1 ring-ink-100"
                               : "rounded-br-sm bg-brand-600 text-white",
                           )}
                         >

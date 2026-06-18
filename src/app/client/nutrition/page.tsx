@@ -207,21 +207,21 @@ export default function ClientNutritionPage() {
                 consumed={consumed.protein}
                 target={plan.protein}
                 barClass="bg-brand-500"
-                tintClass="text-brand-600"
+                tintClass="text-brand-400"
               />
               <MacroBar
                 label="Carbs"
                 consumed={consumed.carbs}
                 target={plan.carbs}
                 barClass="bg-accent-500"
-                tintClass="text-accent-600"
+                tintClass="text-accent-400"
               />
               <MacroBar
                 label="Fat"
                 consumed={consumed.fat}
                 target={plan.fat}
                 barClass="bg-amber-500"
-                tintClass="text-amber-600"
+                tintClass="text-amber-400"
               />
             </div>
             <div className="mt-5 flex items-center justify-between rounded-xl bg-ink-50 p-4">
@@ -257,8 +257,8 @@ export default function ClientNutritionPage() {
             className={cn(
               "flex flex-col items-center gap-1 rounded-2xl border p-4 text-sm font-semibold transition active:scale-95",
               scanner === "barcode"
-                ? "border-brand-400 bg-brand-50 text-brand-700"
-                : "border-ink-200 bg-white text-ink-700 hover:border-brand-300",
+                ? "border-brand-400 bg-brand-500/15 text-brand-400"
+                : "border-ink-200 bg-ink-100 text-ink-700 hover:border-brand-300",
             )}
           >
             <ScanLine className="h-6 w-6" /> Scan barcode
@@ -269,8 +269,8 @@ export default function ClientNutritionPage() {
             className={cn(
               "flex flex-col items-center gap-1 rounded-2xl border p-4 text-sm font-semibold transition active:scale-95",
               scanner === "photo"
-                ? "border-accent-400 bg-accent-50 text-accent-700"
-                : "border-ink-200 bg-white text-ink-700 hover:border-accent-300",
+                ? "border-accent-400 bg-accent-500/15 text-accent-400"
+                : "border-ink-200 bg-ink-100 text-ink-700 hover:border-accent-300",
             )}
           >
             <Camera className="h-6 w-6" /> Photo log
@@ -296,7 +296,7 @@ export default function ClientNutritionPage() {
                 type="button"
                 onClick={() => setScanner(null)}
                 aria-label="Close scanner"
-                className="flex h-7 w-7 items-center justify-center rounded-full text-ink-400 transition hover:bg-white hover:text-ink-700"
+                className="flex h-7 w-7 items-center justify-center rounded-full text-ink-400 transition hover:bg-ink-100 hover:text-ink-700"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -308,12 +308,12 @@ export default function ClientNutritionPage() {
                   key={f.name}
                   type="button"
                   onClick={() => addFood(f.name, f.kcal)}
-                  className="flex w-full items-center justify-between rounded-xl border border-ink-100 bg-white px-3 py-2.5 text-left text-sm transition hover:border-brand-300 active:scale-[0.99]"
+                  className="flex w-full items-center justify-between rounded-xl border border-ink-100 bg-ink-100 px-3 py-2.5 text-left text-sm transition hover:border-brand-300 active:scale-[0.99]"
                 >
                   <span className="font-medium text-ink-800">{f.name}</span>
                   <span className="flex items-center gap-2 text-xs text-ink-500">
                     {f.kcal} kcal
-                    <Plus className="h-4 w-4 text-brand-600" />
+                    <Plus className="h-4 w-4 text-brand-400" />
                   </span>
                 </button>
               ))}
@@ -331,9 +331,9 @@ export default function ClientNutritionPage() {
               {foodLog.map((f) => (
                 <div
                   key={f.id}
-                  className="flex items-center gap-3 rounded-xl border border-ink-100 bg-white px-3 py-2.5"
+                  className="flex items-center gap-3 rounded-xl border border-ink-100 bg-ink-100 px-3 py-2.5"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-50 text-accent-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent-500/15 text-accent-400">
                     <Utensils className="h-4 w-4" />
                   </span>
                   <span className="flex-1 text-sm font-medium text-ink-800">{f.name}</span>
@@ -342,7 +342,7 @@ export default function ClientNutritionPage() {
                     type="button"
                     onClick={() => removeFood(f.id)}
                     aria-label={`Remove ${f.name}`}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-ink-300 transition hover:bg-rose-50 hover:text-rose-500"
+                    className="flex h-7 w-7 items-center justify-center rounded-full text-ink-300 transition hover:bg-rose-500/15 hover:text-rose-500"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -371,12 +371,12 @@ export default function ClientNutritionPage() {
                 className={cn(
                   "rounded-2xl border p-4 transition",
                   isLogged
-                    ? "border-accent-200 bg-accent-50"
-                    : "border-ink-100 bg-white"
+                    ? "border-accent-200 bg-accent-500/15"
+                    : "border-ink-100 bg-ink-100"
                 )}
               >
                 <div className="flex items-start gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
                     <Utensils className="h-4 w-4" />
                   </span>
                   <div className="flex-1">
@@ -419,7 +419,7 @@ export default function ClientNutritionPage() {
       {/* AI meal plan generator */}
       <section className="card p-5">
         <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
             <Sparkles className="h-4 w-4" />
           </span>
           <div>
@@ -469,7 +469,7 @@ export default function ClientNutritionPage() {
                     "rounded-full border px-3 py-1.5 text-xs font-semibold transition active:scale-95",
                     pref === p
                       ? "border-brand-500 bg-brand-600 text-white shadow-glow"
-                      : "border-ink-200 bg-white text-ink-700 hover:border-brand-300",
+                      : "border-ink-200 bg-ink-100 text-ink-700 hover:border-brand-300",
                   )}
                 >
                   {p}
@@ -498,7 +498,7 @@ export default function ClientNutritionPage() {
               {aiPlan.meals.map((m) => (
                 <div
                   key={m.name}
-                  className="rounded-xl border border-ink-100 bg-white p-3"
+                  className="rounded-xl border border-ink-100 bg-ink-100 p-3"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-ink-900">{m.name}</span>

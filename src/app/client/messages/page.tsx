@@ -119,7 +119,7 @@ export default function ClientMessagesPage() {
         {/* Composer */}
         <form
           onSubmit={handleSubmit}
-          className="flex items-center gap-2 border-t border-ink-100 bg-white p-3"
+          className="flex items-center gap-2 border-t border-ink-100 bg-ink-100 p-3"
         >
           <input
             type="text"

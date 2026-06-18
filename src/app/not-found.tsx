@@ -3,7 +3,7 @@ import { Logo } from "@/components/ui/Logo";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-brand-50/60 to-white px-6 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-ink-100 to-ink-50 px-6 text-center">
       <Logo />
       <h1 className="mt-10 text-7xl font-extrabold tracking-tight text-ink-900">404</h1>
       <p className="mt-3 max-w-sm text-ink-500">

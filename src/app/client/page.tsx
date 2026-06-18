@@ -62,7 +62,7 @@ export default function ClientTodayPage() {
       )}
 
       {/* Greeting + workout hero */}
-      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-900 p-6 text-white shadow-glow">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-ink-50 p-6 text-white shadow-glow">
         <p className="text-sm text-brand-100">Good morning</p>
         <h1 className="text-2xl font-bold">{c.name.split(" ")[0]} 👋</h1>
 
@@ -106,24 +106,24 @@ export default function ClientTodayPage() {
       {/* Quick actions */}
       <section className="grid grid-cols-3 gap-3">
         <Link href="/client/checkin" className="card flex flex-col items-center gap-1.5 p-4 text-center transition hover:border-brand-200 hover:shadow-soft">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><ClipboardCheck className="h-4 w-4" /></span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400"><ClipboardCheck className="h-4 w-4" /></span>
           <span className="text-xs font-medium text-ink-700">Check-in</span>
         </Link>
         <Link href="/client/challenges" className="card flex flex-col items-center gap-1.5 p-4 text-center transition hover:border-brand-200 hover:shadow-soft">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600"><Trophy className="h-4 w-4" /></span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400"><Trophy className="h-4 w-4" /></span>
           <span className="text-xs font-medium text-ink-700">Challenges</span>
         </Link>
         <Link href="/client/resources" className="card flex flex-col items-center gap-1.5 p-4 text-center transition hover:border-brand-200 hover:shadow-soft">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-50 text-accent-600"><GraduationCap className="h-4 w-4" /></span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent-500/15 text-accent-400"><GraduationCap className="h-4 w-4" /></span>
           <span className="text-xs font-medium text-ink-700">Learn</span>
         </Link>
       </section>
 
       {/* Quick stats */}
       <section className="grid grid-cols-3 gap-3">
-        <StatTile icon={Flame} label="Streak" value="23 days" tint="text-orange-500 bg-orange-50" />
-        <StatTile icon={TrendingDown} label="Weight lost" value={`${lost} lb`} tint="text-accent-600 bg-accent-50" />
-        <StatTile icon={Target} label="To goal" value={`${toGoal} lb`} tint="text-brand-600 bg-brand-50" />
+        <StatTile icon={Flame} label="Streak" value="23 days" tint="text-orange-500 bg-orange-500/15" />
+        <StatTile icon={TrendingDown} label="Weight lost" value={`${lost} lb`} tint="text-accent-400 bg-accent-500/15" />
+        <StatTile icon={Target} label="To goal" value={`${toGoal} lb`} tint="text-brand-400 bg-brand-500/15" />
       </section>
 
       {/* Goal progress */}
@@ -133,7 +133,7 @@ export default function ClientTodayPage() {
             <h2 className="font-semibold text-ink-900">{c.goal}</h2>
             <p className="text-sm text-ink-500">{c.program}</p>
           </div>
-          <span className="text-2xl font-bold text-brand-600">{c.progress}%</span>
+          <span className="text-2xl font-bold text-brand-400">{c.progress}%</span>
         </div>
         <div className="mt-4 h-2.5 w-full rounded-full bg-ink-100">
           <div
@@ -160,7 +160,7 @@ export default function ClientTodayPage() {
                 key={h.id}
                 className="flex items-center gap-3 rounded-xl border border-ink-100 p-3"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500/15 text-brand-400">
                   <Icon className="h-4 w-4" />
                 </span>
                 <div className="flex-1">
@@ -184,7 +184,7 @@ export default function ClientTodayPage() {
         if (!nextSession) return null;
         return (
           <section className="card flex items-center gap-4 p-5">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent-500/15 text-accent-400">
               <Calendar className="h-6 w-6" />
             </span>
             <div className="flex-1">

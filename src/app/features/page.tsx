@@ -55,7 +55,7 @@ export default function FeaturesPage() {
     <>
       <Navbar />
       <main>
-        <section className="bg-gradient-to-b from-brand-50/60 to-white">
+        <section className="bg-gradient-to-b from-ink-100 to-ink-50">
           <div className="container-page py-20 text-center">
             <span className="eyebrow"><Sparkles className="h-3.5 w-3.5" /> Platform features</span>
             <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
@@ -80,7 +80,7 @@ export default function FeaturesPage() {
               <div className="mt-8 grid gap-6 sm:grid-cols-2">
                 {g.items.map(([title, desc, Icon]: any) => (
                   <div key={title} className="card flex gap-4 p-6">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-50 text-accent-600">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent-500/15 text-accent-400">
                       <Icon className="h-5 w-5" />
                     </span>
                     <div>
@@ -95,10 +95,10 @@ export default function FeaturesPage() {
         ))}
 
         <section className="section container-page">
-          <div className="rounded-3xl bg-gradient-to-br from-brand-600 to-ink-900 px-8 py-14 text-center">
+          <div className="rounded-3xl bg-gradient-to-br from-brand-600 to-ink-50 px-8 py-14 text-center">
             <h2 className="text-3xl font-extrabold text-white">See it in action</h2>
             <p className="mt-3 text-brand-100">Explore the full coaching dashboard — no signup needed.</p>
-            <Link href="/dashboard" className="btn mt-7 bg-white px-7 py-3 text-base text-brand-700 hover:bg-brand-50">
+            <Link href="/dashboard" className="btn mt-7 bg-ink-100 px-7 py-3 text-base text-brand-400 hover:bg-brand-500/15">
               Open the dashboard <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

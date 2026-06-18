@@ -19,7 +19,7 @@ export function Avatar({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full font-semibold text-white ring-2 ring-white",
+        "flex shrink-0 items-center justify-center rounded-full font-semibold text-white ring-2 ring-ink-100",
         sizes[size],
         color,
         className,

@@ -17,10 +17,10 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
       {/* Mobile sidebar */}
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-ink-900/40" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-0 bg-ink-50/40" onClick={() => setMobileOpen(false)} />
           <div className="absolute left-0 top-0 h-full">
             <button
-              className="absolute -right-12 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white text-ink-700"
+              className="absolute -right-12 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-ink-100 text-ink-700"
               onClick={() => setMobileOpen(false)}
               aria-label="Close menu"
             >
