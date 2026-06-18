@@ -83,6 +83,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
 function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
   const w = workout;
+  const { exercises: exerciseLibrary } = useApp();
 
   // Build a stable default log map seeded from the prescribed sets.
   const defaultLog = useMemo<LogMap>(() => {
@@ -233,7 +234,9 @@ function WorkoutPlayer({ workout }: { workout: import("@/lib/data").Workout }) {
                     type="button"
                     onClick={() =>
                       setVideo({
-                        src: sampleVideo(ex.exerciseId || ex.name),
+                        src:
+                          exerciseLibrary.find((e) => e.id === ex.exerciseId)?.video ||
+                          sampleVideo(ex.exerciseId || ex.name),
                         title: ex.name,
                       })
                     }

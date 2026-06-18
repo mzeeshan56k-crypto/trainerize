@@ -30,6 +30,7 @@ export interface Exercise {
   level: "Beginner" | "Intermediate" | "Advanced";
   type: "Strength" | "Cardio" | "Mobility" | "Core";
   videoThumb: string;
+  video?: string;
 }
 
 export interface WorkoutSet {

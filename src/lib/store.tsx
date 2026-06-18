@@ -206,6 +206,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       id: uid("e"), name: e.name ?? "New Exercise", muscle: e.muscle ?? "Full body",
       equipment: e.equipment ?? "Bodyweight", level: e.level ?? "Beginner",
       type: e.type ?? "Strength", videoThumb: e.videoThumb ?? "demo",
+      video: e.video,
     };
     setDb((d) => ({ ...d, exercises: [ex, ...d.exercises] }));
     return ex;

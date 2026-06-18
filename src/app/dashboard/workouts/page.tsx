@@ -79,6 +79,7 @@ export default function TrainingPage() {
   const [eEquipment, setEEquipment] = useState("");
   const [eLevel, setELevel] = useState<(typeof levels)[number]>("Beginner");
   const [eType, setEType] = useState<(typeof types)[number]>("Strength");
+  const [eVideo, setEVideo] = useState("");
 
   // Add-exercise-to-workout control
   const [addExId, setAddExId] = useState("");
@@ -147,12 +148,14 @@ export default function TrainingPage() {
       equipment: eEquipment.trim() || "Bodyweight",
       level: eLevel,
       type: eType,
+      video: eVideo.trim() || undefined,
     });
     setEName("");
     setEMuscle("");
     setEEquipment("");
     setELevel("Beginner");
     setEType("Strength");
+    setEVideo("");
     setExerciseModal(false);
   }
 
@@ -495,7 +498,7 @@ export default function TrainingPage() {
                 <div key={ex.id} className="card overflow-hidden">
                   <button
                     type="button"
-                    onClick={() => setVideo({ src: sampleVideo(ex.id), title: ex.name })}
+                    onClick={() => setVideo({ src: ex.video || sampleVideo(ex.id), title: ex.name })}
                     aria-label={`Play ${ex.name} demo`}
                     className="group/play relative flex h-32 w-full items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700"
                   >
@@ -729,6 +732,17 @@ export default function TrainingPage() {
               </select>
             </Field>
           </div>
+          <Field label="Demo video URL (optional)">
+            <input
+              className="input"
+              value={eVideo}
+              onChange={(e) => setEVideo(e.target.value)}
+              placeholder="YouTube, Vimeo or .mp4 link"
+            />
+            <p className="mt-1 text-xs text-ink-400">
+              Paste a YouTube/Vimeo link or a direct video URL. Leave blank to use a sample demo.
+            </p>
+          </Field>
         </div>
       </Modal>
 

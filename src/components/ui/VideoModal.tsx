@@ -27,6 +27,8 @@ export function VideoModal({
 
   if (!open) return null;
 
+  const embed = toEmbedUrl(src);
+
   return (
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-ink-950/80 p-4 backdrop-blur-sm"
@@ -46,16 +48,50 @@ export function VideoModal({
             <X className="h-5 w-5" />
           </button>
         </div>
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
-        <video
-          key={src}
-          src={src}
-          controls
-          autoPlay
-          playsInline
-          className="aspect-video w-full bg-black"
-        />
+        {embed ? (
+          <iframe
+            key={embed}
+            src={embed}
+            title={title ?? "Video"}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="aspect-video w-full bg-black"
+          />
+        ) : (
+          // eslint-disable-next-line jsx-a11y/media-has-caption
+          <video
+            key={src}
+            src={src}
+            controls
+            autoPlay
+            playsInline
+            className="aspect-video w-full bg-black"
+          />
+        )}
       </div>
     </div>
   );
+}
+
+/** Converts a YouTube/Vimeo watch URL into an embeddable URL; returns null for direct video files. */
+function toEmbedUrl(url: string): string | null {
+  if (!url) return null;
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    if (host === "youtu.be") {
+      return `https://www.youtube.com/embed/${u.pathname.slice(1)}?autoplay=1`;
+    }
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const id = u.searchParams.get("v") ?? u.pathname.split("/").pop();
+      if (id) return `https://www.youtube.com/embed/${id}?autoplay=1`;
+    }
+    if (host === "vimeo.com") {
+      const id = u.pathname.split("/").filter(Boolean).pop();
+      if (id) return `https://player.vimeo.com/video/${id}?autoplay=1`;
+    }
+  } catch {
+    /* not a URL we can embed */
+  }
+  return null;
 }

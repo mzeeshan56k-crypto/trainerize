@@ -1,15 +1,43 @@
-import { Check, CreditCard, Wallet, CalendarClock } from "lucide-react";
+"use client";
+
+import { useState } from "react";
+import { Check, CreditCard, Wallet, CalendarClock, Pencil } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-import { billingTiers } from "@/lib/platform";
+import { Modal, Field } from "@/components/ui/Modal";
+import { useLocalState } from "@/lib/useLocalState";
+import { billingTiers as seedTiers, type BillingTier } from "@/lib/platform";
 import { formatCurrency } from "@/lib/utils";
 
 export default function BillingPage() {
-  const tierRevenue = billingTiers.map((t) => ({
-    ...t,
-    revenue: t.price * t.subscribers,
-  }));
+  const [tiers, setTiers, hydrated] = useLocalState<BillingTier[]>("ffkc-tiers", seedTiers);
+
+  const [editing, setEditing] = useState<BillingTier | null>(null);
+  const [price, setPrice] = useState("");
+  const [subs, setSubs] = useState("");
+
+  function openEdit(t: BillingTier) {
+    setEditing(t);
+    setPrice(String(t.price));
+    setSubs(String(t.subscribers));
+  }
+  function save() {
+    if (!editing) return;
+    setTiers((prev) => prev.map((t) =>
+      t.name === editing.name ? { ...t, price: Number(price) || 0, subscribers: Number(subs) || 0 } : t));
+    setEditing(null);
+  }
+
+  if (!hydrated) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+      </div>
+    );
+  }
+
+  const tierRevenue = tiers.map((t) => ({ ...t, revenue: t.price * t.subscribers }));
   const totalRevenue = tierRevenue.reduce((s, t) => s + t.revenue, 0);
-  const maxRevenue = Math.max(...tierRevenue.map((t) => t.revenue));
+  const maxRevenue = Math.max(1, ...tierRevenue.map((t) => t.revenue));
 
   return (
     <>
@@ -21,15 +49,20 @@ export default function BillingPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {tierRevenue.map((t) => (
           <div key={t.name} className="card overflow-hidden">
-            <div className={`bg-gradient-to-br ${t.color} p-6 text-white`}>
+            <div className={`relative bg-gradient-to-br ${t.color} p-6 text-white`}>
+              <button
+                onClick={() => openEdit(t)}
+                className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white transition hover:bg-white/30"
+                aria-label={`Edit ${t.name}`}
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
               <div className="text-sm font-medium uppercase tracking-wide text-white/80">{t.name}</div>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-4xl font-bold">{formatCurrency(t.price)}</span>
                 <span className="text-sm text-white/80">/mo</span>
               </div>
-              <div className="mt-3 text-sm text-white/80">
-                {t.subscribers.toLocaleString()} subscribers
-              </div>
+              <div className="mt-3 text-sm text-white/80">{t.subscribers.toLocaleString()} subscribers</div>
             </div>
             <div className="p-6">
               <div className="rounded-xl bg-ink-50 p-4">
@@ -44,6 +77,9 @@ export default function BillingPage() {
                   </li>
                 ))}
               </ul>
+              <button className="btn-secondary mt-4 w-full" onClick={() => openEdit(t)}>
+                <Pencil className="h-4 w-4" /> Edit plan
+              </button>
             </div>
           </div>
         ))}
@@ -80,7 +116,7 @@ export default function BillingPage() {
               </span>
               <div className="flex-1">
                 <div className="font-semibold text-ink-900">Next payout</div>
-                <div className="text-xs text-ink-500">Jun 19, 2026 · {formatCurrency(186420)}</div>
+                <div className="text-xs text-ink-500">Jun 19, 2026 · {formatCurrency(Math.round(totalRevenue / 15))}</div>
               </div>
               <span className="badge bg-amber-50 text-amber-700">Pending</span>
             </div>
@@ -107,13 +143,34 @@ export default function BillingPage() {
                   />
                 </div>
                 <div className="mt-1 text-xs text-ink-400">
-                  {Math.round((t.revenue / totalRevenue) * 100)}% of total
+                  {totalRevenue ? Math.round((t.revenue / totalRevenue) * 100) : 0}% of total
                 </div>
               </div>
             ))}
           </div>
         </div>
       </div>
+
+      <Modal
+        open={!!editing}
+        onClose={() => setEditing(null)}
+        title={editing ? `Edit ${editing.name} plan` : ""}
+        footer={
+          <>
+            <button className="btn-secondary" onClick={() => setEditing(null)}>Cancel</button>
+            <button className="btn-primary" onClick={save}>Save plan</button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Field label="Monthly price ($)">
+            <input className="input" type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </Field>
+          <Field label="Subscribers">
+            <input className="input" type="number" value={subs} onChange={(e) => setSubs(e.target.value)} />
+          </Field>
+        </div>
+      </Modal>
     </>
   );
 }
