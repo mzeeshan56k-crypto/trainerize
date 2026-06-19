@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Apple, Flame, CheckCircle2, Circle, Droplet, Plus, Minus, Utensils,
@@ -105,6 +105,21 @@ function buildPlan(goal: Goal, target: number, pref: Pref): GenPlan {
   return { goal, target, pref, meals };
 }
 
+// Map a client's free-text goal onto the generator's Goal enum.
+function goalFromClient(goal: string): Goal {
+  const g = goal.toLowerCase();
+  if (g.includes("lose") || g.includes("fat") || g.includes("cut") || g.includes("weight loss")) return "cut";
+  if (g.includes("muscle") || g.includes("build") || g.includes("bulk") || g.includes("strength") || g.includes("1rm") || g.includes("gain")) return "bulk";
+  return "maintain";
+}
+
+// Estimate a baseline daily calorie target from bodyweight + goal.
+function baselineCalories(weight: number, goal: Goal): number {
+  const w = weight > 0 ? weight : 165; // sensible default if unknown
+  const mult = goal === "cut" ? 11 : goal === "bulk" ? 16 : 14;
+  return Math.round((w * mult) / 50) * 50; // round to nearest 50
+}
+
 // Faux scanner preset foods.
 const SCAN_FOODS = [
   { name: "Protein bar", kcal: 210 },
@@ -137,6 +152,18 @@ export default function ClientNutritionPage() {
   const [goal, setGoal] = useState<Goal>("cut");
   const [calTarget, setCalTarget] = useState<number>(1850);
   const [pref, setPref] = useState<Pref>("High-protein");
+
+  // Seed the AI generator from the current client's data, and re-seed when the
+  // client or their goal changes. The user can still override the inputs after.
+  const clientGoal = client?.goal;
+  const clientWeight = client?.currentWeight ?? 0;
+  useEffect(() => {
+    if (!client) return;
+    const g = goalFromClient(client.goal);
+    setGoal(g);
+    setCalTarget(baselineCalories(client.currentWeight ?? 0, g));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [client?.id, clientGoal, clientWeight]);
 
   // Quick-log scanner panel
   const [scanner, setScanner] = useState<null | "barcode" | "photo">(null);
@@ -552,6 +579,17 @@ export default function ClientNutritionPage() {
             <p className="text-xs text-ink-400">Build a tailored day of meals instantly</p>
           </div>
         </div>
+
+        {client && (
+          <p className="mt-4 flex items-start gap-2 rounded-xl border border-brand-500/30 bg-brand-500/10 p-3 text-xs text-ink-600">
+            <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" />
+            <span>
+              Baseline from {client.name}&apos;s data:{" "}
+              {clientWeight > 0 ? `${clientWeight} lb` : "weight not set"} · goal {client.goal}.
+              Adjust any field below to override.
+            </span>
+          </p>
+        )}
 
         <div className="mt-4 space-y-4">
           <div className="grid grid-cols-2 gap-3">

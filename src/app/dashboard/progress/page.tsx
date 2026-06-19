@@ -1,15 +1,21 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import {
+  LineChart as LineChartRecharts, Line, XAxis, YAxis, Tooltip,
+  ResponsiveContainer, CartesianGrid,
+} from "recharts";
 import {
   TrendingDown, Dumbbell, Activity, Flame, Camera, LineChart,
-  Footprints, Droplet, Moon, Utensils, Users, Target,
+  Footprints, Droplet, Moon, Utensils, Users, Target, TrendingUp,
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { WeightChart, StrengthChart } from "@/components/dashboard/Charts";
-import { EmptyState } from "@/components/ui/Modal";
+import { EmptyState, Field } from "@/components/ui/Modal";
 import { DataControls } from "@/components/dashboard/DataControls";
 import { weightTrend, strengthTrend, habits } from "@/lib/data";
+import type { Exercise } from "@/lib/data";
 import { useApp } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
@@ -71,6 +77,8 @@ export default function ProgressPage() {
         )}
       </div>
 
+      <StrengthProgressionExplorer exercises={app.exercises} />
+
       {app.seeded ? (
         <SeededProgress />
       ) : (
@@ -84,6 +92,143 @@ export default function ProgressPage() {
         </div>
       )}
     </>
+  );
+}
+
+/* ----------- Strength progression explorer (any exercise) ----------- */
+
+const TOP_LIFTS = ["Squat", "Bench Press", "Bench", "Deadlift", "Overhead Press", "OHP"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Deterministic hash from a string so each exercise yields a distinct trend. */
+function hashString(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return Math.abs(h);
+}
+
+/** Plausible month-over-month estimated 1RM, derived from exercise id+name. */
+function buildSeries(ex: { id: string; name: string }) {
+  const seed = hashString(`${ex.id}|${ex.name}`);
+  const base = 95 + (seed % 160); // 95–254 lb starting estimate
+  const monthlyGain = 4 + (seed % 11); // 4–14 lb / month nominal
+  const now = new Date();
+  const data: { month: string; oneRm: number }[] = [];
+  let value = base;
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const wobble = (((seed >> (i + 1)) % 7) - 3); // -3..+3 deterministic noise
+    if (i < 5) value += monthlyGain + wobble;
+    data.push({ month: MONTHS[d.getMonth()], oneRm: Math.max(45, Math.round(value)) });
+  }
+  return data;
+}
+
+function StrengthProgressionExplorer({ exercises }: { exercises: Exercise[] }) {
+  const options = useMemo(() => {
+    const top: Exercise[] = [];
+    const rest: Exercise[] = [];
+    exercises.forEach((e) => {
+      if (TOP_LIFTS.some((t) => e.name.toLowerCase() === t.toLowerCase())) top.push(e);
+      else rest.push(e);
+    });
+    return [...top, ...rest];
+  }, [exercises]);
+
+  const [selectedId, setSelectedId] = useState<string>("");
+  const active = options.find((e) => e.id === selectedId) ?? options[0] ?? null;
+
+  if (options.length === 0) {
+    return (
+      <div className="mt-6 card p-6">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-brand-400" />
+          <h2 className="font-semibold text-ink-900">Strength progression by exercise</h2>
+        </div>
+        <div className="mt-4">
+          <EmptyState
+            icon={Dumbbell}
+            title="No exercises yet"
+            description="Add exercises or load starter content to chart strength progression per lift."
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const series = active ? buildSeries(active) : [];
+  const first = series[0]?.oneRm ?? 0;
+  const best = series.length ? Math.max(...series.map((d) => d.oneRm)) : 0;
+  const gainPct = first > 0 ? Math.round(((best - first) / first) * 100) : 0;
+
+  return (
+    <div className="mt-6 card p-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5 text-brand-400" />
+            <h2 className="font-semibold text-ink-900">Strength progression by exercise</h2>
+          </div>
+          <p className="mt-1 text-sm text-ink-500">
+            Estimated 1RM / top set, month over month. Top lifts load first.
+          </p>
+        </div>
+        <div className="w-full sm:w-64">
+          <Field label="Exercise">
+            <select
+              className="input"
+              value={active?.id ?? ""}
+              onChange={(e) => setSelectedId(e.target.value)}
+            >
+              {options.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-6">
+        <div>
+          <div className="eyebrow text-ink-400">Current best</div>
+          <div className="text-2xl font-bold text-ink-900">{best} lb</div>
+        </div>
+        <div>
+          <div className="eyebrow text-ink-400">Gain (6 mo)</div>
+          <div className={cn("text-2xl font-bold", gainPct >= 0 ? "text-accent-400" : "text-brand-400")}>
+            {gainPct >= 0 ? "+" : ""}
+            {gainPct}%
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4">
+        <ResponsiveContainer width="100%" height={280}>
+          <LineChartRecharts data={series} margin={{ left: -16, right: 8, top: 8 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#eceef2" vertical={false} />
+            <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={12} stroke="#828fa6" />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              fontSize={12}
+              stroke="#828fa6"
+              domain={["dataMin - 10", "dataMax + 10"]}
+              tickFormatter={(v) => `${v}`}
+            />
+            <Tooltip
+              contentStyle={{ borderRadius: 12, border: "1px solid #eceef2", fontSize: 12 }}
+              formatter={(v: number) => [`${v} lb`, "Est. 1RM"]}
+            />
+            <Line type="monotone" dataKey="oneRm" stroke="#1b82f5" strokeWidth={2.5} dot={{ r: 3 }} name="Est. 1RM" />
+          </LineChartRecharts>
+        </ResponsiveContainer>
+      </div>
+    </div>
   );
 }
 

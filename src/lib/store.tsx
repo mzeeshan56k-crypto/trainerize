@@ -11,6 +11,7 @@ import type {
   KanbanColumn, KanbanCard, Challenge, PlatformUser, AISuggestion,
 } from "@/lib/platform";
 import { sampleData } from "@/lib/samples";
+import { seedExercises, seedWorkouts, seedPrograms, prebuiltForms } from "@/lib/seed-content";
 
 export function uid(prefix = "id") {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
@@ -26,6 +27,7 @@ export interface AppSettings {
   aiProvider?: "openai" | "anthropic" | "gemini";
   aiModel?: string;
   aiApiKey?: string;
+  autoUpdates?: { workouts: boolean; nutrition: boolean; checkins: boolean };
 }
 
 export interface Broadcast {
@@ -43,6 +45,21 @@ export interface CheckIn {
   answers: Record<string, string | number>;
 }
 
+export interface FormField {
+  id: string;
+  label: string;
+  type: "short" | "long" | "number" | "scale" | "yesno" | "choice";
+  options?: string[];
+  required?: boolean;
+}
+
+export interface CoachForm {
+  id: string;
+  name: string;
+  description?: string;
+  fields: FormField[];
+}
+
 export interface DB {
   clients: Client[];
   exercises: Exercise[];
@@ -57,6 +74,7 @@ export interface DB {
   users: PlatformUser[];
   broadcasts: Broadcast[];
   checkins: CheckIn[];
+  forms: CoachForm[];
   settings: AppSettings;
   currentClientId: string | null;
   seeded: boolean;
@@ -72,12 +90,13 @@ const emptyKanban: KanbanColumn[] = [
 const emptyDB: DB = {
   clients: [], exercises: [], workouts: [], programs: [], mealPlans: [],
   conversations: [], appointments: [], kanban: emptyKanban, challenges: [],
-  aiSuggestions: [], users: [], broadcasts: [], checkins: [],
+  aiSuggestions: [], users: [], broadcasts: [], checkins: [], forms: [],
   settings: {
     trainerName: "Your Name",
     trainerEmail: "you@email.com",
     businessName: "Your Coaching Business",
     brandColor: "#1b82f5",
+    autoUpdates: { workouts: false, nutrition: false, checkins: false },
   },
   currentClientId: null,
   seeded: false,
@@ -90,7 +109,12 @@ interface AppContextValue extends DB {
   // generic
   set: (patch: Partial<DB>) => void;
   seedSampleData: () => void;
+  loadStarterContent: () => void;
   resetAll: () => void;
+  // forms
+  addForm: (f: Partial<CoachForm>) => void;
+  updateForm: (id: string, patch: Partial<CoachForm>) => void;
+  removeForm: (id: string) => void;
   // clients
   addClient: (c: Partial<Client>) => Client;
   updateClient: (id: string, patch: Partial<Client>) => void;
@@ -166,9 +190,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setDb({ ...sampleData, seeded: true });
   }, []);
 
+  // Loads the pre-built library (exercises, workouts, programs, forms) WITHOUT
+  // demo clients — gives a coach a ready-to-use catalog on an empty workspace.
+  const loadStarterContent = useCallback(() => {
+    setDb((d) => ({
+      ...d,
+      exercises: seedExercises,
+      workouts: seedWorkouts,
+      programs: seedPrograms,
+      forms: prebuiltForms,
+    }));
+  }, []);
+
   const resetAll = useCallback(() => {
     setDb({ ...emptyDB, seeded: false });
   }, []);
+
+  /* ----- forms ----- */
+  const addForm = useCallback((f: Partial<CoachForm>) => {
+    const form: CoachForm = {
+      id: uid("form"), name: f.name ?? "New Form",
+      description: f.description, fields: f.fields ?? [],
+    };
+    setDb((d) => ({ ...d, forms: [form, ...d.forms] }));
+  }, []);
+  const updateForm = useCallback((id: string, patch: Partial<CoachForm>) =>
+    setDb((d) => ({ ...d, forms: d.forms.map((f) => (f.id === id ? { ...f, ...patch } : f)) })), []);
+  const removeForm = useCallback((id: string) =>
+    setDb((d) => ({ ...d, forms: d.forms.filter((f) => f.id !== id) })), []);
 
   /* ----- clients ----- */
   const addClient = useCallback((c: Partial<Client>): Client => {
@@ -380,7 +429,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<AppContextValue>(() => ({
     ...db, hydrated,
-    set, seedSampleData, resetAll,
+    set, seedSampleData, loadStarterContent, resetAll,
+    addForm, updateForm, removeForm,
     addClient, updateClient, removeClient, setCurrentClient,
     addExercise, removeExercise,
     addWorkout, updateWorkout, removeWorkout,
@@ -396,7 +446,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addBroadcast,
     updateSettings,
   }), [
-    db, hydrated, set, seedSampleData, resetAll, addClient, updateClient, removeClient,
+    db, hydrated, set, seedSampleData, loadStarterContent, resetAll, addForm, updateForm, removeForm,
+    addClient, updateClient, removeClient,
     setCurrentClient, addExercise, removeExercise, addWorkout, updateWorkout, removeWorkout,
     addProgram, removeProgram, addMealPlan, removeMealPlan, sendMessage, addAppointment,
     removeAppointment, addCard, moveCard, removeCard, addChallenge, toggleJoinChallenge,

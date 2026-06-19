@@ -31,6 +31,7 @@ export interface Exercise {
   type: "Strength" | "Cardio" | "Mobility" | "Core";
   videoThumb: string;
   video?: string;
+  pattern?: string; // movement pattern for the animated graphic
 }
 
 export interface WorkoutSet {

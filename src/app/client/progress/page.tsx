@@ -9,6 +9,7 @@ import {
 import { weightTrend, strengthTrend } from "@/lib/data";
 import { WeightChart, StrengthChart } from "@/components/dashboard/Charts";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { PhotoCompare } from "@/components/PhotoCompare";
 import { useLocalState } from "@/lib/useLocalState";
 import { useApp, useCurrentClient } from "@/lib/store";
 import { EmptyState } from "@/components/ui/Modal";
@@ -285,6 +286,23 @@ export default function ClientProgressPage() {
               <Plus className="h-3 w-3" /> New photo
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Side-by-side comparison */}
+      <section className="card p-5">
+        <h2 className="font-semibold text-ink-900">Side-by-side comparison</h2>
+        <p className="mt-1 text-sm text-ink-500">
+          Pick two photos to see your transformation side by side.
+        </p>
+        <div className="mt-4">
+          {photosHydrated ? (
+            <PhotoCompare photos={photos} />
+          ) : (
+            <div className="flex h-32 items-center justify-center">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-ink-200 border-t-brand-600" />
+            </div>
+          )}
         </div>
       </section>
 

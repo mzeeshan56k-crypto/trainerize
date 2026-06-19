@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { VideoModal } from "@/components/ui/VideoModal";
+import { ExerciseAnimation } from "@/components/ui/ExerciseAnimation";
 import { Modal, Field, EmptyState } from "@/components/ui/Modal";
 import type { Workout, WorkoutExercise } from "@/lib/data";
 import { sampleVideo } from "@/lib/media";
@@ -498,14 +499,19 @@ export default function TrainingPage() {
                 <div key={ex.id} className="card overflow-hidden">
                   <button
                     type="button"
-                    onClick={() => setVideo({ src: ex.video || sampleVideo(ex.id), title: ex.name })}
-                    aria-label={`Play ${ex.name} demo`}
-                    className="group/play relative flex h-32 w-full items-center justify-center bg-gradient-to-br from-brand-500 to-brand-700"
+                    onClick={() => ex.video && setVideo({ src: ex.video, title: ex.name })}
+                    aria-label={ex.video ? `Play ${ex.name} demo video` : `${ex.name} animation`}
+                    className="group/play relative block h-32 w-full"
                   >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/25 text-white backdrop-blur-sm transition group-hover/play:scale-105 group-hover/play:bg-white/40">
-                      <Play className="h-5 w-5 fill-current" />
-                    </span>
-                    <span className="absolute right-2 top-2 badge bg-white/20 text-white backdrop-blur-sm">
+                    <ExerciseAnimation name={ex.name} pattern={ex.pattern} className="h-full w-full" />
+                    {ex.video && (
+                      <span className="absolute inset-0 flex items-center justify-center bg-ink-950/30 opacity-0 transition group-hover/play:opacity-100">
+                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-600 text-white">
+                          <Play className="h-5 w-5 fill-current" />
+                        </span>
+                      </span>
+                    )}
+                    <span className="absolute right-2 top-2 badge bg-ink-950/50 text-white backdrop-blur-sm">
                       {ex.type}
                     </span>
                   </button>

@@ -6,6 +6,7 @@ import {
   LayoutDashboard, Users, Dumbbell, Apple, CalendarDays,
   MessageSquare, LineChart, Sparkles, Settings, LogOut,
   TrafficCone, KanbanSquare, ClipboardList, FileSpreadsheet, UsersRound, Megaphone,
+  ScanLine, HeartPulse,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,7 @@ const nav = [
   { href: "/dashboard/clients", label: "Clients", icon: Users },
   { href: "/dashboard/auditing", label: "Auditing", icon: TrafficCone },
   { href: "/dashboard/workouts", label: "Training", icon: Dumbbell },
+  { href: "/dashboard/form-check", label: "Form Check", icon: ScanLine },
   { href: "/dashboard/program-builder", label: "Program Builder", icon: ClipboardList },
   { href: "/dashboard/nutrition", label: "Nutrition", icon: Apple },
   { href: "/dashboard/calendar", label: "Calendar", icon: CalendarDays },
@@ -22,6 +24,7 @@ const nav = [
   { href: "/dashboard/form-builder", label: "Form Builder", icon: FileSpreadsheet },
   { href: "/dashboard/messages", label: "Messages", icon: MessageSquare },
   { href: "/dashboard/progress", label: "Progress", icon: LineChart },
+  { href: "/dashboard/recovery", label: "Recovery", icon: HeartPulse },
   { href: "/dashboard/team", label: "Team", icon: UsersRound },
   { href: "/dashboard/announcements", label: "Announcements", icon: Megaphone },
   { href: "/dashboard/ai-coach", label: "AI Co-Pilot", icon: Sparkles },

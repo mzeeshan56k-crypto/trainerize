@@ -5,10 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, MessageSquare, Pencil, Trash2, Scale, Target, Flag, Activity,
-  Dumbbell, Calendar, Sparkles, Clock, Layers, LineChart, Loader2,
+  Dumbbell, Calendar, Sparkles, Clock, Layers, LineChart, Loader2, Images,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Modal, Field, EmptyState } from "@/components/ui/Modal";
+import { PhotoCompare } from "@/components/PhotoCompare";
 import { WeightChart, StrengthChart, AdherenceRing } from "@/components/dashboard/Charts";
 import { useApp } from "@/lib/store";
 import { useLocalState } from "@/lib/useLocalState";
@@ -23,13 +24,19 @@ const statusBadge: Record<ClientStatus, string> = {
   inactive: "bg-ink-100 text-ink-600",
 };
 
-const tabs = ["Overview", "Training", "Progress", "Notes"] as const;
+const tabs = ["Overview", "Training", "Progress", "Photos", "Notes"] as const;
 type Tab = (typeof tabs)[number];
 
 interface Note {
   author: string;
   time: string;
   text: string;
+}
+
+interface ProgressPhoto {
+  id: string;
+  label: string;
+  dataUrl: string;
 }
 
 function Loading() {
@@ -69,6 +76,11 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
     [],
   );
   const [draft, setDraft] = useState("");
+
+  const [photos, , photosHydrated] = useLocalState<ProgressPhoto[]>(
+    "ffkc-progress-photos",
+    [],
+  );
 
   if (!hydrated) return <Loading />;
 
@@ -354,6 +366,33 @@ export default function ClientDetailPage({ params }: { params: { id: string } })
               description="Once this client logs workouts and check-ins, their weight and strength trends will appear here."
             />
           )
+        )}
+
+        {tab === "Photos" && (
+          <div className="card p-6">
+            <div className="flex items-center gap-2">
+              <Images className="h-5 w-5 text-brand-400" />
+              <h2 className="font-semibold text-ink-900">Progress photo review</h2>
+            </div>
+            <p className="mt-1 text-sm text-ink-500">
+              Compare {c.name}&rsquo;s photos side by side. Highlight and circle
+              areas of comparison directly on the &ldquo;After&rdquo; photo —
+              your annotations are saved automatically.
+            </p>
+            <div className="mt-4">
+              {photosHydrated ? (
+                <PhotoCompare
+                  photos={photos}
+                  annotatable
+                  storageKey={`ffkc-annotation-${params.id}`}
+                />
+              ) : (
+                <div className="flex h-32 items-center justify-center text-ink-400">
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {tab === "Notes" && (

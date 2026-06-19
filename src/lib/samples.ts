@@ -7,13 +7,19 @@ import {
 import {
   kanbanColumns, challenges, aiSuggestions, platformUsers, broadcasts,
 } from "@/lib/platform";
+import { seedExercises, seedWorkouts, seedPrograms, prebuiltForms } from "@/lib/seed-content";
 import type { DB } from "@/lib/store";
+
+// Merge the small demo data with the full pre-built library (de-duped by id).
+const mergedExercises = [...seedExercises, ...exercises.filter((e) => !seedExercises.some((s) => s.id === e.id))];
+const mergedWorkouts = [...seedWorkouts, ...workouts.filter((w) => !seedWorkouts.some((s) => s.id === w.id))];
+const mergedPrograms = [...seedPrograms, ...programs.filter((p) => !seedPrograms.some((s) => s.id === p.id))];
 
 export const sampleData: DB = {
   clients,
-  exercises,
-  workouts,
-  programs,
+  exercises: mergedExercises,
+  workouts: mergedWorkouts,
+  programs: mergedPrograms,
   mealPlans,
   conversations,
   appointments,
@@ -23,6 +29,7 @@ export const sampleData: DB = {
   users: platformUsers,
   broadcasts: broadcasts.map((b) => ({ ...b })),
   checkins: [],
+  forms: prebuiltForms,
   settings: {
     trainerName: "Alex Coach",
     trainerEmail: "alex@ffkc.app",

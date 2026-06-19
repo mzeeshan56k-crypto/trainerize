@@ -434,6 +434,43 @@ export default function SettingsPage() {
                   </div>
                 ))}
               </div>
+
+              <div className="mt-8 rounded-2xl border border-ink-100 bg-ink-50/40 p-5">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-brand-400" />
+                  <h3 className="font-semibold text-ink-900">Automatic program updates</h3>
+                </div>
+                <p className="mt-1 text-xs text-ink-500">
+                  When enabled, the AI Copilot automatically adjusts clients&apos; plans based on logged
+                  progress and check-in data — no manual edits required.
+                </p>
+
+                <div className="mt-4 divide-y divide-ink-100">
+                  {([
+                    { key: "workouts", label: "Auto-update workouts", desc: "Progress loads and swaps exercises as clients adapt." },
+                    { key: "nutrition", label: "Auto-update nutrition", desc: "Re-tune macros and calories from logged intake." },
+                    { key: "checkins", label: "Auto-update check-ins", desc: "Adapt check-in cadence and questions automatically." },
+                  ] as const).map((row) => {
+                    const auto = app.settings.autoUpdates ?? { workouts: false, nutrition: false, checkins: false };
+                    return (
+                      <div key={row.key} className="flex items-center justify-between py-4">
+                        <div>
+                          <div className="text-sm font-medium text-ink-900">{row.label}</div>
+                          <div className="text-xs text-ink-500">{row.desc}</div>
+                        </div>
+                        <Toggle
+                          on={auto[row.key]}
+                          onToggle={() =>
+                            app.updateSettings({
+                              autoUpdates: { ...auto, [row.key]: !auto[row.key] },
+                            })
+                          }
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
 

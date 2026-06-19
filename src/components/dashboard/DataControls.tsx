@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Database, Trash2, Sparkles } from "lucide-react";
+import { Database, Trash2, Sparkles, Library } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { Modal } from "@/components/ui/Modal";
 
 export function DataControls({ variant = "inline" }: { variant?: "inline" | "card" }) {
-  const { seedSampleData, resetAll, seeded, clients } = useApp();
+  const { seedSampleData, loadStarterContent, resetAll, seeded, clients } = useApp();
   const [confirm, setConfirm] = useState<null | "seed" | "reset">(null);
 
   const hasData = clients.length > 0;
 
   const buttons = (
     <div className="flex flex-wrap gap-3">
+      <button onClick={() => loadStarterContent()} className="btn-primary">
+        <Library className="h-4 w-4" /> Load starter content
+      </button>
       <button onClick={() => setConfirm("seed")} className="btn-secondary">
         <Sparkles className="h-4 w-4" /> Load example data
       </button>
@@ -35,8 +38,9 @@ export function DataControls({ variant = "inline" }: { variant?: "inline" | "car
             <h3 className="font-semibold text-ink-900">Workspace data</h3>
           </div>
           <p className="mt-1 text-sm text-ink-500">
-            Your data is stored locally in this browser. Load a fully-populated example
-            workspace to explore, or clear everything to start fresh.
+            Your data is stored locally in this browser. <strong className="text-ink-700">Load starter content</strong> to
+            populate the pre-built exercise library, 20 workouts, 5 programs and 5 forms;
+            <strong className="text-ink-700"> Load example data</strong> for a fully-populated demo with clients; or clear everything.
           </p>
           <div className="mt-4">{buttons}</div>
         </div>
