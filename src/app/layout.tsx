@@ -10,22 +10,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FitForge — AI Fitness Coaching Platform",
+  title: "Fitness Factory KC — Coaching Platform",
   description:
-    "FitForge is the all-in-one platform for personal trainers, gyms and online coaches to build workouts, track nutrition, message clients and grow their business.",
-  keywords: [
-    "personal training software",
-    "online coaching platform",
-    "workout builder",
-    "fitness app",
-    "nutrition tracking",
-  ],
-  openGraph: {
-    title: "FitForge — AI Fitness Coaching Platform",
-    description:
-      "Build workouts, track progress, coach clients and grow your fitness business — all in one place.",
-    type: "website",
-  },
+    "Private coaching platform for Fitness Factory KC — workouts, nutrition, progress tracking, recovery and messaging for coaches and members.",
+  robots: { index: false, follow: false },
 };
 
 export default function RootLayout({

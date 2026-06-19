@@ -10,7 +10,7 @@ export default function NotFound() {
         We couldn&apos;t find that page. It may have moved or never existed.
       </p>
       <div className="mt-8 flex gap-3">
-        <Link href="/" className="btn-secondary">Go home</Link>
+        <Link href="/login" className="btn-secondary">Sign in</Link>
         <Link href="/dashboard" className="btn-primary">Open dashboard</Link>
       </div>
     </div>

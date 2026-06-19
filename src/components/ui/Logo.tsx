@@ -10,7 +10,7 @@ export function Logo({
 }) {
   return (
     <Link href="/" className={cn("flex items-center gap-2.5", className)}>
-      <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-accent-500 shadow-glow">
+      <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-orange-500 shadow-glow">
         <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="none">
           <path
             d="M6.5 9v6M9.5 7v10M14.5 7v10M17.5 9v6M4 12h2M18 12h2"
@@ -26,7 +26,7 @@ export function Logo({
           dark ? "text-white" : "text-ink-900",
         )}
       >
-        Fit<span className="text-brand-400">Forge</span>
+Fitness Factory <span className="text-brand-400">KC</span>
       </span>
     </Link>
   );
